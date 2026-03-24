@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reel Vault</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #222;
+    --accent: #ff2d55;
+    --accent2: #ff9500;
+    --text: #f0f0f0;
+    --muted: #555;
+    --card: #141414;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  header { text-align: center; margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 12vw, 96px);
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--muted); }
+
+  .row { display: flex; gap: 10px; margin-top: 14px; }
+
+  button {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 12px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  button.secondary {
+    background: var(--border);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    flex: 0 0 auto;
+    padding: 12px 16px;
+  }
+
+  #status {
+    max-width: 680px;
+    margin: 0 auto 16px;
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1s infinite;
+    display: none;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+  }
+
+  #results {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-author { font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+  .result-desc   { font-size: 12px; color: #aaa; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .result-link   { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--accent2); text-decoration: none; word-break: break-all; }
+  .result-link:hover { text-decoration: underline; }
+  .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
+  .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; display: inline-block; }
+  .error         { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
+  .info          { color: var(--muted); font-size: 11px; margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Reel Vault</h1>
+  <p class="subtitle">TikTok Video Finder</p>
+</header>
+
+<div class="card">
+  <label>Apify API Token</label>
+  <input type="password" id="token" placeholder="apify_api_xxxxxxxxxxxxxxxx" />
+</div>
+
+<div class="card">
+  <label>Search Keyword</label>
+  <input type="text" id="keyword" placeholder="e.g. cooking hacks" />
+  <div class="row">
+    <button id="searchBtn" onclick="startSearch()">Search TikTok</button>
+    <button class="secondary" onclick="clearAll()">Clear</button>
+  </div>
+</div>
+
+<div id="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
+<div id="results"></div>
+
+<script>
+  const ACTOR = "clockworks~tiktok-scraper";
+
+  // Use Apify's own CORS-enabled client API endpoint
+  // This is the correct way to call Apify from a browser
+  const BASE = "https://api.apify.com/v2";
+
+  function setStatus(msg, loading = false) {
+    document.getElementById("statusText").textContent = msg;
+    document.getElementById("dot").style.display = loading ? "block" : "none";
+  }
+
+  function clearAll() {
+    document.getElementById("results").innerHTML = "";
+    setStatus("");
+  }
+
+  async function apiFetch(path, token, options = {}) {
+    const url = `${BASE}${path}`;
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...( options.headers || {} )
+    };
+    const res = await fetch(url, { ...options, headers });
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0, 200)); }
+    if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
+    return json;
+  }
+
+  async function startSearch() {
+    const token   = document.getElementById("token").value.trim();
+    const keyword = document.getElementById("keyword").value.trim();
+
+    if (!token)   return alert("Paste your Apify API token first.");
+    if (!keyword) return alert("Enter a search keyword.");
+
+    const btn = document.getElementById("searchBtn");
+    btn.disabled = true;
+    clearAll();
+    setStatus("Starting Apify run...", true);
+
+    try {
+      // ── 1. Start the run ─────────────────────────────────────────
+      const runData = await apiFetch(
+        `/acts/${ACTOR}/runs`,
+        token,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            searchQueries: [keyword],
+            maxResults: 20,
+            shouldDownloadVideos: false,
+            shouldDownloadCovers: false
+          })
+        }
+      );
+
+      const runId     = runData.data?.id;
+      const datasetId = runData.data?.defaultDatasetId;
+      if (!runId) throw new Error("No run ID returned. Check your token.");
+
+      setStatus("Run started — scraping TikTok...", true);
+
+      // ── 2. Poll until done ───────────────────────────────────────
+      await pollUntilDone(token, runId);
+
+      setStatus("Fetching video links...", true);
+
+      // ── 3. Get results ───────────────────────────────────────────
+      const resultData = await apiFetch(
+        `/datasets/${datasetId}/items?limit=20`,
+        token
+      );
+
+      // Apify returns array directly or wrapped
+      const items = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
+      displayResults(items, keyword);
+
+    } catch (e) {
+      setStatus("");
+      document.getElementById("results").innerHTML =
+        `<div class="error">⚠ ${esc(e.message)}<br><br>
+         <span style="font-size:11px;color:#888">
+           If you see a network error, your browser may be blocking the request.<br>
+           Try opening this file in Chrome or Safari on your phone.
+         </span>
+        </div>`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function pollUntilDone(token, runId) {
+    const MAX_MS   = 120_000;
+    const INTERVAL =   5_000;
+    let elapsed    = 0;
+
+    while (elapsed < MAX_MS) {
+      await new Promise(r => setTimeout(r, INTERVAL));
+      elapsed += INTERVAL;
+
+      const data = await apiFetch(`/actor-runs/${runId}`, token);
+      const s    = data.data?.status;
+
+      setStatus(`Status: ${s} · ${Math.round(elapsed / 1000)}s`, true);
+
+      if (s === "SUCCEEDED") return;
+      if (["FAILED", "ABORTED", "TIMED-OUT"].includes(s))
+        throw new Error(`Apify run ${s}. Try a different keyword.`);
+    }
+
+    throw new Error("Timed out after 2 minutes. Try again.");
+  }
+
+  function displayResults(items, keyword) {
+    const box = document.getElementById("results");
+    setStatus("");
+
+    if (!items || items.length === 0) {
+      box.innerHTML = `<div class="error">No videos found for "${esc(keyword)}". Try a broader keyword.</div>`;
+      return;
+    }
+
+    box.innerHTML = `<span class="count-badge">✓ ${items.length} videos for "${esc(keyword)}"</span>`;
+
+    items.forEach(item => {
+      const url    = item.webVideoUrl || item.videoUrl || item.url || "";
+      const author = item.authorMeta?.name || item.author || "unknown";
+      const desc   = item.text || item.description || item.desc || "";
+      const views  = item.playCount || item.viewCount || "";
+      const likes  = item.diggCount || item.likeCount || "";
+
+      if (!url) return;
+
+      const card = document.createElement("div");
+      card.className = "result-card";
+      card.innerHTML = `
+        <div class="result-author">@${esc(author)}</div>
+        ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
+        <div class="result-meta">
+          ${views ? `<span>👁 ${Number(views).toLocaleString()}</span>` : ""}
+          ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
+        </div>
+        <a class="result-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>
+      `;
+      box.appendChild(card);
+    });
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter") startSearch();
+  });
+</script>
+</body>
+</html>
