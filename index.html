@@ -68,7 +68,7 @@
     margin-bottom: 8px;
   }
 
-  input {
+  input, select {
     width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
@@ -81,7 +81,7 @@
     transition: border-color 0.2s;
   }
 
-  input:focus { border-color: var(--accent); }
+  input:focus, select:focus { border-color: var(--accent); }
   input::placeholder { color: var(--muted); }
 
   .row { display: flex; gap: 10px; margin-top: 14px; }
@@ -167,7 +167,6 @@
   .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
   .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; display: inline-block; }
   .error         { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
-  .info          { color: var(--muted); font-size: 11px; margin-top: 8px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -184,7 +183,19 @@
 
 <div class="card">
   <label>Search Keyword</label>
-  <input type="text" id="keyword" placeholder="e.g. cooking hacks" />
+  <input type="text" id="keyword" placeholder="e.g. cooking" />
+
+  <div style="margin-top:14px">
+    <label>Number of Videos</label>
+    <select id="maxResults">
+      <option value="5">5 videos</option>
+      <option value="10">10 videos</option>
+      <option value="20" selected>20 videos</option>
+      <option value="30">30 videos</option>
+      <option value="50">50 videos</option>
+    </select>
+  </div>
+
   <div class="row">
     <button id="searchBtn" onclick="startSearch()">Search TikTok</button>
     <button class="secondary" onclick="clearAll()">Clear</button>
@@ -196,10 +207,7 @@
 
 <script>
   const ACTOR = "clockworks~tiktok-scraper";
-
-  // Use Apify's own CORS-enabled client API endpoint
-  // This is the correct way to call Apify from a browser
-  const BASE = "https://api.apify.com/v2";
+  const BASE  = "https://api.apify.com/v2";
 
   function setStatus(msg, loading = false) {
     document.getElementById("statusText").textContent = msg;
@@ -216,9 +224,9 @@
     const headers = {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
-      ...( options.headers || {} )
+      ...(options.headers || {})
     };
-    const res = await fetch(url, { ...options, headers });
+    const res  = await fetch(url, { ...options, headers });
     const text = await res.text();
     let json;
     try { json = JSON.parse(text); } catch { throw new Error(text.slice(0, 200)); }
@@ -227,8 +235,9 @@
   }
 
   async function startSearch() {
-    const token   = document.getElementById("token").value.trim();
-    const keyword = document.getElementById("keyword").value.trim();
+    const token      = document.getElementById("token").value.trim();
+    const keyword    = document.getElementById("keyword").value.trim();
+    const maxResults = parseInt(document.getElementById("maxResults").value);
 
     if (!token)   return alert("Paste your Apify API token first.");
     if (!keyword) return alert("Enter a search keyword.");
@@ -247,9 +256,11 @@
           method: "POST",
           body: JSON.stringify({
             searchQueries: [keyword],
-            maxResults: 20,
+            maxResults: maxResults,
+            resultsPerPage: maxResults,
             shouldDownloadVideos: false,
-            shouldDownloadCovers: false
+            shouldDownloadCovers: false,
+            searchSection: "/search/video"
           })
         }
       );
@@ -258,31 +269,30 @@
       const datasetId = runData.data?.defaultDatasetId;
       if (!runId) throw new Error("No run ID returned. Check your token.");
 
-      setStatus("Run started — scraping TikTok...", true);
+      setStatus(`Run started — scraping TikTok for "${keyword}"...`, true);
 
       // ── 2. Poll until done ───────────────────────────────────────
       await pollUntilDone(token, runId);
 
       setStatus("Fetching video links...", true);
 
-      // ── 3. Get results ───────────────────────────────────────────
+      // ── 3. Get results — request more than needed to be safe ─────
       const resultData = await apiFetch(
-        `/datasets/${datasetId}/items?limit=20`,
+        `/datasets/${datasetId}/items?limit=${maxResults * 2}`,
         token
       );
 
-      // Apify returns array directly or wrapped
-      const items = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
-      displayResults(items, keyword);
+      const items = Array.isArray(resultData)
+        ? resultData
+        : resultData.data?.items || [];
+
+      displayResults(items, keyword, maxResults);
 
     } catch (e) {
       setStatus("");
       document.getElementById("results").innerHTML =
         `<div class="error">⚠ ${esc(e.message)}<br><br>
-         <span style="font-size:11px;color:#888">
-           If you see a network error, your browser may be blocking the request.<br>
-           Try opening this file in Chrome or Safari on your phone.
-         </span>
+         <span style="font-size:11px;color:#888">Check your token and try again.</span>
         </div>`;
     } finally {
       btn.disabled = false;
@@ -290,7 +300,7 @@
   }
 
   async function pollUntilDone(token, runId) {
-    const MAX_MS   = 120_000;
+    const MAX_MS   = 180_000; // 3 min max
     const INTERVAL =   5_000;
     let elapsed    = 0;
 
@@ -301,35 +311,38 @@
       const data = await apiFetch(`/actor-runs/${runId}`, token);
       const s    = data.data?.status;
 
-      setStatus(`Status: ${s} · ${Math.round(elapsed / 1000)}s`, true);
+      setStatus(`Scraping TikTok... ${Math.round(elapsed / 1000)}s`, true);
 
       if (s === "SUCCEEDED") return;
       if (["FAILED", "ABORTED", "TIMED-OUT"].includes(s))
         throw new Error(`Apify run ${s}. Try a different keyword.`);
     }
 
-    throw new Error("Timed out after 2 minutes. Try again.");
+    throw new Error("Timed out after 3 minutes. Try again.");
   }
 
-  function displayResults(items, keyword) {
+  function displayResults(items, keyword, maxResults) {
     const box = document.getElementById("results");
     setStatus("");
 
-    if (!items || items.length === 0) {
-      box.innerHTML = `<div class="error">No videos found for "${esc(keyword)}". Try a broader keyword.</div>`;
+    // Filter only items that have a video URL
+    const valid = items.filter(item =>
+      item.webVideoUrl || item.videoUrl || item.url
+    ).slice(0, maxResults);
+
+    if (valid.length === 0) {
+      box.innerHTML = `<div class="error">No videos found for "${esc(keyword)}". Try a broader keyword like "cooking" or "dance".</div>`;
       return;
     }
 
-    box.innerHTML = `<span class="count-badge">✓ ${items.length} videos for "${esc(keyword)}"</span>`;
+    box.innerHTML = `<span class="count-badge">✓ ${valid.length} videos for "${esc(keyword)}"</span>`;
 
-    items.forEach(item => {
+    valid.forEach(item => {
       const url    = item.webVideoUrl || item.videoUrl || item.url || "";
       const author = item.authorMeta?.name || item.author || "unknown";
       const desc   = item.text || item.description || item.desc || "";
-      const views  = item.playCount || item.viewCount || "";
-      const likes  = item.diggCount || item.likeCount || "";
-
-      if (!url) return;
+      const views  = item.playCount  || item.viewCount  || "";
+      const likes  = item.diggCount  || item.likeCount  || "";
 
       const card = document.createElement("div");
       card.className = "result-card";
