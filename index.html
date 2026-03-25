@@ -79,14 +79,119 @@
     padding: 12px 14px;
     outline: none;
     transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
   }
 
+  input { background-image: none; }
   input:focus, select:focus { border-color: var(--accent); }
   input::placeholder { color: var(--muted); }
 
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  /* Subject toggle buttons */
+  .toggle-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    min-width: 80px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 10px 8px;
+    text-align: center;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .toggle-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .toggle-btn:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  /* Location chips */
+  .chip-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .chip.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #000;
+    font-weight: bold;
+  }
+
+  .chip:hover:not(.active) {
+    border-color: var(--accent2);
+    color: var(--text);
+  }
+
+  /* Query preview */
+  .query-preview {
+    max-width: 680px;
+    margin: 0 auto 16px;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .query-preview span { color: var(--accent2); }
+
   .row { display: flex; gap: 10px; margin-top: 14px; }
 
-  button {
+  button.primary {
     flex: 1;
     background: var(--accent);
     border: none;
@@ -100,15 +205,20 @@
     transition: opacity 0.2s, transform 0.1s;
   }
 
-  button:active { transform: scale(0.97); }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.primary:active { transform: scale(0.97); }
+  button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
   button.secondary {
     background: var(--border);
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
     font-size: 13px;
     font-family: 'DM Mono', monospace;
     flex: 0 0 auto;
     padding: 12px 16px;
+    transition: opacity 0.2s;
   }
 
   #status {
@@ -167,6 +277,20 @@
   .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
   .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; display: inline-block; }
   .error         { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
 </style>
 </head>
 <body>
@@ -176,30 +300,84 @@
   <p class="subtitle">TikTok Video Finder</p>
 </header>
 
+<!-- Token -->
 <div class="card">
   <label>Apify API Token</label>
   <input type="password" id="token" placeholder="apify_api_xxxxxxxxxxxxxxxx" />
 </div>
 
+<!-- Search Filters -->
 <div class="card">
-  <label>Search Keyword</label>
-  <input type="text" id="keyword" placeholder="e.g. cooking" />
 
-  <div style="margin-top:14px">
-    <label>Number of Videos</label>
-    <select id="maxResults">
-      <option value="5">5 videos</option>
-      <option value="10">10 videos</option>
-      <option value="20" selected>20 videos</option>
-      <option value="30">30 videos</option>
-      <option value="50">50 videos</option>
-    </select>
+  <!-- Vibe Preset -->
+  <div class="section-title">Vibe Preset</div>
+  <select id="preset" onchange="updatePreview()">
+    <option value="rich people spotted">🎥 Rich people spotted</option>
+    <option value="paparazzi billionaire street">📸 Paparazzi billionaire street</option>
+    <option value="luxury car spotted candid">🚗 Luxury car spotted candid</option>
+    <option value="celebrity leaving restaurant">🍽️ Celebrity leaving restaurant</option>
+    <option value="rich people caught camera">📷 Rich people caught on camera</option>
+    <option value="ferrari lamborghini spotted street">🏎️ Ferrari / Lambo spotted</option>
+    <option value="luxury villa pool candid">🏡 Luxury villa / pool</option>
+    <option value="private jet spotted airport">✈️ Private jet airport</option>
+    <option value="yacht rich people">🛥️ Yacht rich people</option>
+    <option value="custom">✏️ Custom keyword...</option>
+  </select>
+
+  <!-- Custom keyword (hidden by default) -->
+  <div id="customWrap" style="display:none; margin-top:12px;">
+    <label>Custom Keyword</label>
+    <input type="text" id="customKeyword" placeholder="Type your own keyword..." oninput="updatePreview()" />
   </div>
+
+  <hr class="divider">
+
+  <!-- Subject -->
+  <div class="section-title">Subject</div>
+  <div class="toggle-group" id="subjectGroup">
+    <div class="toggle-btn active" data-value="" onclick="selectToggle(this, 'subjectGroup')">👤 Any</div>
+    <div class="toggle-btn" data-value="woman" onclick="selectToggle(this, 'subjectGroup')">👩 Woman</div>
+    <div class="toggle-btn" data-value="man" onclick="selectToggle(this, 'subjectGroup')">👨 Man</div>
+    <div class="toggle-btn" data-value="couple" onclick="selectToggle(this, 'subjectGroup')">👫 Couple</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Location -->
+  <div class="section-title">Location</div>
+  <div class="chip-group" id="locationGroup">
+    <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
+    <div class="chip" data-value="Monaco" onclick="selectChip(this)">🇲🇨 Monaco</div>
+    <div class="chip" data-value="Dubai" onclick="selectChip(this)">🇦🇪 Dubai</div>
+    <div class="chip" data-value="Miami" onclick="selectChip(this)">🇺🇸 Miami</div>
+    <div class="chip" data-value="Moscow" onclick="selectChip(this)">🇷🇺 Moscow</div>
+    <div class="chip" data-value="Marbella" onclick="selectChip(this)">🇪🇸 Marbella</div>
+    <div class="chip" data-value="Los Angeles" onclick="selectChip(this)">🌴 LA</div>
+    <div class="chip" data-value="Saint Tropez" onclick="selectChip(this)">⛵ St Tropez</div>
+    <div class="chip" data-value="Mykonos" onclick="selectChip(this)">🇬🇷 Mykonos</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Number of videos -->
+  <div class="section-title">Number of Videos</div>
+  <select id="maxResults" onchange="updatePreview()">
+    <option value="5">5 videos</option>
+    <option value="10">10 videos</option>
+    <option value="20" selected>20 videos</option>
+    <option value="30">30 videos</option>
+    <option value="50">50 videos</option>
+  </select>
 
   <div class="row">
-    <button id="searchBtn" onclick="startSearch()">Search TikTok</button>
+    <button class="primary" id="searchBtn" onclick="startSearch()">Search TikTok</button>
     <button class="secondary" onclick="clearAll()">Clear</button>
   </div>
+</div>
+
+<!-- Query Preview -->
+<div class="query-preview">
+  🔍 Searching for: <span id="previewText">rich people spotted</span>
 </div>
 
 <div id="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
@@ -208,6 +386,43 @@
 <script>
   const ACTOR = "clockworks~tiktok-scraper";
   const BASE  = "https://api.apify.com/v2";
+
+  // ── UI helpers ───────────────────────────────────────────────────
+
+  function selectToggle(el, groupId) {
+    document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+    updatePreview();
+  }
+
+  function selectChip(el) {
+    document.querySelectorAll("#locationGroup .chip").forEach(c => c.classList.remove("active"));
+    el.classList.add("active");
+    updatePreview();
+  }
+
+  document.getElementById("preset").addEventListener("change", function() {
+    const isCustom = this.value === "custom";
+    document.getElementById("customWrap").style.display = isCustom ? "block" : "none";
+    updatePreview();
+  });
+
+  function buildQuery() {
+    const preset   = document.getElementById("preset").value;
+    const custom   = document.getElementById("customKeyword").value.trim();
+    const subject  = document.querySelector("#subjectGroup .toggle-btn.active")?.dataset.value || "";
+    const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
+
+    let base = preset === "custom" ? (custom || "rich people spotted") : preset;
+    let query = base;
+    if (subject)  query += ` ${subject}`;
+    if (location) query += ` ${location}`;
+    return query;
+  }
+
+  function updatePreview() {
+    document.getElementById("previewText").textContent = buildQuery();
+  }
 
   function setStatus(msg, loading = false) {
     document.getElementById("statusText").textContent = msg;
@@ -219,14 +434,17 @@
     setStatus("");
   }
 
+  // ── API ──────────────────────────────────────────────────────────
+
   async function apiFetch(path, token, options = {}) {
-    const url = `${BASE}${path}`;
-    const headers = {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    };
-    const res  = await fetch(url, { ...options, headers });
+    const res  = await fetch(`${BASE}${path}`, {
+      ...options,
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
     const text = await res.text();
     let json;
     try { json = JSON.parse(text); } catch { throw new Error(text.slice(0, 200)); }
@@ -236,47 +454,42 @@
 
   async function startSearch() {
     const token      = document.getElementById("token").value.trim();
-    const keyword    = document.getElementById("keyword").value.trim();
     const maxResults = parseInt(document.getElementById("maxResults").value);
+    const query      = buildQuery();
 
-    if (!token)   return alert("Paste your Apify API token first.");
-    if (!keyword) return alert("Enter a search keyword.");
+    if (!token) return alert("Paste your Apify API token first.");
 
     const btn = document.getElementById("searchBtn");
     btn.disabled = true;
     clearAll();
-    setStatus("Starting Apify run...", true);
+    setStatus(`Searching for "${query}"...`, true);
 
     try {
-      // ── 1. Start the run ─────────────────────────────────────────
-      const runData = await apiFetch(
-        `/acts/${ACTOR}/runs`,
-        token,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            searchQueries: [keyword],
-            maxResults: maxResults,
-            resultsPerPage: maxResults,
-            shouldDownloadVideos: false,
-            shouldDownloadCovers: false,
-            searchSection: "/video"
-          })
-        }
-      );
+      // 1. Start run
+      const runData = await apiFetch(`/acts/${ACTOR}/runs`, token, {
+        method: "POST",
+        body: JSON.stringify({
+          searchQueries: [query],
+          maxResults: maxResults,
+          resultsPerPage: maxResults,
+          shouldDownloadVideos: false,
+          shouldDownloadCovers: false,
+          searchSection: "/video"
+        })
+      });
 
       const runId     = runData.data?.id;
       const datasetId = runData.data?.defaultDatasetId;
       if (!runId) throw new Error("No run ID returned. Check your token.");
 
-      setStatus(`Run started — scraping TikTok for "${keyword}"...`, true);
+      setStatus(`Scraping TikTok for "${query}"...`, true);
 
-      // ── 2. Poll until done ───────────────────────────────────────
+      // 2. Poll
       await pollUntilDone(token, runId);
 
       setStatus("Fetching video links...", true);
 
-      // ── 3. Get results — request more than needed to be safe ─────
+      // 3. Fetch results
       const resultData = await apiFetch(
         `/datasets/${datasetId}/items?limit=${maxResults * 2}`,
         token
@@ -286,7 +499,7 @@
         ? resultData
         : resultData.data?.items || [];
 
-      displayResults(items, keyword, maxResults);
+      displayResults(items, query, maxResults);
 
     } catch (e) {
       setStatus("");
@@ -300,7 +513,7 @@
   }
 
   async function pollUntilDone(token, runId) {
-    const MAX_MS   = 180_000; // 3 min max
+    const MAX_MS   = 180_000;
     const INTERVAL =   5_000;
     let elapsed    = 0;
 
@@ -315,27 +528,26 @@
 
       if (s === "SUCCEEDED") return;
       if (["FAILED", "ABORTED", "TIMED-OUT"].includes(s))
-        throw new Error(`Apify run ${s}. Try a different keyword.`);
+        throw new Error(`Apify run ${s}. Try a different preset.`);
     }
 
     throw new Error("Timed out after 3 minutes. Try again.");
   }
 
-  function displayResults(items, keyword, maxResults) {
+  function displayResults(items, query, maxResults) {
     const box = document.getElementById("results");
     setStatus("");
 
-    // Filter only items that have a video URL
-    const valid = items.filter(item =>
-      item.webVideoUrl || item.videoUrl || item.url
-    ).slice(0, maxResults);
+    const valid = items
+      .filter(item => item.webVideoUrl || item.videoUrl || item.url)
+      .slice(0, maxResults);
 
     if (valid.length === 0) {
-      box.innerHTML = `<div class="error">No videos found for "${esc(keyword)}". Try a broader keyword like "cooking" or "dance".</div>`;
+      box.innerHTML = `<div class="error">No videos found for "${esc(query)}". Try a different preset or location.</div>`;
       return;
     }
 
-    box.innerHTML = `<span class="count-badge">✓ ${valid.length} videos for "${esc(keyword)}"</span>`;
+    box.innerHTML = `<span class="count-badge">✓ ${valid.length} videos for "${esc(query)}"</span>`;
 
     valid.forEach(item => {
       const url    = item.webVideoUrl || item.videoUrl || item.url || "";
@@ -368,6 +580,9 @@
   document.addEventListener("keydown", e => {
     if (e.key === "Enter") startSearch();
   });
+
+  // Init preview
+  updatePreview();
 </script>
 </body>
 </html>
