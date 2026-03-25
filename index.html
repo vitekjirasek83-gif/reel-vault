@@ -343,6 +343,23 @@
     <option value="50">50 videos</option>
   </select>
 
+  <hr class="divider">
+
+  <div class="section-title">Text Overlay Filter</div>
+  <div class="toggle-group" id="textFilterGroup">
+    <div class="toggle-btn active" data-value="all" onclick="selectToggle(this,'textFilterGroup')">🚫 Block all text</div>
+    <div class="toggle-btn" data-value="small" onclick="selectToggle(this,'textFilterGroup')">✍️ Allow small coverable text</div>
+    <div class="toggle-btn" data-value="off" onclick="selectToggle(this,'textFilterGroup')">⭕ Off</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-title">Video Orientation</div>
+  <div class="toggle-group" id="orientationGroup">
+    <div class="toggle-btn active" data-value="vertical" onclick="selectToggle(this,'orientationGroup')">📱 Vertical only (full screen)</div>
+    <div class="toggle-btn" data-value="any" onclick="selectToggle(this,'orientationGroup')">🔄 Any orientation</div>
+  </div>
+
   <div class="row">
     <button class="primary" id="searchBtn" onclick="startSearch()">Search TikTok</button>
     <button class="secondary" onclick="clearAll()">Clear</button>
@@ -397,16 +414,38 @@
   }
 
   // ── Vision check via Anthropic API ──────────────────────────────
-  async function hasTextOverlay(thumbnailUrl, anthropicKey) {
-    if (!thumbnailUrl) return false;
+  // textFilter: "all" = block any text, "small" = only block large/uncoverable text
+  async function checkThumbnail(thumbnailUrl, anthropicKey, textFilter, checkOrientation) {
+    if (!thumbnailUrl) return { blockText: false, blockOrientation: false };
 
     try {
-      // Fetch thumbnail as base64
-      const imgRes  = await fetch(thumbnailUrl);
-      if (!imgRes.ok) return false;
-      const blob    = await imgRes.blob();
-      const base64  = await blobToBase64(blob);
-      const mime    = blob.type || "image/jpeg";
+      const imgRes = await fetch(thumbnailUrl);
+      if (!imgRes.ok) return { blockText: false, blockOrientation: false };
+      const blob   = await imgRes.blob();
+      const base64 = await blobToBase64(blob);
+      const mime   = blob.type || "image/jpeg";
+
+      let prompt = "";
+
+      if (textFilter === "all" && checkOrientation) {
+        prompt = `Look at this image carefully and answer TWO questions. Reply in exactly this format: TEXT:YES or TEXT:NO, then a space, then VERTICAL:YES or VERTICAL:NO.
+
+TEXT: Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Any other readable text = YES.
+
+VERTICAL: Is this video in vertical/portrait orientation (taller than wide, filling a phone screen top to bottom)? A proper full-screen vertical video = YES. Horizontal/landscape or square = NO.`;
+      } else if (textFilter === "all") {
+        prompt = `Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Reply only YES or NO.`;
+      } else if (textFilter === "small" && checkOrientation) {
+        prompt = `Look at this image carefully and answer TWO questions. Reply in exactly this format: TEXT:YES or TEXT:NO, then a space, then VERTICAL:YES or VERTICAL:NO.
+
+TEXT: Does this image contain text that is LARGE, prominent, or would stick out if you placed different text over it? Small subtle text that could easily be covered by a text overlay without looking out of place = NO. Only large, dominant, or full-width text = YES. Tiny watermarks = NO.
+
+VERTICAL: Is this video in vertical/portrait orientation (taller than wide, filling a phone screen top to bottom)? YES or NO.`;
+      } else if (textFilter === "small") {
+        prompt = `Does this image contain text that is LARGE or prominent enough that it could NOT be covered by a small text overlay without sticking out of frame or looking awkward? Small subtle text that fits in one spot = NO. Large dominant text = YES. Tiny watermarks = NO. Reply only YES or NO.`;
+      } else if (checkOrientation) {
+        prompt = `Is this video in vertical/portrait orientation — taller than wide, filling a phone screen top to bottom like a TikTok? Reply only YES or NO.`;
+      }
 
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -418,30 +457,35 @@
         },
         body: JSON.stringify({
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 10,
+          max_tokens: 20,
           messages: [{
             role: "user",
             content: [
-              {
-                type: "image",
-                source: { type: "base64", media_type: mime, data: base64 }
-              },
-              {
-                type: "text",
-                text: "Does this image have text overlaid on it (excluding small watermarks or tiny usernames in corners)? Reply only YES or NO."
-              }
+              { type: "image", source: { type: "base64", media_type: mime, data: base64 } },
+              { type: "text", text: prompt }
             ]
           }]
         })
       });
 
       const data   = await res.json();
-      const answer = data?.content?.[0]?.text?.trim().toUpperCase();
-      return answer === "YES";
+      const answer = (data?.content?.[0]?.text?.trim().toUpperCase()) || "";
+
+      // Parse combined response
+      if (textFilter !== "off" && checkOrientation) {
+        const blockText        = answer.includes("TEXT:YES");
+        const blockOrientation = !answer.includes("VERTICAL:YES");
+        return { blockText, blockOrientation };
+      } else if (textFilter !== "off") {
+        return { blockText: answer === "YES" || answer.startsWith("YES"), blockOrientation: false };
+      } else if (checkOrientation) {
+        return { blockText: false, blockOrientation: !(answer === "YES" || answer.startsWith("YES")) };
+      }
+
+      return { blockText: false, blockOrientation: false };
 
     } catch {
-      // If vision check fails, don't block the video
-      return false;
+      return { blockText: false, blockOrientation: false };
     }
   }
 
@@ -576,10 +620,16 @@
       const keywordRemoved  = hasURL.length - keywordFiltered.length;
 
       // Step 2: vision filter (only if Anthropic key provided)
-      let finalItems    = keywordFiltered;
-      let visionRemoved = 0;
+      let finalItems         = keywordFiltered;
+      let visionRemoved      = 0;
+      let orientationRemoved = 0;
 
-      if (anthropicKey && keywordFiltered.length > 0) {
+      const textFilter      = document.querySelector("#textFilterGroup .toggle-btn.active")?.dataset.value || "all";
+      const orientationMode = document.querySelector("#orientationGroup .toggle-btn.active")?.dataset.value || "vertical";
+      const checkOrientation = orientationMode === "vertical";
+      const useVision = anthropicKey && (textFilter !== "off" || checkOrientation);
+
+      if (useVision && keywordFiltered.length > 0) {
         setStatus("Running vision check on thumbnails...", true);
 
         const toCheck = keywordFiltered.slice(0, maxResults * 2);
@@ -587,16 +637,16 @@
 
         const visionResults = [];
         for (let i = 0; i < toCheck.length; i++) {
-          const item         = toCheck[i];
-          const thumbnail    = item.videoMeta?.coverUrl || item.covers?.default || item.cover || item.thumbnail || "";
-          const hasText      = await hasTextOverlay(thumbnail, anthropicKey);
+          const item      = toCheck[i];
+          const thumbnail = item.videoMeta?.coverUrl || item.videoMeta?.originalCoverUrl || item.covers?.default || item.covers?.origin || item.cover || item.thumbnail || item.thumbnailUrl || "";
+          const result    = await checkThumbnail(thumbnail, anthropicKey, textFilter, checkOrientation);
 
           setVisionProgress(i + 1, toCheck.length);
 
-          if (!hasText) visionResults.push(item);
-          else visionRemoved++;
+          if (result.blockText)        { visionRemoved++; continue; }
+          if (result.blockOrientation) { orientationRemoved++; continue; }
+          visionResults.push(item);
 
-          // Stop early if we have enough
           if (visionResults.length >= maxResults) break;
         }
 
@@ -606,7 +656,7 @@
       const clean       = finalItems.slice(0, maxResults);
       const totalRemoved = keywordRemoved + visionRemoved;
 
-      displayResults(clean, query, totalRemoved, keywordRemoved, visionRemoved);
+      displayResults(clean, query, keywordRemoved, visionRemoved, orientationRemoved);
 
     } catch (e) {
       setStatus("");
@@ -635,7 +685,7 @@
     throw new Error("Timed out after 3 minutes. Try again.");
   }
 
-  function displayResults(items, query, totalRemoved, keywordRemoved, visionRemoved) {
+  function displayResults(items, query, keywordRemoved, visionRemoved, orientationRemoved) {
     const box = document.getElementById("results");
     setStatus("");
 
@@ -645,8 +695,9 @@
     }
 
     let badges = `<span class="count-badge">✓ ${items.length} clean videos for "${esc(query)}"</span>`;
-    if (keywordRemoved > 0) badges += `<span class="filtered-badge">🚫 ${keywordRemoved} talking heads removed</span>`;
-    if (visionRemoved  > 0) badges += `<span class="filtered-badge">👁 ${visionRemoved} text overlay videos removed</span>`;
+    if (keywordRemoved     > 0) badges += `<span class="filtered-badge">🚫 ${keywordRemoved} talking heads removed</span>`;
+    if (visionRemoved      > 0) badges += `<span class="filtered-badge">👁 ${visionRemoved} text overlay videos removed</span>`;
+    if (orientationRemoved > 0) badges += `<span class="filtered-badge">📐 ${orientationRemoved} wrong orientation removed</span>`;
 
     box.innerHTML = badges;
 
