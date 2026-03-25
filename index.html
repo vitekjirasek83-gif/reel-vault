@@ -113,23 +113,10 @@
     letter-spacing: 1px;
   }
 
-  .toggle-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+  .toggle-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .toggle-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
 
-  .toggle-btn:hover:not(.active) {
-    border-color: var(--accent);
-    color: var(--text);
-  }
-
-  .chip-group {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
+  .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 
   .chip {
     background: var(--bg);
@@ -144,17 +131,8 @@
     letter-spacing: 1px;
   }
 
-  .chip.active {
-    background: var(--accent2);
-    border-color: var(--accent2);
-    color: #000;
-    font-weight: bold;
-  }
-
-  .chip:hover:not(.active) {
-    border-color: var(--accent2);
-    color: var(--text);
-  }
+  .chip.active { background: var(--accent2); border-color: var(--accent2); color: #000; font-weight: bold; }
+  .chip:hover:not(.active) { border-color: var(--accent2); color: var(--text); }
 
   .query-preview {
     max-width: 680px;
@@ -172,16 +150,7 @@
   }
 
   .query-preview span { color: var(--accent2); }
-
-  .filter-badge {
-    background: #1a1a0a;
-    border: 1px solid #333300;
-    border-radius: 6px;
-    color: #888;
-    font-size: 10px;
-    padding: 3px 8px;
-    margin-left: 4px;
-  }
+  .filter-badge { background: #1a1a0a; border: 1px solid #333300; border-radius: 6px; color: #888; font-size: 10px; padding: 3px 8px; }
 
   .row { display: flex; gap: 10px; margin-top: 14px; }
 
@@ -234,9 +203,36 @@
     flex-shrink: 0;
   }
 
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50%      { opacity: 0.2; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  /* Vision progress bar */
+  .vision-bar-wrap {
+    max-width: 680px;
+    margin: 0 auto 16px;
+    display: none;
+  }
+
+  .vision-bar-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .vision-bar-bg {
+    background: var(--border);
+    border-radius: 4px;
+    height: 4px;
+    overflow: hidden;
+  }
+
+  .vision-bar-fill {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
   }
 
   #results {
@@ -258,10 +254,7 @@
     animation: fadeIn 0.3s ease;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   .result-author { font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
   .result-desc   { font-size: 12px; color: #aaa; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -270,8 +263,8 @@
   .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
   .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 4px; display: inline-block; }
   .filtered-badge { background: #1a1000; border: 1px solid #333; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #666; margin-bottom: 8px; display: inline-block; margin-left: 6px; }
-  .error         { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
-  .divider       { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .error { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
   .section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 </style>
 </head>
@@ -282,11 +275,17 @@
   <p class="subtitle">TikTok Video Finder</p>
 </header>
 
+<!-- API Keys -->
 <div class="card">
   <label>Apify API Token</label>
   <input type="password" id="token" placeholder="apify_api_xxxxxxxxxxxxxxxx" />
+  <div style="margin-top:14px">
+    <label>Anthropic API Key <span style="color:#444;font-size:10px">(for text overlay filter)</span></label>
+    <input type="password" id="anthropicKey" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxx" />
+  </div>
 </div>
 
+<!-- Search Filters -->
 <div class="card">
 
   <div class="section-title">Vibe Preset</div>
@@ -336,7 +335,7 @@
   <hr class="divider">
 
   <div class="section-title">Number of Videos</div>
-  <select id="maxResults" onchange="updatePreview()">
+  <select id="maxResults">
     <option value="5">5 videos</option>
     <option value="10">10 videos</option>
     <option value="20" selected>20 videos</option>
@@ -352,7 +351,17 @@
 
 <div class="query-preview">
   🔍 <span id="previewText">rich people filmed street</span>
-  <span class="filter-badge">🚫 talking heads filtered out</span>
+  <span class="filter-badge">🚫 talking heads filtered</span>
+  <span class="filter-badge">👁 text overlay filtered</span>
+</div>
+
+<!-- Vision progress bar -->
+<div class="vision-bar-wrap" id="visionBarWrap">
+  <div class="vision-bar-label">
+    <span id="visionBarLabel">Checking thumbnails for text overlays...</span>
+    <span id="visionBarCount">0 / 0</span>
+  </div>
+  <div class="vision-bar-bg"><div class="vision-bar-fill" id="visionBarFill"></div></div>
 </div>
 
 <div id="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
@@ -362,43 +371,90 @@
   const ACTOR = "clockworks~tiktok-scraper";
   const BASE  = "https://api.apify.com/v2";
 
-  // ── These words in a video description = filtered out ────────────
+  // ── Keyword filter (same as before) ─────────────────────────────
   const BLOCK_WORDS = [
-    "spotting", "car spot", "carspot", "i spotted", "we spotted",
-    "review", "podcast", "interview", "talking about", "he recalls",
-    "she recalls", "story time", "storytime", "reaction", "reacting",
-    "explains", "i was there", "told me", "i remember", "reminiscing",
-    "commentary", "voiceover", "narrator", "i saw", "i seen",
-    "discuss", "opinion", "ranked", "ranking", "top 10", "top 5",
-    "compilation", "best of", "worst of", "you won't believe",
-    "found out", "reveals", "exposed", "breaking news", "news"
+    "spotting","car spot","carspot","i spotted","we spotted",
+    "review","podcast","interview","talking about","he recalls",
+    "she recalls","story time","storytime","reaction","reacting",
+    "explains","i was there","told me","i remember","reminiscing",
+    "commentary","voiceover","narrator","i saw","i seen",
+    "discuss","opinion","ranked","ranking","top 10","top 5",
+    "compilation","best of","worst of","you won't believe",
+    "found out","reveals","exposed","breaking news","news"
   ];
 
-  // ── These words in a username = likely a carspotting channel ─────
   const BLOCK_USERNAMES = [
-    "spot", "spotter", "carspot", "review", "daily", "news",
-    "media", "channel", "official", "podcast", "talk"
+    "spot","spotter","carspot","review","daily","news",
+    "media","channel","official","podcast","talk"
   ];
 
-  function isBlocked(item) {
-    const desc     = (item.text || item.description || item.desc || "").toLowerCase();
-    const author   = (item.authorMeta?.name || item.author || "").toLowerCase();
-
-    // Block by description keywords
-    for (const word of BLOCK_WORDS) {
-      if (desc.includes(word)) return true;
-    }
-
-    // Block by username patterns
-    for (const word of BLOCK_USERNAMES) {
-      if (author.includes(word)) return true;
-    }
-
+  function isBlockedByText(item) {
+    const desc   = (item.text || item.description || item.desc || "").toLowerCase();
+    const author = (item.authorMeta?.name || item.author || "").toLowerCase();
+    for (const w of BLOCK_WORDS)     { if (desc.includes(w))   return true; }
+    for (const w of BLOCK_USERNAMES) { if (author.includes(w)) return true; }
     return false;
   }
 
-  // ── UI helpers ───────────────────────────────────────────────────
+  // ── Vision check via Anthropic API ──────────────────────────────
+  async function hasTextOverlay(thumbnailUrl, anthropicKey) {
+    if (!thumbnailUrl) return false;
 
+    try {
+      // Fetch thumbnail as base64
+      const imgRes  = await fetch(thumbnailUrl);
+      if (!imgRes.ok) return false;
+      const blob    = await imgRes.blob();
+      const base64  = await blobToBase64(blob);
+      const mime    = blob.type || "image/jpeg";
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": anthropicKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 10,
+          messages: [{
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: { type: "base64", media_type: mime, data: base64 }
+              },
+              {
+                type: "text",
+                text: "Does this image have text overlaid on it (excluding small watermarks or tiny usernames in corners)? Reply only YES or NO."
+              }
+            ]
+          }]
+        })
+      });
+
+      const data   = await res.json();
+      const answer = data?.content?.[0]?.text?.trim().toUpperCase();
+      return answer === "YES";
+
+    } catch {
+      // If vision check fails, don't block the video
+      return false;
+    }
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
+      reader.onerror  = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // ── UI helpers ───────────────────────────────────────────────────
   function selectToggle(el, groupId) {
     document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove("active"));
     el.classList.add("active");
@@ -421,7 +477,6 @@
     const custom   = document.getElementById("customKeyword").value.trim();
     const subject  = document.querySelector("#subjectGroup .toggle-btn.active")?.dataset.value || "";
     const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
-
     let base  = preset === "custom" ? (custom || "rich people filmed street") : preset;
     let query = base;
     if (subject)  query += ` ${subject}`;
@@ -438,13 +493,23 @@
     document.getElementById("dot").style.display = loading ? "block" : "none";
   }
 
+  function setVisionProgress(current, total) {
+    const wrap = document.getElementById("visionBarWrap");
+    wrap.style.display = total > 0 ? "block" : "none";
+    document.getElementById("visionBarCount").textContent  = `${current} / ${total}`;
+    document.getElementById("visionBarFill").style.width   = `${Math.round((current / total) * 100)}%`;
+    document.getElementById("visionBarLabel").textContent  = current < total
+      ? `Checking thumbnails for text overlays...`
+      : `Vision check complete ✓`;
+  }
+
   function clearAll() {
     document.getElementById("results").innerHTML = "";
+    document.getElementById("visionBarWrap").style.display = "none";
     setStatus("");
   }
 
   // ── API ──────────────────────────────────────────────────────────
-
   async function apiFetch(path, token, options = {}) {
     const res  = await fetch(`${BASE}${path}`, {
       ...options,
@@ -462,9 +527,10 @@
   }
 
   async function startSearch() {
-    const token      = document.getElementById("token").value.trim();
-    const maxResults = parseInt(document.getElementById("maxResults").value);
-    const query      = buildQuery();
+    const token        = document.getElementById("token").value.trim();
+    const anthropicKey = document.getElementById("anthropicKey").value.trim();
+    const maxResults   = parseInt(document.getElementById("maxResults").value);
+    const query        = buildQuery();
 
     if (!token) return alert("Paste your Apify API token first.");
 
@@ -474,7 +540,6 @@
     setStatus(`Searching for "${query}"...`, true);
 
     try {
-      // Fetch extra results to account for filtered ones
       const fetchCount = maxResults * 3;
 
       const runData = await apiFetch(`/acts/${ACTOR}/runs`, token, {
@@ -494,7 +559,6 @@
       if (!runId) throw new Error("No run ID returned. Check your token.");
 
       setStatus(`Scraping TikTok for "${query}"...`, true);
-
       await pollUntilDone(token, runId);
 
       setStatus("Filtering results...", true);
@@ -505,17 +569,50 @@
       );
 
       const raw   = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
-      const valid = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
-      const clean = valid.filter(item => !isBlocked(item)).slice(0, maxResults);
-      const removed = valid.length - clean.length;
+      const hasURL = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
 
-      displayResults(clean, query, maxResults, removed);
+      // Step 1: keyword filter
+      const keywordFiltered = hasURL.filter(item => !isBlockedByText(item));
+      const keywordRemoved  = hasURL.length - keywordFiltered.length;
+
+      // Step 2: vision filter (only if Anthropic key provided)
+      let finalItems    = keywordFiltered;
+      let visionRemoved = 0;
+
+      if (anthropicKey && keywordFiltered.length > 0) {
+        setStatus("Running vision check on thumbnails...", true);
+
+        const toCheck = keywordFiltered.slice(0, maxResults * 2);
+        setVisionProgress(0, toCheck.length);
+
+        const visionResults = [];
+        for (let i = 0; i < toCheck.length; i++) {
+          const item         = toCheck[i];
+          const thumbnail    = item.videoMeta?.coverUrl || item.covers?.default || item.cover || item.thumbnail || "";
+          const hasText      = await hasTextOverlay(thumbnail, anthropicKey);
+
+          setVisionProgress(i + 1, toCheck.length);
+
+          if (!hasText) visionResults.push(item);
+          else visionRemoved++;
+
+          // Stop early if we have enough
+          if (visionResults.length >= maxResults) break;
+        }
+
+        finalItems = visionResults;
+      }
+
+      const clean       = finalItems.slice(0, maxResults);
+      const totalRemoved = keywordRemoved + visionRemoved;
+
+      displayResults(clean, query, totalRemoved, keywordRemoved, visionRemoved);
 
     } catch (e) {
       setStatus("");
       document.getElementById("results").innerHTML =
         `<div class="error">⚠ ${esc(e.message)}<br><br>
-         <span style="font-size:11px;color:#888">Check your token and try again.</span>
+         <span style="font-size:11px;color:#888">Check your tokens and try again.</span>
         </div>`;
     } finally {
       btn.disabled = false;
@@ -523,40 +620,35 @@
   }
 
   async function pollUntilDone(token, runId) {
-    const MAX_MS   = 180_000;
-    const INTERVAL =   5_000;
-    let elapsed    = 0;
-
+    const MAX_MS = 180_000, INTERVAL = 5_000;
+    let elapsed  = 0;
     while (elapsed < MAX_MS) {
       await new Promise(r => setTimeout(r, INTERVAL));
       elapsed += INTERVAL;
-
       const data = await apiFetch(`/actor-runs/${runId}`, token);
       const s    = data.data?.status;
-
       setStatus(`Scraping TikTok... ${Math.round(elapsed / 1000)}s`, true);
-
       if (s === "SUCCEEDED") return;
-      if (["FAILED", "ABORTED", "TIMED-OUT"].includes(s))
+      if (["FAILED","ABORTED","TIMED-OUT"].includes(s))
         throw new Error(`Apify run ${s}. Try a different preset.`);
     }
-
     throw new Error("Timed out after 3 minutes. Try again.");
   }
 
-  function displayResults(items, query, maxResults, removed) {
+  function displayResults(items, query, totalRemoved, keywordRemoved, visionRemoved) {
     const box = document.getElementById("results");
     setStatus("");
 
     if (items.length === 0) {
-      box.innerHTML = `<div class="error">No videos passed the filter for "${esc(query)}". Try a different preset or location.</div>`;
+      box.innerHTML = `<div class="error">No clean videos found for "${esc(query)}". Try a different preset or location.</div>`;
       return;
     }
 
-    box.innerHTML = `
-      <span class="count-badge">✓ ${items.length} videos for "${esc(query)}"</span>
-      ${removed > 0 ? `<span class="filtered-badge">🚫 ${removed} irrelevant videos filtered out</span>` : ""}
-    `;
+    let badges = `<span class="count-badge">✓ ${items.length} clean videos for "${esc(query)}"</span>`;
+    if (keywordRemoved > 0) badges += `<span class="filtered-badge">🚫 ${keywordRemoved} talking heads removed</span>`;
+    if (visionRemoved  > 0) badges += `<span class="filtered-badge">👁 ${visionRemoved} text overlay videos removed</span>`;
+
+    box.innerHTML = badges;
 
     items.forEach(item => {
       const url    = item.webVideoUrl || item.videoUrl || item.url || "";
@@ -586,10 +678,7 @@
       .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  document.addEventListener("keydown", e => {
-    if (e.key === "Enter") startSearch();
-  });
-
+  document.addEventListener("keydown", e => { if (e.key === "Enter") startSearch(); });
   updatePreview();
 </script>
 </body>
