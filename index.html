@@ -90,21 +90,6 @@
   input:focus, select:focus { border-color: var(--accent); }
   input::placeholder { color: var(--muted); }
 
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 14px;
-  }
-
-  .grid-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-top: 14px;
-  }
-
-  /* Subject toggle buttons */
   .toggle-group {
     display: flex;
     gap: 8px;
@@ -139,7 +124,6 @@
     color: var(--text);
   }
 
-  /* Location chips */
   .chip-group {
     display: flex;
     gap: 8px;
@@ -172,7 +156,6 @@
     color: var(--text);
   }
 
-  /* Query preview */
   .query-preview {
     max-width: 680px;
     margin: 0 auto 16px;
@@ -185,9 +168,20 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .query-preview span { color: var(--accent2); }
+
+  .filter-badge {
+    background: #1a1a0a;
+    border: 1px solid #333300;
+    border-radius: 6px;
+    color: #888;
+    font-size: 10px;
+    padding: 3px 8px;
+    margin-left: 4px;
+  }
 
   .row { display: flex; gap: 10px; margin-top: 14px; }
 
@@ -218,7 +212,6 @@
     font-family: 'DM Mono', monospace;
     flex: 0 0 auto;
     padding: 12px 16px;
-    transition: opacity 0.2s;
   }
 
   #status {
@@ -275,22 +268,11 @@
   .result-link   { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--accent2); text-decoration: none; word-break: break-all; }
   .result-link:hover { text-decoration: underline; }
   .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
-  .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; display: inline-block; }
+  .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 4px; display: inline-block; }
+  .filtered-badge { background: #1a1000; border: 1px solid #333; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #666; margin-bottom: 8px; display: inline-block; margin-left: 6px; }
   .error         { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
-
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 16px 0;
-  }
-
-  .section-title {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
+  .divider       { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -300,31 +282,27 @@
   <p class="subtitle">TikTok Video Finder</p>
 </header>
 
-<!-- Token -->
 <div class="card">
   <label>Apify API Token</label>
   <input type="password" id="token" placeholder="apify_api_xxxxxxxxxxxxxxxx" />
 </div>
 
-<!-- Search Filters -->
 <div class="card">
 
-  <!-- Vibe Preset -->
   <div class="section-title">Vibe Preset</div>
   <select id="preset" onchange="updatePreview()">
-    <option value="rich people spotted">🎥 Rich people spotted</option>
-    <option value="paparazzi billionaire street">📸 Paparazzi billionaire street</option>
-    <option value="luxury car spotted candid">🚗 Luxury car spotted candid</option>
-    <option value="celebrity leaving restaurant">🍽️ Celebrity leaving restaurant</option>
-    <option value="rich people caught camera">📷 Rich people caught on camera</option>
-    <option value="ferrari lamborghini spotted street">🏎️ Ferrari / Lambo spotted</option>
-    <option value="luxury villa pool candid">🏡 Luxury villa / pool</option>
-    <option value="private jet spotted airport">✈️ Private jet airport</option>
-    <option value="yacht rich people">🛥️ Yacht rich people</option>
+    <option value="rich people filmed street">🎥 Rich people filmed on street</option>
+    <option value="billionaire caught camera walking">📸 Billionaire caught on camera</option>
+    <option value="luxury car filmed street candid">🚗 Luxury car filmed candid</option>
+    <option value="celebrity filmed leaving restaurant">🍽️ Celebrity leaving restaurant</option>
+    <option value="rich people filmed candid">📷 Rich people candid footage</option>
+    <option value="ferrari lamborghini filmed street">🏎️ Ferrari / Lambo on street</option>
+    <option value="luxury villa filmed candid">🏡 Luxury villa candid</option>
+    <option value="private jet filmed airport candid">✈️ Private jet candid</option>
+    <option value="yacht rich people filmed">🛥️ Yacht candid footage</option>
     <option value="custom">✏️ Custom keyword...</option>
   </select>
 
-  <!-- Custom keyword (hidden by default) -->
   <div id="customWrap" style="display:none; margin-top:12px;">
     <label>Custom Keyword</label>
     <input type="text" id="customKeyword" placeholder="Type your own keyword..." oninput="updatePreview()" />
@@ -332,18 +310,16 @@
 
   <hr class="divider">
 
-  <!-- Subject -->
   <div class="section-title">Subject</div>
   <div class="toggle-group" id="subjectGroup">
-    <div class="toggle-btn active" data-value="" onclick="selectToggle(this, 'subjectGroup')">👤 Any</div>
-    <div class="toggle-btn" data-value="woman" onclick="selectToggle(this, 'subjectGroup')">👩 Woman</div>
-    <div class="toggle-btn" data-value="man" onclick="selectToggle(this, 'subjectGroup')">👨 Man</div>
-    <div class="toggle-btn" data-value="couple" onclick="selectToggle(this, 'subjectGroup')">👫 Couple</div>
+    <div class="toggle-btn active" data-value="" onclick="selectToggle(this,'subjectGroup')">👤 Any</div>
+    <div class="toggle-btn" data-value="woman" onclick="selectToggle(this,'subjectGroup')">👩 Woman</div>
+    <div class="toggle-btn" data-value="man" onclick="selectToggle(this,'subjectGroup')">👨 Man</div>
+    <div class="toggle-btn" data-value="couple" onclick="selectToggle(this,'subjectGroup')">👫 Couple</div>
   </div>
 
   <hr class="divider">
 
-  <!-- Location -->
   <div class="section-title">Location</div>
   <div class="chip-group" id="locationGroup">
     <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
@@ -359,7 +335,6 @@
 
   <hr class="divider">
 
-  <!-- Number of videos -->
   <div class="section-title">Number of Videos</div>
   <select id="maxResults" onchange="updatePreview()">
     <option value="5">5 videos</option>
@@ -375,9 +350,9 @@
   </div>
 </div>
 
-<!-- Query Preview -->
 <div class="query-preview">
-  🔍 Searching for: <span id="previewText">rich people spotted</span>
+  🔍 <span id="previewText">rich people filmed street</span>
+  <span class="filter-badge">🚫 talking heads filtered out</span>
 </div>
 
 <div id="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
@@ -386,6 +361,41 @@
 <script>
   const ACTOR = "clockworks~tiktok-scraper";
   const BASE  = "https://api.apify.com/v2";
+
+  // ── These words in a video description = filtered out ────────────
+  const BLOCK_WORDS = [
+    "spotting", "car spot", "carspot", "i spotted", "we spotted",
+    "review", "podcast", "interview", "talking about", "he recalls",
+    "she recalls", "story time", "storytime", "reaction", "reacting",
+    "explains", "i was there", "told me", "i remember", "reminiscing",
+    "commentary", "voiceover", "narrator", "i saw", "i seen",
+    "discuss", "opinion", "ranked", "ranking", "top 10", "top 5",
+    "compilation", "best of", "worst of", "you won't believe",
+    "found out", "reveals", "exposed", "breaking news", "news"
+  ];
+
+  // ── These words in a username = likely a carspotting channel ─────
+  const BLOCK_USERNAMES = [
+    "spot", "spotter", "carspot", "review", "daily", "news",
+    "media", "channel", "official", "podcast", "talk"
+  ];
+
+  function isBlocked(item) {
+    const desc     = (item.text || item.description || item.desc || "").toLowerCase();
+    const author   = (item.authorMeta?.name || item.author || "").toLowerCase();
+
+    // Block by description keywords
+    for (const word of BLOCK_WORDS) {
+      if (desc.includes(word)) return true;
+    }
+
+    // Block by username patterns
+    for (const word of BLOCK_USERNAMES) {
+      if (author.includes(word)) return true;
+    }
+
+    return false;
+  }
 
   // ── UI helpers ───────────────────────────────────────────────────
 
@@ -402,8 +412,7 @@
   }
 
   document.getElementById("preset").addEventListener("change", function() {
-    const isCustom = this.value === "custom";
-    document.getElementById("customWrap").style.display = isCustom ? "block" : "none";
+    document.getElementById("customWrap").style.display = this.value === "custom" ? "block" : "none";
     updatePreview();
   });
 
@@ -413,7 +422,7 @@
     const subject  = document.querySelector("#subjectGroup .toggle-btn.active")?.dataset.value || "";
     const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
 
-    let base = preset === "custom" ? (custom || "rich people spotted") : preset;
+    let base  = preset === "custom" ? (custom || "rich people filmed street") : preset;
     let query = base;
     if (subject)  query += ` ${subject}`;
     if (location) query += ` ${location}`;
@@ -465,13 +474,15 @@
     setStatus(`Searching for "${query}"...`, true);
 
     try {
-      // 1. Start run
+      // Fetch extra results to account for filtered ones
+      const fetchCount = maxResults * 3;
+
       const runData = await apiFetch(`/acts/${ACTOR}/runs`, token, {
         method: "POST",
         body: JSON.stringify({
           searchQueries: [query],
-          maxResults: maxResults,
-          resultsPerPage: maxResults,
+          maxResults: fetchCount,
+          resultsPerPage: fetchCount,
           shouldDownloadVideos: false,
           shouldDownloadCovers: false,
           searchSection: "/video"
@@ -484,22 +495,21 @@
 
       setStatus(`Scraping TikTok for "${query}"...`, true);
 
-      // 2. Poll
       await pollUntilDone(token, runId);
 
-      setStatus("Fetching video links...", true);
+      setStatus("Filtering results...", true);
 
-      // 3. Fetch results
       const resultData = await apiFetch(
-        `/datasets/${datasetId}/items?limit=${maxResults * 2}`,
+        `/datasets/${datasetId}/items?limit=${fetchCount}`,
         token
       );
 
-      const items = Array.isArray(resultData)
-        ? resultData
-        : resultData.data?.items || [];
+      const raw   = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
+      const valid = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
+      const clean = valid.filter(item => !isBlocked(item)).slice(0, maxResults);
+      const removed = valid.length - clean.length;
 
-      displayResults(items, query, maxResults);
+      displayResults(clean, query, maxResults, removed);
 
     } catch (e) {
       setStatus("");
@@ -534,22 +544,21 @@
     throw new Error("Timed out after 3 minutes. Try again.");
   }
 
-  function displayResults(items, query, maxResults) {
+  function displayResults(items, query, maxResults, removed) {
     const box = document.getElementById("results");
     setStatus("");
 
-    const valid = items
-      .filter(item => item.webVideoUrl || item.videoUrl || item.url)
-      .slice(0, maxResults);
-
-    if (valid.length === 0) {
-      box.innerHTML = `<div class="error">No videos found for "${esc(query)}". Try a different preset or location.</div>`;
+    if (items.length === 0) {
+      box.innerHTML = `<div class="error">No videos passed the filter for "${esc(query)}". Try a different preset or location.</div>`;
       return;
     }
 
-    box.innerHTML = `<span class="count-badge">✓ ${valid.length} videos for "${esc(query)}"</span>`;
+    box.innerHTML = `
+      <span class="count-badge">✓ ${items.length} videos for "${esc(query)}"</span>
+      ${removed > 0 ? `<span class="filtered-badge">🚫 ${removed} irrelevant videos filtered out</span>` : ""}
+    `;
 
-    valid.forEach(item => {
+    items.forEach(item => {
       const url    = item.webVideoUrl || item.videoUrl || item.url || "";
       const author = item.authorMeta?.name || item.author || "unknown";
       const desc   = item.text || item.description || item.desc || "";
@@ -581,7 +590,6 @@
     if (e.key === "Enter") startSearch();
   });
 
-  // Init preview
   updatePreview();
 </script>
 </body>
