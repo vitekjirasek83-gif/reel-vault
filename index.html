@@ -710,7 +710,11 @@ body {
         maxResults: n,
         type: "video"
       }),
-      parseItems: raw => raw,
+      // Filter to Shorts only: duration ≤ 60 seconds (Shorts are by definition ≤60s)
+      parseItems: raw => raw.filter(i => {
+        const dur = i.duration || i.durationSeconds || 0;
+        return dur === 0 || dur <= 60; // 0 = unknown, allow through; >60 = definitely not a Short
+      }),
       getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
       getAuthor: i => i.channelName || i.channel || i.author || "unknown",
       getDesc:   i => i.title || i.description || "",
@@ -723,45 +727,47 @@ body {
     }
   };
 
-  // Words that indicate talking-head / vlog / story content — applied to ALL platforms
+  // Words that indicate talking-head / vlog / car showoff / story content
   const BLOCK_WORDS = [
+    // Car showoff / spotting (the main Instagram problem)
+    "car show","car showcase","supercar","hypercar","exotic car","luxury car show",
+    "ferrari","lamborghini","bugatti","mclaren","koenigsegg","pagani","rolls royce",
+    "exhaust","revving","rev","launch control","drift","burnout","0-60","0 to 60",
+    "horsepower","hp ","bhp","top speed","v12","v10","v8 ",
+    "spotting","car spot","carspot","i spotted","we spotted","just spotted",
+    "car collection","my garage","garage tour","car tour",
     // Story / vlog / life content
     "my life","day in my life","week in my life","living my","my morning","my routine",
-    "storytime","story time","i told","she told","he told","they told",
-    "my story","our story","real story","true story","what happened",
-    "i cried","i was crying","emotional","i broke down","vulnerable",
-    "growing up","my childhood","back when i","when i was","i used to",
-    "i remember","reminiscing","throwback","years ago","back in the day",
+    "storytime","story time","my story","our story","real story","true story",
+    "what happened","i cried","emotional","i broke down","vulnerable",
+    "growing up","my childhood","i remember","reminiscing","throwback","back in the day",
     // Talking head / commentary
     "podcast","interview","talking about","explains","he recalls","she recalls",
-    "reaction","reacting","commentary","voiceover","narrator","i saw","i seen",
+    "reaction","reacting","commentary","voiceover","narrator",
     "discuss","opinion","let me explain","you need to know","the truth about",
     "i think","i believe","my thoughts","my opinion","here's why",
-    // Ranking / list / edu content
-    "ranked","ranking","top 10","top 5","top 3","number one","number 1",
+    // Ranking / list / wealth edu content
+    "ranked","ranking","top 10","top 5","top 3","number one",
     "best of","worst of","most expensive","how much does","how rich",
     "net worth","billionaire list","forbes","richest","wealthiest",
-    // Car spotting channels
-    "spotting","car spot","carspot","i spotted","we spotted","just spotted",
     // Review / analysis
     "review","unboxing","first look","hands on","deep dive","breakdown",
     // Clickbait
-    "you won't believe","can't believe","impossible","shocking","insane wealth",
-    "found out","reveals","exposed","leaked","drama","beef","cancelled",
-    "breaking news","news","update","announcement",
-    // Compilation / montage (non-candid)
-    "compilation","best moments","highlights","montage","edited",
-    // Aspirational / motivational (usually voiceover)
+    "you won't believe","shocking","insane wealth","found out","reveals",
+    "exposed","leaked","drama","breaking news","update","announcement",
+    // Compilation / montage
+    "compilation","best moments","highlights","montage",
+    // Motivational voiceover
     "motivation","motivational","mindset","grind","hustle","success tips",
-    "how i became","how to become","how to be rich","secret to","the key to",
-    "this is why","reason why","that's why"
+    "how i became","how to become","how to be rich","secret to","the key to"
   ];
 
   const BLOCK_USERNAMES = [
-    "spot","spotter","carspot","review","daily","news","media","channel",
-    "official","podcast","talk","vlog","vlogs","react","reacts","commentary",
-    "motivation","motivate","finance","money","wealth","invest","investing",
-    "explain","explains","breakdown","analysis","report","tv","network"
+    "spot","spotter","carspot","supercar","hypercar","exoticcar","ferrarilife",
+    "review","daily","news","media","channel","official","podcast","talk",
+    "vlog","vlogs","react","reacts","commentary","motivation","motivate",
+    "finance","money","wealth","invest","investing","explain","explains",
+    "breakdown","analysis","report","tv","network","garage","cars","auto"
   ];
 
   // ── State ────────────────────────────────────────────────────────
