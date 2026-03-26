@@ -5,390 +5,716 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reel Vault</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap');
 
-  :root {
-    --bg: #0a0a0a;
-    --surface: #111;
-    --border: #222;
-    --accent: #ff2d55;
-    --accent2: #ff9500;
-    --text: #f0f0f0;
-    --muted: #555;
-    --card: #141414;
-  }
+:root {
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface2: #2c2c2e;
+  --surface3: #3a3a3c;
+  --silver: #e8e8e8;
+  --silver2: rgba(235,235,245,0.6);
+  --silver3: rgba(235,235,245,0.3);
+  --silver4: rgba(235,235,245,0.12);
+  --silver5: rgba(235,235,245,0.06);
+  --separator: rgba(235,235,245,0.08);
+  --text: #ffffff;
+  --text2: rgba(255,255,255,0.85);
+  --muted: rgba(255,255,255,0.4);
+  --green: #30d158;
+  --red: #ff453a;
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Chrome/silver gradient for accent */
+  --chrome: linear-gradient(135deg,
+    #c8c8c8 0%,
+    #f0f0f0 25%,
+    #a8a8a8 45%,
+    #ffffff 55%,
+    #b0b0b0 75%,
+    #e0e0e0 100%
+  );
+  --chrome-glow: 0 2px 16px rgba(255,255,255,0.15);
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    padding: 24px 16px 60px;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  header { text-align: center; margin-bottom: 36px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Figtree', -apple-system, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+}
 
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 12vw, 96px);
-    letter-spacing: 4px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-  }
+/* ── Header ── */
+.app-header {
+  padding: 60px 22px 20px;
+  background: linear-gradient(180deg, #111 0%, #000 100%);
+}
 
-  .subtitle {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
+.header-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  display: inline-block;
+}
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+.app-title {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+  line-height: 1;
+}
 
-  label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
+.app-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 5px;
+  font-weight: 400;
+}
 
-  input, select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-  }
+/* ── Section ── */
+.section { padding: 0 16px; margin-top: 28px; }
 
-  input { background-image: none; }
-  input:focus, select:focus { border-color: var(--accent); }
-  input::placeholder { color: var(--muted); }
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
 
-  .toggle-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-  }
+/* ── List group ── */
+.list-group {
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+}
 
-  .toggle-btn {
-    flex: 1;
-    min-width: 80px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    padding: 10px 8px;
-    text-align: center;
-    transition: all 0.2s;
-    letter-spacing: 1px;
-  }
+.list-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 14px;
+  border-bottom: 1px solid var(--separator);
+  transition: background 0.18s;
+}
 
-  .toggle-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .toggle-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+.list-row:last-child { border-bottom: none; }
+.list-row:hover { background: var(--silver5); }
 
-  .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  background: var(--surface2);
+}
 
-  .chip {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 6px 14px;
-    transition: all 0.2s;
-    letter-spacing: 1px;
-  }
+.row-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
 
-  .chip.active { background: var(--accent2); border-color: var(--accent2); color: #000; font-weight: bold; }
-  .chip:hover:not(.active) { border-color: var(--accent2); color: var(--text); }
+.row-input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--silver2);
+  flex: 1;
+  min-width: 0;
+}
 
-  .query-preview {
-    max-width: 680px;
-    margin: 0 auto 16px;
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+.row-input::placeholder { color: var(--muted); font-size: 15px; }
 
-  .query-preview span { color: var(--accent2); }
-  .filter-badge { background: #1a1a0a; border: 1px solid #333300; border-radius: 6px; color: #888; font-size: 10px; padding: 3px 8px; }
+.row-select-wrap { flex: 1; display: flex; justify-content: flex-end; }
 
-  .row { display: flex; gap: 10px; margin-top: 14px; }
+.row-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--silver);
+  cursor: pointer;
+  text-align: right;
+  max-width: 180px;
+}
 
-  button.primary {
-    flex: 1;
-    background: var(--accent);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    cursor: pointer;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    padding: 12px;
-    transition: opacity 0.2s, transform 0.1s;
-  }
+/* ── Segment control ── */
+.segment-wrap { padding: 0 16px; margin-top: 10px; }
 
-  button.primary:active { transform: scale(0.97); }
-  button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.segment {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 3px;
+  display: flex;
+  gap: 2px;
+}
 
-  button.secondary {
-    background: var(--border);
-    border: none;
-    border-radius: 8px;
-    color: var(--text);
-    cursor: pointer;
-    font-size: 13px;
-    font-family: 'DM Mono', monospace;
-    flex: 0 0 auto;
-    padding: 12px 16px;
-  }
+.seg-btn {
+  flex: 1;
+  border: none;
+  background: none;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: -0.1px;
+}
 
-  #status {
-    max-width: 680px;
-    margin: 0 auto 16px;
-    font-size: 12px;
-    color: var(--muted);
-    min-height: 18px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+.seg-btn:hover:not(.active) { color: var(--silver2); }
+.seg-btn:not(.active):active { transform: scale(0.92); transition: transform 0.08s; }
 
-  .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 1s infinite;
-    display: none;
-    flex-shrink: 0;
-  }
+.seg-btn.active {
+  background: var(--surface3);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  animation: segPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+@keyframes segPop {
+  0%   { transform: scale(0.88); opacity: 0.5; }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1);    opacity: 1; }
+}
 
-  /* Vision progress bar */
-  .vision-bar-wrap {
-    max-width: 680px;
-    margin: 0 auto 16px;
-    display: none;
-  }
+/* ── Chips ── */
+.chips-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px 4px;
+  scrollbar-width: none;
+}
+.chips-row::-webkit-scrollbar { display: none; }
 
-  .vision-bar-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-  }
+.chip {
+  background: var(--surface);
+  border: 1.5px solid var(--surface3);
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--silver2);
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
 
-  .vision-bar-bg {
-    background: var(--border);
-    border-radius: 4px;
-    height: 4px;
-    overflow: hidden;
-  }
+.chip:hover:not(.active) {
+  border-color: var(--silver3);
+  color: var(--silver);
+  background: var(--silver5);
+  transform: translateY(-1px);
+}
 
-  .vision-bar-fill {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.3s ease;
-    width: 0%;
-  }
+.chip:active {
+  transform: scale(0.94);
+  transition: transform 0.08s;
+}
 
-  #results {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+.chip.active {
+  background: var(--surface2);
+  border-color: rgba(235,235,245,0.35);
+  color: var(--silver);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation: chipPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-  .result-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    animation: fadeIn 0.3s ease;
-  }
+/* Glare sweep on chip activate */
+.chip.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+  transform: skewX(-15deg);
+  animation: chipGlare 0.5s ease 0.05s forwards;
+}
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes chipGlare {
+  0%   { left: -80%; opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
 
-  .result-author { font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-  .result-desc   { font-size: 12px; color: #aaa; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .result-link   { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--accent2); text-decoration: none; word-break: break-all; }
-  .result-link:hover { text-decoration: underline; }
-  .result-meta   { font-size: 10px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
-  .count-badge   { background: var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--muted); margin-bottom: 4px; display: inline-block; }
-  .filtered-badge { background: #1a1000; border: 1px solid #333; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #666; margin-bottom: 8px; display: inline-block; margin-left: 6px; }
-  .error { color: var(--accent); font-size: 13px; padding: 14px 16px; background: var(--card); border: 1px solid #331014; border-radius: 10px; line-height: 1.7; }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-  .section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+@keyframes chipPop {
+  0%   { transform: scale(0.85); opacity: 0.4; }
+  55%  { transform: scale(1.08); }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Filter rows ── */
+.filter-block {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+.filter-block:last-child { border-bottom: none; }
+
+.filter-block-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+/* ── Query preview ── */
+.query-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.query-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.query-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--silver);
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.filter-pill {
+  background: var(--silver5);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 4px 10px;
+}
+
+/* ── CHROME BUTTON ── */
+.btn-row { display: flex; gap: 10px; padding: 0 16px; margin-top: 16px; }
+
+.search-btn {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 16px;
+  letter-spacing: -0.3px;
+  color: #111;
+  background: linear-gradient(160deg,
+    #c0c0c0 0%,
+    #f5f5f5 30%,
+    #a8a8a8 50%,
+    #f0f0f0 70%,
+    #b8b8b8 100%
+  );
+  box-shadow: 0 4px 20px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+/* Glare overlay */
+.search-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.search-btn:hover::before { left: 125%; }
+.search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
+.search-btn:active { transform: scale(0.97) translateY(0); }
+.search-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+.search-btn:disabled::before { display: none; }
+
+.clear-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--silver4);
+  border-radius: 14px;
+  color: var(--silver2);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 22px;
+  transition: background 0.18s, transform 0.1s, color 0.18s;
+}
+
+.clear-btn:hover { background: var(--surface2); color: var(--silver); transform: translateY(-1px); }
+.clear-btn:active { transform: scale(0.97); }
+
+/* ── Status ── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 0;
+  min-height: 36px;
+}
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--silver4);
+  border-top-color: var(--silver);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.status-txt { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+/* ── Vision bar ── */
+.vision-bar-wrap { padding: 8px 20px 0; display: none; }
+.vision-bar-row  { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+.vision-bar-bg   { background: var(--surface2); border-radius: 4px; height: 3px; overflow: hidden; }
+.vision-bar-fill { background: linear-gradient(90deg, #888, #fff); height: 100%; border-radius: 4px; transition: width 0.3s ease; width: 0%; }
+
+/* ── Results ── */
+#results { margin-top: 24px; }
+
+.results-meta {
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.badge-count {
+  background: var(--surface2);
+  border: 1px solid rgba(235,235,245,0.2);
+  color: var(--silver);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+}
+
+.badge-removed {
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+
+.result-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 16px 10px;
+  animation: slideUp 0.3s ease both;
+  border: 1px solid var(--separator);
+  transition: background 0.18s, transform 0.15s;
+}
+
+.result-card:hover { background: #222; transform: translateY(-1px); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.result-author {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--silver2);
+  letter-spacing: 0.3px;
+  margin-bottom: 5px;
+}
+
+.result-desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--silver3);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 8px;
+}
+
+.result-stats {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* Chrome open button */
+.result-link-btn {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--silver4);
+  border-radius: 10px;
+  padding: 11px 14px;
+  text-decoration: none;
+  color: var(--silver);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.18s, transform 0.15s;
+}
+
+.result-link-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  transition: left 0.4s ease;
+}
+
+.result-link-btn:hover::before { left: 125%; }
+.result-link-btn:hover { background: var(--surface3); transform: translateY(-1px); }
+.result-link-btn:active { opacity: 0.7; transform: scale(0.98); }
+.result-link-arrow { color: var(--silver3); font-size: 16px; }
+
+.error-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--separator);
+  border-radius: 16px;
+  padding: 18px;
+  margin: 0 16px;
+  color: var(--silver2);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.error-sub { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 400; }
+
+.custom-wrap {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Reel Vault</h1>
-  <p class="subtitle">TikTok Video Finder</p>
-</header>
+<!-- Header -->
+<div class="app-header">
+  <div class="header-eyebrow">TikTok Discovery</div>
+  <div class="app-title">Reel Vault</div>
+  <div class="app-subtitle">Find candid luxury content</div>
+</div>
 
 <!-- API Keys -->
-<div class="card">
-  <label>Apify API Token</label>
-  <input type="password" id="token" placeholder="apify_api_xxxxxxxxxxxxxxxx" />
-  <div style="margin-top:14px">
-    <label>Anthropic API Key <span style="color:#444;font-size:10px">(for text overlay filter)</span></label>
-    <input type="password" id="anthropicKey" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxx" />
+<div class="section">
+  <div class="section-label">API Keys</div>
+  <div class="list-group">
+    <div class="list-row">
+      <div class="row-icon">🔑</div>
+      <input class="row-input" type="password" id="token" placeholder="Apify Token" />
+    </div>
+    <div class="list-row">
+      <div class="row-icon">🤖</div>
+      <input class="row-input" type="password" id="anthropicKey" placeholder="Anthropic Key (optional)" />
+    </div>
   </div>
 </div>
 
-<!-- Search Filters -->
-<div class="card">
-
-  <div class="section-title">Vibe Preset</div>
-  <select id="preset" onchange="updatePreview()">
-    <option value="rich people filmed street">🎥 Rich people filmed on street</option>
-    <option value="billionaire caught camera walking">📸 Billionaire caught on camera</option>
-    <option value="luxury car filmed street candid">🚗 Luxury car filmed candid</option>
-    <option value="celebrity filmed leaving restaurant">🍽️ Celebrity leaving restaurant</option>
-    <option value="rich people filmed candid">📷 Rich people candid footage</option>
-    <option value="ferrari lamborghini filmed street">🏎️ Ferrari / Lambo on street</option>
-    <option value="luxury villa filmed candid">🏡 Luxury villa candid</option>
-    <option value="private jet filmed airport candid">✈️ Private jet candid</option>
-    <option value="yacht rich people filmed">🛥️ Yacht candid footage</option>
-    <option value="custom">✏️ Custom keyword...</option>
-  </select>
-
-  <div id="customWrap" style="display:none; margin-top:12px;">
-    <label>Custom Keyword</label>
-    <input type="text" id="customKeyword" placeholder="Type your own keyword..." oninput="updatePreview()" />
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">Subject</div>
-  <div class="toggle-group" id="subjectGroup">
-    <div class="toggle-btn active" data-value="" onclick="selectToggle(this,'subjectGroup')">👤 Any</div>
-    <div class="toggle-btn" data-value="woman" onclick="selectToggle(this,'subjectGroup')">👩 Woman</div>
-    <div class="toggle-btn" data-value="man" onclick="selectToggle(this,'subjectGroup')">👨 Man</div>
-    <div class="toggle-btn" data-value="couple" onclick="selectToggle(this,'subjectGroup')">👫 Couple</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">Location</div>
-  <div class="chip-group" id="locationGroup">
-    <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
-    <div class="chip" data-value="Monaco" onclick="selectChip(this)">🇲🇨 Monaco</div>
-    <div class="chip" data-value="Dubai" onclick="selectChip(this)">🇦🇪 Dubai</div>
-    <div class="chip" data-value="Miami" onclick="selectChip(this)">🇺🇸 Miami</div>
-    <div class="chip" data-value="Moscow" onclick="selectChip(this)">🇷🇺 Moscow</div>
-    <div class="chip" data-value="Marbella" onclick="selectChip(this)">🇪🇸 Marbella</div>
-    <div class="chip" data-value="Los Angeles" onclick="selectChip(this)">🌴 LA</div>
-    <div class="chip" data-value="Saint Tropez" onclick="selectChip(this)">⛵ St Tropez</div>
-    <div class="chip" data-value="Mykonos" onclick="selectChip(this)">🇬🇷 Mykonos</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">Number of Videos</div>
-  <select id="maxResults">
-    <option value="5">5 videos</option>
-    <option value="10">10 videos</option>
-    <option value="20" selected>20 videos</option>
-    <option value="30">30 videos</option>
-    <option value="50">50 videos</option>
-  </select>
-
-  <hr class="divider">
-
-  <div class="section-title">Text Overlay Filter</div>
-  <div class="toggle-group" id="textFilterGroup">
-    <div class="toggle-btn active" data-value="all" onclick="selectToggle(this,'textFilterGroup')">🚫 Block all text</div>
-    <div class="toggle-btn" data-value="small" onclick="selectToggle(this,'textFilterGroup')">✍️ Allow small coverable text</div>
-    <div class="toggle-btn" data-value="off" onclick="selectToggle(this,'textFilterGroup')">⭕ Off</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">Video Orientation</div>
-  <div class="toggle-group" id="orientationGroup">
-    <div class="toggle-btn active" data-value="vertical" onclick="selectToggle(this,'orientationGroup')">📱 Vertical only (full screen)</div>
-    <div class="toggle-btn" data-value="any" onclick="selectToggle(this,'orientationGroup')">🔄 Any orientation</div>
-  </div>
-
-  <div class="row">
-    <button class="primary" id="searchBtn" onclick="startSearch()">Search TikTok</button>
-    <button class="secondary" onclick="clearAll()">Clear</button>
+<!-- Vibe Preset -->
+<div class="section">
+  <div class="section-label">Vibe</div>
+  <div class="list-group">
+    <div class="list-row">
+      <div class="row-icon">🎥</div>
+      <div class="row-label">Preset</div>
+      <div class="row-select-wrap">
+        <select class="row-select" id="preset" onchange="onPresetChange()">
+          <option value="rich people filmed street">Rich people on street</option>
+          <option value="billionaire caught camera walking">Billionaire caught</option>
+          <option value="luxury car filmed street candid">Luxury car candid</option>
+          <option value="celebrity filmed leaving restaurant">Celebrity leaving restaurant</option>
+          <option value="rich people filmed candid">Rich people candid</option>
+          <option value="ferrari lamborghini filmed street">Ferrari / Lambo</option>
+          <option value="luxury villa filmed candid">Luxury villa</option>
+          <option value="private jet filmed airport candid">Private jet</option>
+          <option value="yacht rich people filmed">Yacht</option>
+          <option value="custom">Custom...</option>
+        </select>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="query-preview">
-  🔍 <span id="previewText">rich people filmed street</span>
-  <span class="filter-badge">🚫 talking heads filtered</span>
-  <span class="filter-badge">👁 text overlay filtered</span>
+<!-- Custom keyword -->
+<div class="section" id="customSection" style="display:none">
+  <div class="custom-wrap">
+    <div class="row-icon">✏️</div>
+    <input class="row-input" type="text" id="customKeyword" placeholder="Enter custom keyword..." oninput="updatePreview()" />
+  </div>
+</div>
+
+<!-- Subject -->
+<div class="section">
+  <div class="section-label">Subject</div>
+  <div class="segment" id="subjectGroup">
+    <button class="seg-btn active" data-value="" onclick="selectSeg(this,'subjectGroup')">Any</button>
+    <button class="seg-btn" data-value="woman" onclick="selectSeg(this,'subjectGroup')">Woman</button>
+    <button class="seg-btn" data-value="man" onclick="selectSeg(this,'subjectGroup')">Man</button>
+    <button class="seg-btn" data-value="couple" onclick="selectSeg(this,'subjectGroup')">Couple</button>
+  </div>
+</div>
+
+<!-- Location -->
+<div class="section">
+  <div class="section-label">Location</div>
+</div>
+<div class="chips-row" id="locationGroup">
+  <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
+  <div class="chip" data-value="Monaco" onclick="selectChip(this)">🇲🇨 Monaco</div>
+  <div class="chip" data-value="Dubai" onclick="selectChip(this)">🇦🇪 Dubai</div>
+  <div class="chip" data-value="Miami" onclick="selectChip(this)">🇺🇸 Miami</div>
+  <div class="chip" data-value="Moscow" onclick="selectChip(this)">🇷🇺 Moscow</div>
+  <div class="chip" data-value="Marbella" onclick="selectChip(this)">🇪🇸 Marbella</div>
+  <div class="chip" data-value="Los Angeles" onclick="selectChip(this)">🌴 LA</div>
+  <div class="chip" data-value="Saint Tropez" onclick="selectChip(this)">⛵ St Tropez</div>
+  <div class="chip" data-value="Mykonos" onclick="selectChip(this)">🇬🇷 Mykonos</div>
+</div>
+
+<!-- Filters -->
+<div class="section" style="margin-top:28px">
+  <div class="section-label">Filters</div>
+  <div class="list-group">
+
+    <div class="filter-block">
+      <div class="filter-block-header">
+        <div class="row-icon">👁</div>
+        <div class="row-label">Text Overlay</div>
+      </div>
+      <div class="segment" id="textFilterGroup">
+        <button class="seg-btn active" data-value="all" onclick="selectSeg(this,'textFilterGroup')">Block all</button>
+        <button class="seg-btn" data-value="small" onclick="selectSeg(this,'textFilterGroup')">Allow small</button>
+        <button class="seg-btn" data-value="off" onclick="selectSeg(this,'textFilterGroup')">Off</button>
+      </div>
+    </div>
+
+    <div class="filter-block">
+      <div class="filter-block-header">
+        <div class="row-icon">📱</div>
+        <div class="row-label">Orientation</div>
+      </div>
+      <div class="segment" id="orientationGroup">
+        <button class="seg-btn active" data-value="vertical" onclick="selectSeg(this,'orientationGroup')">Vertical only</button>
+        <button class="seg-btn" data-value="any" onclick="selectSeg(this,'orientationGroup')">Any</button>
+      </div>
+    </div>
+
+    <div class="list-row">
+      <div class="row-icon">🎬</div>
+      <div class="row-label">Videos</div>
+      <div class="row-select-wrap">
+        <select class="row-select" id="maxResults">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Query preview -->
+<div class="section">
+  <div class="query-card">
+    <div class="query-eyebrow">Searching for</div>
+    <div class="query-text" id="previewText">rich people filmed street</div>
+    <div class="filter-pills">
+      <span class="filter-pill">🚫 Talking heads filtered</span>
+      <span class="filter-pill">👁 Vision filter active</span>
+    </div>
+  </div>
+</div>
+
+<!-- Buttons -->
+<div class="btn-row">
+  <button class="search-btn" id="searchBtn" onclick="startSearch()">Search TikTok</button>
+  <button class="clear-btn" onclick="clearAll()">Clear</button>
+</div>
+
+<!-- Status -->
+<div class="status-row">
+  <div class="spinner" id="spinner"></div>
+  <div class="status-txt" id="statusText"></div>
 </div>
 
 <!-- Vision progress bar -->
 <div class="vision-bar-wrap" id="visionBarWrap">
-  <div class="vision-bar-label">
-    <span id="visionBarLabel">Checking thumbnails for text overlays...</span>
-    <span id="visionBarCount">0 / 0</span>
+  <div class="vision-bar-row">
+    <span id="visionBarLabel">Checking thumbnails...</span>
+    <span id="visionBarCount"></span>
   </div>
   <div class="vision-bar-bg"><div class="vision-bar-fill" id="visionBarFill"></div></div>
 </div>
 
-<div id="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
+<!-- Results -->
 <div id="results"></div>
 
 <script>
   const ACTOR = "clockworks~tiktok-scraper";
   const BASE  = "https://api.apify.com/v2";
 
-  // ── Keyword filter (same as before) ─────────────────────────────
   const BLOCK_WORDS = [
     "spotting","car spot","carspot","i spotted","we spotted",
     "review","podcast","interview","talking about","he recalls",
@@ -413,94 +739,42 @@
     return false;
   }
 
-  // ── Vision check via Anthropic API ──────────────────────────────
-  // textFilter: "all" = block any text, "small" = only block large/uncoverable text
-  async function checkThumbnail(thumbnailUrl, anthropicKey, textFilter, checkOrientation) {
-    if (!thumbnailUrl) return { blockText: false, blockOrientation: false };
-
+  async function checkThumbnail(thumbnailUrl, anthropicKey, textFilter) {
+    if (!thumbnailUrl) return { blockText: false };
     try {
       const imgRes = await fetch(thumbnailUrl);
-      if (!imgRes.ok) return { blockText: false, blockOrientation: false };
+      if (!imgRes.ok) return { blockText: false };
       const blob   = await imgRes.blob();
       const base64 = await blobToBase64(blob);
       const mime   = blob.type || "image/jpeg";
-
-      let prompt = "";
-
-      if (textFilter === "all" && checkOrientation) {
-        prompt = `Look at this image carefully and answer TWO questions. Reply in exactly this format: TEXT:YES or TEXT:NO, then a space, then VERTICAL:YES or VERTICAL:NO.
-
-TEXT: Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Any other readable text = YES.
-
-VERTICAL: Is this video in vertical/portrait orientation (taller than wide, filling a phone screen top to bottom)? A proper full-screen vertical video = YES. Horizontal/landscape or square = NO.`;
-      } else if (textFilter === "all") {
-        prompt = `Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Reply only YES or NO.`;
-      } else if (textFilter === "small" && checkOrientation) {
-        prompt = `Look at this image carefully and answer TWO questions. Reply in exactly this format: TEXT:YES or TEXT:NO, then a space, then VERTICAL:YES or VERTICAL:NO.
-
-TEXT: Does this image contain text that is LARGE, prominent, or would stick out if you placed different text over it? Small subtle text that could easily be covered by a text overlay without looking out of place = NO. Only large, dominant, or full-width text = YES. Tiny watermarks = NO.
-
-VERTICAL: Is this video in vertical/portrait orientation (taller than wide, filling a phone screen top to bottom)? YES or NO.`;
-      } else if (textFilter === "small") {
-        prompt = `Does this image contain text that is LARGE or prominent enough that it could NOT be covered by a small text overlay without sticking out of frame or looking awkward? Small subtle text that fits in one spot = NO. Large dominant text = YES. Tiny watermarks = NO. Reply only YES or NO.`;
-      } else if (checkOrientation) {
-        prompt = `Is this video in vertical/portrait orientation — taller than wide, filling a phone screen top to bottom like a TikTok? Reply only YES or NO.`;
-      }
-
+      const prompt = textFilter === "all"
+        ? `Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Reply only YES or NO.`
+        : `Does this image contain text that is LARGE or prominent enough that it could NOT be covered by a small overlay without sticking out? Small subtle text = NO. Large dominant text = YES. Tiny watermarks = NO. Reply only YES or NO.`;
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": anthropicKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 20,
-          messages: [{
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: mime, data: base64 } },
-              { type: "text", text: prompt }
-            ]
-          }]
-        })
+        headers: { "Content-Type": "application/json", "x-api-key": anthropicKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 10, messages: [{ role: "user", content: [
+          { type: "image", source: { type: "base64", media_type: mime, data: base64 } },
+          { type: "text", text: prompt }
+        ]}]})
       });
-
       const data   = await res.json();
       const answer = (data?.content?.[0]?.text?.trim().toUpperCase()) || "";
-
-      // Parse combined response
-      if (textFilter !== "off" && checkOrientation) {
-        const blockText        = answer.includes("TEXT:YES");
-        const blockOrientation = !answer.includes("VERTICAL:YES");
-        return { blockText, blockOrientation };
-      } else if (textFilter !== "off") {
-        return { blockText: answer === "YES" || answer.startsWith("YES"), blockOrientation: false };
-      } else if (checkOrientation) {
-        return { blockText: false, blockOrientation: !(answer === "YES" || answer.startsWith("YES")) };
-      }
-
-      return { blockText: false, blockOrientation: false };
-
-    } catch {
-      return { blockText: false, blockOrientation: false };
-    }
+      return { blockText: answer === "YES" || answer.startsWith("YES") };
+    } catch { return { blockText: false }; }
   }
 
   function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(",")[1]);
-      reader.onerror  = reject;
-      reader.readAsDataURL(blob);
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onloadend = () => res(r.result.split(",")[1]);
+      r.onerror   = rej;
+      r.readAsDataURL(blob);
     });
   }
 
-  // ── UI helpers ───────────────────────────────────────────────────
-  function selectToggle(el, groupId) {
-    document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove("active"));
+  function selectSeg(el, groupId) {
+    document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("active"));
     el.classList.add("active");
     updatePreview();
   }
@@ -511,15 +785,16 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
     updatePreview();
   }
 
-  document.getElementById("preset").addEventListener("change", function() {
-    document.getElementById("customWrap").style.display = this.value === "custom" ? "block" : "none";
+  function onPresetChange() {
+    const isCustom = document.getElementById("preset").value === "custom";
+    document.getElementById("customSection").style.display = isCustom ? "block" : "none";
     updatePreview();
-  });
+  }
 
   function buildQuery() {
     const preset   = document.getElementById("preset").value;
     const custom   = document.getElementById("customKeyword").value.trim();
-    const subject  = document.querySelector("#subjectGroup .toggle-btn.active")?.dataset.value || "";
+    const subject  = document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value || "";
     const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
     let base  = preset === "custom" ? (custom || "rich people filmed street") : preset;
     let query = base;
@@ -528,23 +803,19 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
     return query;
   }
 
-  function updatePreview() {
-    document.getElementById("previewText").textContent = buildQuery();
-  }
+  function updatePreview() { document.getElementById("previewText").textContent = buildQuery(); }
 
   function setStatus(msg, loading = false) {
     document.getElementById("statusText").textContent = msg;
-    document.getElementById("dot").style.display = loading ? "block" : "none";
+    document.getElementById("spinner").style.display = loading ? "block" : "none";
   }
 
   function setVisionProgress(current, total) {
     const wrap = document.getElementById("visionBarWrap");
     wrap.style.display = total > 0 ? "block" : "none";
-    document.getElementById("visionBarCount").textContent  = `${current} / ${total}`;
-    document.getElementById("visionBarFill").style.width   = `${Math.round((current / total) * 100)}%`;
-    document.getElementById("visionBarLabel").textContent  = current < total
-      ? `Checking thumbnails for text overlays...`
-      : `Vision check complete ✓`;
+    document.getElementById("visionBarCount").textContent = `${current} / ${total}`;
+    document.getElementById("visionBarFill").style.width  = `${Math.round((current / total) * 100)}%`;
+    document.getElementById("visionBarLabel").textContent = current < total ? "Checking thumbnails..." : "Vision check complete ✓";
   }
 
   function clearAll() {
@@ -553,19 +824,11 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
     setStatus("");
   }
 
-  // ── API ──────────────────────────────────────────────────────────
   async function apiFetch(path, token, options = {}) {
-    const res  = await fetch(`${BASE}${path}`, {
-      ...options,
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      }
-    });
+    const res  = await fetch(`${BASE}${path}`, { ...options, headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", ...(options.headers || {}) }});
     const text = await res.text();
     let json;
-    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0, 200)); }
+    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0,200)); }
     if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
     return json;
   }
@@ -581,89 +844,74 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
     const btn = document.getElementById("searchBtn");
     btn.disabled = true;
     clearAll();
-    setStatus(`Searching for "${query}"...`, true);
+    setStatus("Searching...", true);
 
     try {
       const fetchCount = maxResults * 3;
-
       const runData = await apiFetch(`/acts/${ACTOR}/runs`, token, {
         method: "POST",
-        body: JSON.stringify({
-          searchQueries: [query],
-          maxResults: fetchCount,
-          resultsPerPage: fetchCount,
-          shouldDownloadVideos: false,
-          shouldDownloadCovers: false,
-          searchSection: "/video"
-        })
+        body: JSON.stringify({ searchQueries: [query], maxResults: fetchCount, resultsPerPage: fetchCount, shouldDownloadVideos: false, shouldDownloadCovers: false, searchSection: "/video" })
       });
 
       const runId     = runData.data?.id;
       const datasetId = runData.data?.defaultDatasetId;
       if (!runId) throw new Error("No run ID returned. Check your token.");
 
-      setStatus(`Scraping TikTok for "${query}"...`, true);
+      setStatus("Scraping TikTok...", true);
       await pollUntilDone(token, runId);
-
       setStatus("Filtering results...", true);
 
-      const resultData = await apiFetch(
-        `/datasets/${datasetId}/items?limit=${fetchCount}`,
-        token
-      );
+      const resultData = await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`, token);
+      const raw        = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
+      const hasURL     = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
 
-      const raw   = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
-      const hasURL = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
-
-      // Step 1: keyword filter
       const keywordFiltered = hasURL.filter(item => !isBlockedByText(item));
       const keywordRemoved  = hasURL.length - keywordFiltered.length;
 
-      // Step 2: vision filter (only if Anthropic key provided)
-      let finalItems         = keywordFiltered;
-      let visionRemoved      = 0;
       let orientationRemoved = 0;
+      const checkOrientation = document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value === "vertical";
+      let afterOrientation   = keywordFiltered;
 
-      const textFilter      = document.querySelector("#textFilterGroup .toggle-btn.active")?.dataset.value || "all";
-      const orientationMode = document.querySelector("#orientationGroup .toggle-btn.active")?.dataset.value || "vertical";
-      const checkOrientation = orientationMode === "vertical";
-      const useVision = anthropicKey && (textFilter !== "off" || checkOrientation);
+      if (checkOrientation) {
+        afterOrientation = keywordFiltered.filter(item => {
+          const w = item.videoMeta?.width || item.width || 0;
+          const h = item.videoMeta?.height || item.height || 0;
+          if (w > 0 && h > 0 && h <= w) { orientationRemoved++; return false; }
+          return true;
+        });
+      }
 
-      if (useVision && keywordFiltered.length > 0) {
-        setStatus("Running vision check on thumbnails...", true);
+      const textFilter    = document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value || "all";
+      const useTextVision = anthropicKey && textFilter !== "off";
+      let visionRemoved   = 0;
+      let finalItems      = afterOrientation;
 
-        const toCheck = keywordFiltered.slice(0, maxResults * 2);
+      if (useTextVision && afterOrientation.length > 0) {
+        setStatus("Running vision check...", true);
+        const toCheck = afterOrientation.slice(0, maxResults * 2);
         setVisionProgress(0, toCheck.length);
 
         const visionResults = [];
         for (let i = 0; i < toCheck.length; i++) {
           const item      = toCheck[i];
           const thumbnail = item.videoMeta?.coverUrl || item.videoMeta?.originalCoverUrl || item.covers?.default || item.covers?.origin || item.cover || item.thumbnail || item.thumbnailUrl || "";
-          const result    = await checkThumbnail(thumbnail, anthropicKey, textFilter, checkOrientation);
 
-          setVisionProgress(i + 1, toCheck.length);
+          if (!thumbnail) { visionResults.push(item); setVisionProgress(i+1, toCheck.length); if (visionResults.length >= maxResults) break; continue; }
 
-          if (result.blockText)        { visionRemoved++; continue; }
-          if (result.blockOrientation) { orientationRemoved++; continue; }
+          const result = await checkThumbnail(thumbnail, anthropicKey, textFilter);
+          setVisionProgress(i+1, toCheck.length);
+          if (result.blockText) { visionRemoved++; continue; }
           visionResults.push(item);
-
           if (visionResults.length >= maxResults) break;
         }
-
         finalItems = visionResults;
       }
 
-      const clean       = finalItems.slice(0, maxResults);
-      const totalRemoved = keywordRemoved + visionRemoved;
-
-      displayResults(clean, query, keywordRemoved, visionRemoved, orientationRemoved);
+      displayResults(finalItems.slice(0, maxResults), query, keywordRemoved, visionRemoved, orientationRemoved);
 
     } catch (e) {
       setStatus("");
-      document.getElementById("results").innerHTML =
-        `<div class="error">⚠ ${esc(e.message)}<br><br>
-         <span style="font-size:11px;color:#888">Check your tokens and try again.</span>
-        </div>`;
+      document.getElementById("results").innerHTML = `<div class="error-card">${esc(e.message)}<div class="error-sub">Check your token and try again.</div></div>`;
     } finally {
       btn.disabled = false;
     }
@@ -671,18 +919,17 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
 
   async function pollUntilDone(token, runId) {
     const MAX_MS = 180_000, INTERVAL = 5_000;
-    let elapsed  = 0;
+    let elapsed = 0;
     while (elapsed < MAX_MS) {
       await new Promise(r => setTimeout(r, INTERVAL));
       elapsed += INTERVAL;
       const data = await apiFetch(`/actor-runs/${runId}`, token);
       const s    = data.data?.status;
-      setStatus(`Scraping TikTok... ${Math.round(elapsed / 1000)}s`, true);
+      setStatus(`Scraping TikTok... ${Math.round(elapsed/1000)}s`, true);
       if (s === "SUCCEEDED") return;
-      if (["FAILED","ABORTED","TIMED-OUT"].includes(s))
-        throw new Error(`Apify run ${s}. Try a different preset.`);
+      if (["FAILED","ABORTED","TIMED-OUT"].includes(s)) throw new Error(`Run ${s}. Try a different preset.`);
     }
-    throw new Error("Timed out after 3 minutes. Try again.");
+    throw new Error("Timed out. Try again.");
   }
 
   function displayResults(items, query, keywordRemoved, visionRemoved, orientationRemoved) {
@@ -690,18 +937,18 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
     setStatus("");
 
     if (items.length === 0) {
-      box.innerHTML = `<div class="error">No clean videos found for "${esc(query)}". Try a different preset or location.</div>`;
+      box.innerHTML = `<div class="error-card" style="margin:0 16px">No clean videos found for "${esc(query)}".<div class="error-sub">Try a different preset or turn off some filters.</div></div>`;
       return;
     }
 
-    let badges = `<span class="count-badge">✓ ${items.length} clean videos for "${esc(query)}"</span>`;
-    if (keywordRemoved     > 0) badges += `<span class="filtered-badge">🚫 ${keywordRemoved} talking heads removed</span>`;
-    if (visionRemoved      > 0) badges += `<span class="filtered-badge">👁 ${visionRemoved} text overlay videos removed</span>`;
-    if (orientationRemoved > 0) badges += `<span class="filtered-badge">📐 ${orientationRemoved} wrong orientation removed</span>`;
+    let meta = `<div class="results-meta"><span class="badge-count">✓ ${items.length} videos</span>`;
+    if (keywordRemoved     > 0) meta += `<span class="badge-removed">🚫 ${keywordRemoved} removed</span>`;
+    if (visionRemoved      > 0) meta += `<span class="badge-removed">👁 ${visionRemoved} removed</span>`;
+    if (orientationRemoved > 0) meta += `<span class="badge-removed">📐 ${orientationRemoved} removed</span>`;
+    meta += `</div>`;
+    box.innerHTML = meta;
 
-    box.innerHTML = badges;
-
-    items.forEach(item => {
+    items.forEach((item, i) => {
       const url    = item.webVideoUrl || item.videoUrl || item.url || "";
       const author = item.authorMeta?.name || item.author || "unknown";
       const desc   = item.text || item.description || item.desc || "";
@@ -710,23 +957,24 @@ VERTICAL: Is this video in vertical/portrait orientation (taller than wide, fill
 
       const card = document.createElement("div");
       card.className = "result-card";
+      card.style.animationDelay = `${i * 0.05}s`;
       card.innerHTML = `
         <div class="result-author">@${esc(author)}</div>
         ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
-        <div class="result-meta">
+        <div class="result-stats">
           ${views ? `<span>👁 ${Number(views).toLocaleString()}</span>` : ""}
           ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
         </div>
-        <a class="result-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>
-      `;
+        <a class="result-link-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+          <span>Open on TikTok</span>
+          <span class="result-link-arrow">↗</span>
+        </a>`;
       box.appendChild(card);
     });
   }
 
   function esc(str) {
-    return String(str)
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
   document.addEventListener("keydown", e => { if (e.key === "Enter") startSearch(); });
