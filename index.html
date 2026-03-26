@@ -675,19 +675,22 @@ body {
     },
     instagram: {
       label: "Reels", emoji: "📸",
-      // Official Apify instagram-hashtag-scraper — correct field name is 'type' not 'scrapeType'
-      actor: "apify~instagram-hashtag-scraper",
+      // apify/instagram-scraper with explore/tags directUrls — the proven way to discover reels by topic
+      actor: "apify~instagram-scraper",
       buildBody: (query, n) => {
-        // Build 2-3 focused hashtags from the query words
-        const words = query.trim().split(/\s+/).filter(w => w.length > 3);
-        const tags = [...new Set([
-          words.slice(0, 2).join(""),   // e.g. "richpeople"
-          words[0] || "luxury",         // e.g. "rich"
-          "luxurylifestyle"
-        ])].slice(0, 3);
-        return { hashtags: tags, resultsLimit: n, type: "reels" };
+        // Convert query to a hashtag slug, plus always include luxurylifestyle as fallback
+        const slug = query.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return {
+          directUrls: [
+            `https://www.instagram.com/explore/tags/${slug}/`,
+            "https://www.instagram.com/explore/tags/luxurylifestyle/"
+          ],
+          resultsType: "reels",
+          resultsLimit: n,
+          addParentData: false
+        };
       },
-      parseItems: raw => raw.filter(i => i.videoUrl || i.url?.includes("/reel/") || i.isVideo),
+      parseItems: raw => raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/")),
       getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
       getAuthor: i => i.ownerUsername || i.ownerId || "unknown",
       getDesc:   i => i.caption || i.description || "",
@@ -700,14 +703,12 @@ body {
     },
     youtube: {
       label: "Shorts", emoji: "▶️",
-      // streamers~youtube-scraper with a YouTube search URL pre-filtered to Shorts (&sp=EgIYAQ%3D%3D)
+      // streamers~youtube-scraper — exact config from the version that worked
       actor: "streamers~youtube-scraper",
       buildBody: (query, n) => ({
-        startUrls: [{
-          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query + " candid filmed")}&sp=EgIYAQ%3D%3D`
-        }],
+        searchKeywords: query + " #shorts",
         maxResults: n,
-        type: "shorts"
+        type: "video"
       }),
       parseItems: raw => raw,
       getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
