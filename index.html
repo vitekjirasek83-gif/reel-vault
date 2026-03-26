@@ -683,39 +683,33 @@ body {
       label: "Reels", emoji: "📸",
       actor: "apify~instagram-scraper",
       buildBody: (query, n) => {
+        // Strategy: scrape actual street/candid/paparazzi-style accounts that post
+        // what we want — rich people filmed on street, in locations, caught on camera.
+        // These accounts consistently post the exact content we're looking for.
         const q = query.toLowerCase();
-        let tags;
-        if      (q.includes("yacht"))                          tags = ["yachtlife","yachtparty","superyacht"];
-        else if (q.includes("jet"))                            tags = ["privatejet","privatejetlife","jetlife"];
-        else if (q.includes("villa"))                          tags = ["villalife","luxuryvilla","villaholiday"];
-        else if (q.includes("monaco"))                         tags = ["monaco","monacolife","montecarlo"];
-        else if (q.includes("dubai"))                          tags = ["dubai","dubailife","dubaisocial"];
-        else if (q.includes("miami"))                          tags = ["miamilife","miamibeach","miamistyle"];
-        else if (q.includes("mykonos"))                        tags = ["mykonos","mykonosparty","mykonosgram"];
-        else if (q.includes("tropez"))                         tags = ["sainttropez","sttropez","tropezlife"];
-        else if (q.includes("marbella"))                       tags = ["marbella","marbellalife","marbellaparty"];
-        else if (q.includes("moscow"))                         tags = ["moscow","moscowlife","moscowgirls"];
-        else if (q.includes("couple"))                         tags = ["richcouple","luxurycouple","wealthylife"];
-        else if (q.includes("woman")||q.includes("girl"))      tags = ["richgirl","luxurygirl","wealthylife"];
-        else if (q.includes("man")||q.includes("guy"))         tags = ["richman","luxurylife","wealthymen"];
-        else if (q.includes("restaurant"))                     tags = ["finedining","luxuryrestaurant","richpeople"];
-        else if (q.includes("billionaire"))                    tags = ["billionaire","billionairelifestyle","richpeople"];
-        else                                                   tags = ["richpeople","wealthylife","candid"];
+        let accounts;
+        if      (q.includes("monaco"))    accounts = ["monaco.people","monacoluxury","monacolife_official","rich_monaco"];
+        else if (q.includes("dubai"))     accounts = ["dubai.rich","dubaigossip","dubaistreetstyle","rich_dubai"];
+        else if (q.includes("miami"))     accounts = ["miamirich","richmiami","miamistreet_","miamiluxury_"];
+        else if (q.includes("mykonos"))   accounts = ["mykonoslife_","mykonos.candid","mykonosparty_","richgreece"];
+        else if (q.includes("tropez"))    accounts = ["sttropez.life","tropez_candid","sttropezlife_","richriviera"];
+        else if (q.includes("marbella"))  accounts = ["marbellarich","marbella.life","marbellapeople","richspain"];
+        else if (q.includes("yacht"))     accounts = ["superyacht_life","yachtpeople_","yacht.candid","richyacht"];
+        else if (q.includes("jet"))       accounts = ["privatejet.life","pj.candid","jetset.people","privatejetlife_"];
+        else if (q.includes("woman")||q.includes("girl")) accounts = ["richandbeautiful_","richgirls.candid","wealthywoman_","luxurygirls.ig"];
+        else                              accounts = ["richpeoplestreet","richkids_official","luxurypeople_","richcandid"];
         return {
-          directUrls: tags.map(t => `https://www.instagram.com/explore/tags/${t}/`),
-          resultsType: "reels",
+          directUrls: accounts.map(a => `https://www.instagram.com/${a}/reels/`),
+          resultsType: "posts",
           resultsLimit: n,
           addParentData: false
         };
       },
-      parseItems: raw => {
-        if (raw[0]) console.log("[IG raw item]", JSON.stringify(raw[0]).slice(0, 500));
-        return raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/") || i.isVideo === true);
-      },
+      parseItems: raw => raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/") || i.isVideo),
       getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
       getAuthor: i => i.ownerUsername || i.ownerId || "unknown",
       getDesc:   i => i.caption || i.description || "",
-      getViews:  i => i.videoViewCount || i.videoPlayCount || i.playsCount || "",
+      getViews:  i => i.videoViewCount || i.videoPlayCount || "",
       getLikes:  i => i.likesCount || i.likes || "",
       getLinkLabel: () => "Open on Instagram",
       getThumbnail: i => i.displayUrl || i.thumbnailUrl || "",
@@ -752,48 +746,53 @@ body {
     }
   };
 
-  // Words that indicate talking-head / vlog / car showoff / story content
+  // ── Block list: any match = REMOVED ─────────────────────────────
   const BLOCK_WORDS = [
-    // Car showoff / spotting (the main Instagram problem)
-    "car show","car showcase","supercar","hypercar","exotic car","luxury car show",
-    "ferrari","lamborghini","bugatti","mclaren","koenigsegg","pagani","rolls royce",
-    "exhaust","revving","rev","launch control","drift","burnout","0-60","0 to 60",
-    "horsepower","hp ","bhp","top speed","v12","v10","v8 ",
-    "spotting","car spot","carspot","i spotted","we spotted","just spotted",
-    "car collection","my garage","garage tour","car tour",
-    // Story / vlog / life content
-    "my life","day in my life","week in my life","living my","my morning","my routine",
-    "storytime","story time","my story","our story","real story","true story",
-    "what happened","i cried","emotional","i broke down","vulnerable",
-    "growing up","my childhood","i remember","reminiscing","throwback","back in the day",
-    // Talking head / commentary
-    "podcast","interview","talking about","explains","he recalls","she recalls",
-    "reaction","reacting","commentary","voiceover","narrator",
-    "discuss","opinion","let me explain","you need to know","the truth about",
-    "i think","i believe","my thoughts","my opinion","here's why",
-    // Ranking / list / wealth edu content
-    "ranked","ranking","top 10","top 5","top 3","number one",
-    "best of","worst of","most expensive","how much does","how rich",
-    "net worth","billionaire list","forbes","richest","wealthiest",
-    // Review / analysis
-    "review","unboxing","first look","hands on","deep dive","breakdown",
-    // Clickbait
-    "you won't believe","shocking","insane wealth","found out","reveals",
-    "exposed","leaked","drama","breaking news","update","announcement",
-    // Compilation / montage
-    "compilation","best moments","highlights","montage",
-    // Motivational voiceover
-    "motivation","motivational","mindset","grind","hustle","success tips",
-    "how i became","how to become","how to be rich","secret to","the key to"
+    // Weddings / events / formal
+    "wedding","bride","groom","bridal","brides","engagement","proposal","married","ceremony",
+    "reception","vows","honeymoon","anniversary","prom","quinceañera","baptism","christening",
+    "birthday party","sweet 16","bar mitzvah","graduation","gala","charity event","red carpet",
+    // Grooming / beauty / fitness
+    "beard","grooming","skincare","skin care","haircut","hair routine","morning routine",
+    "workout","gym","fitness","exercise","training","diet","nutrition","weight loss",
+    "makeup","beauty routine","self care","glow up","transformation",
+    // Car content
+    "car show","car showcase","supercar","hypercar","exotic car","ferrari","lamborghini",
+    "bugatti","mclaren","porsche","rolls royce","bentley","exhaust","revving","drift",
+    "burnout","0-60","horsepower","bhp","v12","v10","garage tour","car collection","car tour",
+    "spotting","car spot","carspot","i spotted","we spotted",
+    // Interior / design / product
+    "interior design","home tour","house tour","room tour","penthouse tour",
+    "interior decor","architecture","design inspiration","furniture","real estate tour",
+    // Talking head / vlog / story
+    "my life","day in my life","storytime","story time","my story","what happened",
+    "podcast","interview","reaction","reacting","commentary","voiceover",
+    "i think","my thoughts","my opinion","here's why","let me explain",
+    // Ranking / edu / finance
+    "top 10","top 5","net worth","forbes","richest","wealthiest","billionaire list",
+    "how to","how i","tips","advice","guide","tutorial","review","unboxing",
+    "motivation","mindset","grind","hustle","success","invest","finance","money tips",
+    // Clickbait / compilation
+    "you won't believe","shocking","exposed","leaked","drama","compilation",
+    "best moments","highlights","montage","ranked","ranking"
   ];
 
+  // ── Block usernames: any match = REMOVED ─────────────────────────
   const BLOCK_USERNAMES = [
-    "spot","spotter","carspot","supercar","hypercar","exoticcar","ferrarilife",
-    "review","daily","news","media","channel","official","podcast","talk",
-    "vlog","vlogs","react","reacts","commentary","motivation","motivate",
-    "finance","money","wealth","invest","investing","explain","explains",
-    "breakdown","analysis","report","tv","network","garage","cars","auto"
+    "car","auto","garage","ferrari","lambo","supercar","hypercar",
+    "wedding","bride","bridal","beauty","makeup","grooming","skincare","fitness","gym","workout",
+    "review","daily","news","media","official","podcast","talk","vlog","react","commentary",
+    "motivation","finance","money","wealth","invest","tutorial","tips","guide",
+    "interior","design","decor","realestate","architecture"
   ];
+
+  function isBlockedByText(item, p) {
+    const desc   = (p.getDesc(item)   || "").toLowerCase();
+    const author = (p.getAuthor(item) || "").toLowerCase();
+    for (const w of BLOCK_WORDS)     { if (desc.includes(w))   return true; }
+    for (const w of BLOCK_USERNAMES) { if (author.includes(w)) return true; }
+    return false;
+  }
 
   // ── State ────────────────────────────────────────────────────────
   let activePlatforms = new Set(["tiktok"]);
@@ -1023,13 +1022,6 @@ body {
     throw new Error("Timed out. Try again.");
   }
 
-  function isBlockedByText(item, p) {
-    const desc   = p.getDesc(item).toLowerCase();
-    const author = p.getAuthor(item).toLowerCase();
-    for (const w of BLOCK_WORDS)     { if (desc.includes(w))   return true; }
-    for (const w of BLOCK_USERNAMES) { if (author.includes(w)) return true; }
-    return false;
-  }
 
   async function checkThumbnail(thumbnailUrl, anthropicKey, textFilter) {
     if (!thumbnailUrl) return { blockText: false };
