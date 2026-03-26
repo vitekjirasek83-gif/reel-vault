@@ -620,8 +620,8 @@ body {
     <div class="query-text" id="previewText">rich people filmed street</div>
     <div class="platform-pills" id="previewPlatforms"></div>
     <div class="filter-pills">
-      <span class="filter-pill">🚫 Talking heads filtered</span>
-      <span class="filter-pill">👁 Vision filter active</span>
+      <span class="filter-pill">🚫 Keyword filtered</span>
+      <span class="filter-pill">👁 AI candid check (needs Anthropic key)</span>
     </div>
   </div>
 </div>
@@ -683,24 +683,30 @@ body {
       label: "Reels", emoji: "📸",
       actor: "apify~instagram-scraper",
       buildBody: (query, n) => {
-        // Strategy: scrape actual street/candid/paparazzi-style accounts that post
-        // what we want — rich people filmed on street, in locations, caught on camera.
-        // These accounts consistently post the exact content we're looking for.
+        // Use direct hashtag explore URLs with very specific candid/street hashtags
+        // Each preset maps to hashtags that real street-shot content uses
         const q = query.toLowerCase();
-        let accounts;
-        if      (q.includes("monaco"))    accounts = ["monaco.people","monacoluxury","monacolife_official","rich_monaco"];
-        else if (q.includes("dubai"))     accounts = ["dubai.rich","dubaigossip","dubaistreetstyle","rich_dubai"];
-        else if (q.includes("miami"))     accounts = ["miamirich","richmiami","miamistreet_","miamiluxury_"];
-        else if (q.includes("mykonos"))   accounts = ["mykonoslife_","mykonos.candid","mykonosparty_","richgreece"];
-        else if (q.includes("tropez"))    accounts = ["sttropez.life","tropez_candid","sttropezlife_","richriviera"];
-        else if (q.includes("marbella"))  accounts = ["marbellarich","marbella.life","marbellapeople","richspain"];
-        else if (q.includes("yacht"))     accounts = ["superyacht_life","yachtpeople_","yacht.candid","richyacht"];
-        else if (q.includes("jet"))       accounts = ["privatejet.life","pj.candid","jetset.people","privatejetlife_"];
-        else if (q.includes("woman")||q.includes("girl")) accounts = ["richandbeautiful_","richgirls.candid","wealthywoman_","luxurygirls.ig"];
-        else                              accounts = ["richpeoplestreet","richkids_official","luxurypeople_","richcandid"];
+        let tags;
+        if      (q.includes("monaco"))                         tags = ["monacopeople","streetmonaco","monacostreet","monacocandid"];
+        else if (q.includes("dubai"))                          tags = ["dubaistreet","dubaipeople","dubaicandid","dubaimoments"];
+        else if (q.includes("miami"))                          tags = ["miamipeople","miamistreet","miamicandid","southbeachpeople"];
+        else if (q.includes("mykonos"))                        tags = ["mykonospeople","mykonosmoments","mykonosstreet","greececandid"];
+        else if (q.includes("tropez"))                         tags = ["sttropezpeople","sttropezmoments","tropezstreet","rivierapeople"];
+        else if (q.includes("marbella"))                       tags = ["marbellapeople","marbellastreet","marbellamoments","costadelsolpeople"];
+        else if (q.includes("moscow"))                         tags = ["moscowpeople","moscowstreet","moscowcandid","moscowgirls"];
+        else if (q.includes("yacht"))                          tags = ["yachtpeople","yachtcandid","superyachtlife","yachtlife"];
+        else if (q.includes("jet"))                            tags = ["privatejetpeople","privatejetlife","jetsetpeople","jetsetlife"];
+        else if (q.includes("villa"))                          tags = ["villapeople","villalife","luxuryvilla","rivieravilla"];
+        else if (q.includes("restaurant"))                     tags = ["finediningpeople","restaurantpeople","luxuryrestaurant","dinningout"];
+        else if (q.includes("billionaire"))                    tags = ["billionairelife","richpeople","wealthypeople","richliving"];
+        else if (q.includes("woman")||q.includes("girl"))      tags = ["richgirl","luxurygirl","wealthygirl","richwoman"];
+        else if (q.includes("man")||q.includes("guy"))         tags = ["richman","wealthyman","luxuryman","richdude"];
+        else if (q.includes("couple"))                         tags = ["richcouple","wealthycouple","luxurycouple","couplesgoals"];
+        else if (q.includes("los angeles")||q.includes(" la")) tags = ["lapeople","losangelesstreet","larich","bevelyhills"];
+        else                                                   tags = ["richpeople","wealthypeople","luxurypeople","streetstyle"];
         return {
-          directUrls: accounts.map(a => `https://www.instagram.com/${a}/reels/`),
-          resultsType: "posts",
+          directUrls: tags.map(t => `https://www.instagram.com/explore/tags/${t}/`),
+          resultsType: "reels",
           resultsLimit: n,
           addParentData: false
         };
@@ -873,7 +879,7 @@ body {
     wrap.style.display = total > 0 ? "block" : "none";
     document.getElementById("visionBarCount").textContent = `${current} / ${total}`;
     document.getElementById("visionBarFill").style.width  = `${Math.round((current / total) * 100)}%`;
-    document.getElementById("visionBarLabel").textContent = current < total ? "Checking thumbnails..." : "Vision check complete ✓";
+    document.getElementById("visionBarLabel").textContent = current < total ? "👁 AI checking thumbnails..." : "✓ Vision filter complete";
   }
 
   function clearAll() {
@@ -960,22 +966,41 @@ body {
         }
 
         const textFilter    = document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value || "all";
+        const useCandid     = !!anthropicKey; // candid check runs whenever there's an Anthropic key
         const useTextVision = anthropicKey && textFilter !== "off";
         let finalItems      = afterOrientation;
         let visionRemoved   = 0;
 
-        if (useTextVision && afterOrientation.length > 0) {
-          setStatus(`Vision check: ${p.label}...`, true);
-          const toCheck = afterOrientation.slice(0, maxResults * 2);
+        if ((useCandid || useTextVision) && afterOrientation.length > 0) {
+          setStatus(`👁 AI vision filter: ${p.label}...`, true);
+          const toCheck = afterOrientation.slice(0, maxResults * 4); // check more candidates
           setVisionProgress(0, toCheck.length);
           const visionResults = [];
+
           for (let i = 0; i < toCheck.length; i++) {
             const item      = toCheck[i];
             const thumbnail = p.getThumbnail(item);
-            if (!thumbnail) { visionResults.push(item); setVisionProgress(i+1, toCheck.length); if (visionResults.length >= maxResults) break; continue; }
-            const result = await checkThumbnail(thumbnail, anthropicKey, textFilter);
-            setVisionProgress(i+1, toCheck.length);
-            if (result.blockText) { visionRemoved++; continue; }
+            setVisionProgress(i + 1, toCheck.length);
+
+            if (!thumbnail) {
+              // No thumbnail — skip vision, let text filter decide
+              visionResults.push(item);
+              if (visionResults.length >= maxResults) break;
+              continue;
+            }
+
+            // ── Pass 1: Candid scene check ──────────────────────────
+            if (useCandid) {
+              const candid = await checkCandid(thumbnail, anthropicKey);
+              if (!candid.pass) { visionRemoved++; continue; }
+            }
+
+            // ── Pass 2: Text overlay check ──────────────────────────
+            if (useTextVision) {
+              const overlay = await checkTextOverlay(thumbnail, anthropicKey, textFilter);
+              if (overlay.block) { visionRemoved++; continue; }
+            }
+
             visionResults.push(item);
             if (visionResults.length >= maxResults) break;
           }
@@ -1023,29 +1048,80 @@ body {
   }
 
 
-  async function checkThumbnail(thumbnailUrl, anthropicKey, textFilter) {
-    if (!thumbnailUrl) return { blockText: false };
+  // ── Vision: text overlay check (existing) ───────────────────────
+  async function checkTextOverlay(thumbnailUrl, anthropicKey, textFilter) {
+    if (!thumbnailUrl || !anthropicKey) return { block: false };
     try {
       const imgRes = await fetch(thumbnailUrl);
-      if (!imgRes.ok) return { blockText: false };
+      if (!imgRes.ok) return { block: false };
       const blob   = await imgRes.blob();
       const base64 = await blobToBase64(blob);
       const mime   = blob.type || "image/jpeg";
       const prompt = textFilter === "all"
         ? `Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Reply only YES or NO.`
         : `Does this image contain text that is LARGE or prominent enough that it could NOT be covered by a small overlay without sticking out? Small subtle text = NO. Large dominant text = YES. Tiny watermarks = NO. Reply only YES or NO.`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": anthropicKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 10, messages: [{ role: "user", content: [
+      const res = await callClaude(anthropicKey, prompt, base64, mime, 5);
+      const answer = res.toUpperCase();
+      return { block: answer === "YES" || answer.startsWith("YES") };
+    } catch { return { block: false }; }
+  }
+
+  // ── Vision: candid scene check (NEW — the main filter) ──────────
+  // Asks Claude: is this actually a real person in a public/outdoor/luxury setting?
+  // Returns { pass: true } if it looks like candid street/location footage.
+  async function checkCandid(thumbnailUrl, anthropicKey) {
+    if (!thumbnailUrl || !anthropicKey) return { pass: true }; // no key = allow through
+    try {
+      const imgRes = await fetch(thumbnailUrl);
+      if (!imgRes.ok) return { pass: true };
+      const blob   = await imgRes.blob();
+      const base64 = await blobToBase64(blob);
+      const mime   = blob.type || "image/jpeg";
+      const prompt = `You are filtering video thumbnails for an app that finds candid footage of wealthy people in public — on streets, at ports, restaurants, beaches, clubs, or luxury locations. Caught-on-camera style.
+
+Look at this thumbnail and answer YES if it shows:
+- Real person(s) in a public outdoor or semi-outdoor setting (street, port, beach, restaurant terrace, airport, club entrance, pool area)
+- Candid or paparazzi-style shot — person may or may not know they're being filmed
+- Luxury context: designer clothes, jewellery, exotic location, yacht, private jet interior, upscale venue
+
+Answer NO if it shows:
+- Wedding, ceremony, formal event, red carpet
+- Indoor grooming, skincare, workout, gym, beauty routine  
+- Car interior or car-focused shot with no visible person
+- Interior design, home tour, room/house with no people
+- Talking head facing the camera directly in a studio or bedroom
+- Motivational quote or text overlay as the main subject
+- Product, food, or object with no person
+- Group of people at a planned formal event
+
+Reply only YES or NO.`;
+      const res = await callClaude(anthropicKey, prompt, base64, mime, 5);
+      const answer = res.toUpperCase().trim();
+      return { pass: answer === "YES" || answer.startsWith("YES") };
+    } catch { return { pass: true }; } // on error, allow through
+  }
+
+  // ── Shared Claude API call ────────────────────────────────────────
+  async function callClaude(anthropicKey, prompt, base64, mime, maxTokens = 5) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: maxTokens,
+        messages: [{ role: "user", content: [
           { type: "image", source: { type: "base64", media_type: mime, data: base64 } },
           { type: "text", text: prompt }
-        ]}]})
-      });
-      const data   = await res.json();
-      const answer = (data?.content?.[0]?.text?.trim().toUpperCase()) || "";
-      return { blockText: answer === "YES" || answer.startsWith("YES") };
-    } catch { return { blockText: false }; }
+        ]}]
+      })
+    });
+    const data = await res.json();
+    return data?.content?.[0]?.text?.trim() || "";
   }
 
   function blobToBase64(blob) {
