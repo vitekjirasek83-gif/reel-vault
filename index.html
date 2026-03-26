@@ -19,21 +19,8 @@
   --silver5: rgba(235,235,245,0.06);
   --separator: rgba(235,235,245,0.08);
   --text: #ffffff;
-  --text2: rgba(255,255,255,0.85);
   --muted: rgba(255,255,255,0.4);
-  --green: #30d158;
-  --red: #ff453a;
-
-  /* Chrome/silver gradient for accent */
-  --chrome: linear-gradient(135deg,
-    #c8c8c8 0%,
-    #f0f0f0 25%,
-    #a8a8a8 45%,
-    #ffffff 55%,
-    #b0b0b0 75%,
-    #e0e0e0 100%
-  );
-  --chrome-glow: 0 2px 16px rgba(255,255,255,0.15);
+  --chrome: linear-gradient(135deg, #c8c8c8 0%, #f0f0f0 25%, #a8a8a8 45%, #ffffff 55%, #b0b0b0 75%, #e0e0e0 100%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -52,151 +39,224 @@ body {
   padding: 60px 22px 20px;
   background: linear-gradient(180deg, #111 0%, #000 100%);
 }
-
 .header-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  background: var(--chrome);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 6px;
-  display: inline-block;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  background: var(--chrome); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 6px; display: inline-block;
 }
-
-.app-title {
-  font-size: 40px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  color: var(--text);
-  line-height: 1;
-}
-
-.app-subtitle {
-  font-size: 14px;
-  color: var(--muted);
-  margin-top: 5px;
-  font-weight: 400;
-}
+.app-title { font-size: 40px; font-weight: 800; letter-spacing: -1px; color: var(--text); line-height: 1; }
+.app-subtitle { font-size: 14px; color: var(--muted); margin-top: 5px; font-weight: 400; }
 
 /* ── Section ── */
 .section { padding: 0 16px; margin-top: 28px; }
-
 .section-label {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
-  padding-left: 4px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px; padding-left: 4px;
 }
 
-/* ── List group ── */
-.list-group {
+/* ── Platform checkbox tiles ── */
+.platform-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.platform-tile {
   background: var(--surface);
-  border-radius: 16px;
+  border: 1.5px solid var(--surface3);
+  border-radius: 14px;
+  padding: 14px 12px 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  user-select: none;
 }
 
-.list-row {
-  display: flex;
-  align-items: center;
-  padding: 14px 16px;
-  gap: 14px;
-  border-bottom: 1px solid var(--separator);
+.platform-tile:hover:not(.active) {
+  border-color: var(--silver3);
+  background: var(--silver5);
+  transform: translateY(-1px);
+}
+.platform-tile:active { transform: scale(0.95); transition: transform 0.08s; }
+
+.platform-tile.active {
+  background: var(--surface2);
+  border-color: rgba(235,235,245,0.4);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+  animation: tilePop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Glare sweep on active */
+.platform-tile.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%; width: 60%; height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
+  transform: skewX(-15deg);
+  animation: tileGlare 0.5s ease 0.05s forwards;
+}
+
+@keyframes tileGlare { 0% { left: -80%; opacity:1; } 100% { left: 130%; opacity:0; } }
+@keyframes tilePop {
+  0%   { transform: scale(0.87); opacity: 0.4; }
+  55%  { transform: scale(1.05); }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+.platform-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: var(--surface3);
   transition: background 0.18s;
 }
+.platform-tile.active .platform-icon { background: var(--surface3); }
 
+.platform-name {
+  font-size: 12px; font-weight: 700; color: var(--silver2);
+  letter-spacing: -0.1px;
+  transition: color 0.18s;
+}
+.platform-tile.active .platform-name { color: var(--silver); }
+
+.platform-check {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--silver3);
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+}
+.platform-tile.active .platform-check {
+  border-color: var(--silver);
+  background: var(--silver);
+}
+.platform-check-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #111;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.platform-tile.active .platform-check-dot { opacity: 1; }
+
+/* ── List group ── */
+.list-group { background: var(--surface); border-radius: 16px; overflow: hidden; }
+.list-row {
+  display: flex; align-items: center; padding: 14px 16px; gap: 14px;
+  border-bottom: 1px solid var(--separator); transition: background 0.18s;
+}
 .list-row:last-child { border-bottom: none; }
 .list-row:hover { background: var(--silver5); }
 
 .row-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  background: var(--surface2);
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; background: var(--surface2);
 }
-
-.row-label {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text);
-  flex: 1;
-}
-
+.row-label { font-size: 16px; font-weight: 500; color: var(--text); flex: 1; }
 .row-input {
-  background: none;
-  border: none;
-  outline: none;
-  font-family: inherit;
-  font-size: 15px;
-  color: var(--silver2);
-  flex: 1;
-  min-width: 0;
+  background: none; border: none; outline: none; font-family: inherit;
+  font-size: 15px; color: var(--silver2); flex: 1; min-width: 0;
 }
-
 .row-input::placeholder { color: var(--muted); font-size: 15px; }
-
 .row-select-wrap { flex: 1; display: flex; justify-content: flex-end; }
-
 .row-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: none;
-  border: none;
-  outline: none;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--silver);
-  cursor: pointer;
-  text-align: right;
-  max-width: 180px;
+  appearance: none; -webkit-appearance: none;
+  background: none; border: none; outline: none; font-family: inherit;
+  font-size: 15px; font-weight: 500; color: var(--silver); cursor: pointer;
+  text-align: right; max-width: 180px;
 }
+
+/* ── Preset cards ── */
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.preset-card {
+  background: var(--surface);
+  border: 1.5px solid var(--surface3);
+  border-radius: 14px;
+  padding: 13px 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.preset-card:hover:not(.active) {
+  border-color: var(--silver3);
+  background: var(--silver5);
+  transform: translateY(-1px);
+}
+.preset-card:active { transform: scale(0.96); transition: transform 0.08s; }
+
+.preset-card.active {
+  background: var(--surface2);
+  border-color: rgba(235,235,245,0.38);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  animation: chipPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.preset-card.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%; width: 60%; height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
+  transform: skewX(-15deg);
+  animation: chipGlare 0.5s ease 0.05s forwards;
+}
+
+.preset-card-custom {
+  grid-column: 1 / -1;
+}
+
+.preset-emoji { font-size: 18px; margin-bottom: 5px; display: block; }
+.preset-title {
+  font-size: 13px; font-weight: 700; color: var(--silver2);
+  line-height: 1.2; margin-bottom: 2px;
+  transition: color 0.18s;
+}
+.preset-card.active .preset-title { color: var(--silver); }
+
+/* Custom input inside preset-card */
+.preset-custom-input {
+  background: none; border: none; outline: none; font-family: inherit;
+  font-size: 13px; font-weight: 600; color: var(--silver2);
+  width: 100%; margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--separator);
+  display: none;
+}
+.preset-custom-input::placeholder { color: var(--muted); }
+.preset-custom-input.visible { display: block; }
 
 /* ── Segment control ── */
-.segment-wrap { padding: 0 16px; margin-top: 10px; }
-
 .segment {
-  background: var(--surface2);
-  border-radius: 12px;
-  padding: 3px;
-  display: flex;
-  gap: 2px;
+  background: var(--surface2); border-radius: 12px;
+  padding: 3px; display: flex; gap: 2px;
 }
-
 .seg-btn {
-  flex: 1;
-  border: none;
-  background: none;
-  border-radius: 9px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  padding: 8px 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: -0.1px;
+  flex: 1; border: none; background: none; border-radius: 9px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--muted); padding: 8px 6px; cursor: pointer;
+  transition: all 0.2s; letter-spacing: -0.1px;
 }
-
 .seg-btn:hover:not(.active) { color: var(--silver2); }
 .seg-btn:not(.active):active { transform: scale(0.92); transition: transform 0.08s; }
-
 .seg-btn.active {
-  background: var(--surface3);
-  color: var(--text);
+  background: var(--surface3); color: var(--text);
   box-shadow: 0 1px 4px rgba(0,0,0,0.5);
   animation: segPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
 @keyframes segPop {
   0%   { transform: scale(0.88); opacity: 0.5; }
   60%  { transform: scale(1.06); }
@@ -205,68 +265,35 @@ body {
 
 /* ── Chips ── */
 .chips-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 0 16px 4px;
-  scrollbar-width: none;
+  display: flex; gap: 8px; overflow-x: auto;
+  padding: 0 16px 4px; scrollbar-width: none;
 }
 .chips-row::-webkit-scrollbar { display: none; }
-
 .chip {
-  background: var(--surface);
-  border: 1.5px solid var(--surface3);
-  border-radius: 20px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--silver2);
-  padding: 8px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.18s;
-  flex-shrink: 0;
+  background: var(--surface); border: 1.5px solid var(--surface3);
+  border-radius: 20px; font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--silver2); padding: 8px 16px; cursor: pointer;
+  white-space: nowrap; transition: all 0.18s; flex-shrink: 0;
 }
-
 .chip:hover:not(.active) {
-  border-color: var(--silver3);
-  color: var(--silver);
-  background: var(--silver5);
-  transform: translateY(-1px);
+  border-color: var(--silver3); color: var(--silver);
+  background: var(--silver5); transform: translateY(-1px);
 }
-
-.chip:active {
-  transform: scale(0.94);
-  transition: transform 0.08s;
-}
-
+.chip:active { transform: scale(0.94); transition: transform 0.08s; }
 .chip.active {
-  background: var(--surface2);
-  border-color: rgba(235,235,245,0.35);
-  color: var(--silver);
-  position: relative;
-  overflow: hidden;
+  background: var(--surface2); border-color: rgba(235,235,245,0.35);
+  color: var(--silver); position: relative; overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
   animation: chipPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-/* Glare sweep on chip activate */
 .chip.active::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -80%;
-  width: 60%;
-  height: 100%;
+  content: ''; position: absolute; top: 0; left: -80%;
+  width: 60%; height: 100%;
   background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
   transform: skewX(-15deg);
   animation: chipGlare 0.5s ease 0.05s forwards;
 }
-
-@keyframes chipGlare {
-  0%   { left: -80%; opacity: 1; }
-  100% { left: 130%; opacity: 0; }
-}
-
+@keyframes chipGlare { 0% { left:-80%; opacity:1; } 100% { left:130%; opacity:0; } }
 @keyframes chipPop {
   0%   { transform: scale(0.85); opacity: 0.4; }
   55%  { transform: scale(1.08); }
@@ -274,93 +301,44 @@ body {
 }
 
 /* ── Filter rows ── */
-.filter-block {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--separator);
-}
+.filter-block { padding: 14px 16px; border-bottom: 1px solid var(--separator); }
 .filter-block:last-child { border-bottom: none; }
-
-.filter-block-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 12px;
-}
+.filter-block-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
 
 /* ── Query preview ── */
-.query-card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 16px;
-}
-
+.query-card { background: var(--surface); border-radius: 16px; padding: 16px; }
 .query-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
 }
-
-.query-text {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--silver);
-  line-height: 1.3;
-  margin-bottom: 10px;
-}
-
+.query-text { font-size: 17px; font-weight: 600; color: var(--silver); line-height: 1.3; margin-bottom: 10px; }
 .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-
 .filter-pill {
-  background: var(--silver5);
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  padding: 4px 10px;
+  background: var(--silver5); border-radius: 20px; font-size: 11px;
+  font-weight: 600; color: var(--muted); padding: 4px 10px;
+}
+.platform-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.platform-pill {
+  background: var(--surface2); border: 1px solid var(--silver4);
+  border-radius: 20px; font-size: 11px; font-weight: 700;
+  color: var(--silver2); padding: 3px 9px;
 }
 
-/* ── CHROME BUTTON ── */
+/* ── Chrome button ── */
 .btn-row { display: flex; gap: 10px; padding: 0 16px; margin-top: 16px; }
-
 .search-btn {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 17px;
-  font-weight: 700;
-  padding: 16px;
-  letter-spacing: -0.3px;
-  color: #111;
-  background: linear-gradient(160deg,
-    #c0c0c0 0%,
-    #f5f5f5 30%,
-    #a8a8a8 50%,
-    #f0f0f0 70%,
-    #b8b8b8 100%
-  );
+  flex: 1; position: relative; overflow: hidden; border: none; border-radius: 14px;
+  cursor: pointer; font-family: inherit; font-size: 17px; font-weight: 700;
+  padding: 16px; letter-spacing: -0.3px; color: #111;
+  background: linear-gradient(160deg, #c0c0c0 0%, #f5f5f5 30%, #a8a8a8 50%, #f0f0f0 70%, #b8b8b8 100%);
   box-shadow: 0 4px 20px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.2);
   transition: transform 0.15s, box-shadow 0.15s;
 }
-
-/* Glare overlay */
 .search-btn::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -75%;
-  width: 50%;
-  height: 100%;
+  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
   background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-  transform: skewX(-20deg);
-  transition: left 0.5s ease;
+  transform: skewX(-20deg); transition: left 0.5s ease;
 }
-
 .search-btn:hover::before { left: 125%; }
 .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
 .search-btn:active { transform: scale(0.97) translateY(0); }
@@ -368,42 +346,26 @@ body {
 .search-btn:disabled::before { display: none; }
 
 .clear-btn {
-  position: relative;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--silver4);
-  border-radius: 14px;
-  color: var(--silver2);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 16px 22px;
+  position: relative; overflow: hidden; background: var(--surface);
+  border: 1px solid var(--silver4); border-radius: 14px;
+  color: var(--silver2); cursor: pointer; font-family: inherit;
+  font-size: 15px; font-weight: 600; padding: 16px 22px;
   transition: background 0.18s, transform 0.1s, color 0.18s;
 }
-
 .clear-btn:hover { background: var(--surface2); color: var(--silver); transform: translateY(-1px); }
 .clear-btn:active { transform: scale(0.97); }
 
 /* ── Status ── */
 .status-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 20px 0;
-  min-height: 36px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px 0; min-height: 36px;
 }
-
 .spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--silver4);
-  border-top-color: var(--silver);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: none; flex-shrink: 0;
+  width: 16px; height: 16px; border: 2px solid var(--silver4);
+  border-top-color: var(--silver); border-radius: 50%;
+  animation: spin 0.7s linear infinite; display: none; flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .status-txt { font-size: 13px; color: var(--muted); font-weight: 500; }
 
 /* ── Vision bar ── */
@@ -414,143 +376,72 @@ body {
 
 /* ── Results ── */
 #results { margin-top: 24px; }
-
-.results-meta {
-  padding: 0 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
+.results-meta { padding: 0 16px; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .badge-count {
-  background: var(--surface2);
-  border: 1px solid rgba(235,235,245,0.2);
-  color: var(--silver);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 12px;
+  background: var(--surface2); border: 1px solid rgba(235,235,245,0.2);
+  color: var(--silver); border-radius: 20px; font-size: 12px; font-weight: 700; padding: 4px 12px;
 }
-
+.badge-platform {
+  background: var(--surface2); border: 1px solid var(--silver4);
+  color: var(--silver2); border-radius: 20px; font-size: 12px; font-weight: 600; padding: 4px 10px;
+}
 .badge-removed {
-  background: var(--surface);
-  color: var(--muted);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
+  background: var(--surface); color: var(--muted);
+  border-radius: 20px; font-size: 12px; font-weight: 600; padding: 4px 10px;
 }
-
 .result-card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 0 16px 10px;
-  animation: slideUp 0.3s ease both;
-  border: 1px solid var(--separator);
-  transition: background 0.18s, transform 0.15s;
+  background: var(--surface); border-radius: 16px; padding: 16px;
+  margin: 0 16px 10px; animation: slideUp 0.3s ease both;
+  border: 1px solid var(--separator); transition: background 0.18s, transform 0.15s;
 }
-
 .result-card:hover { background: #222; transform: translateY(-1px); }
-
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-.result-author {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--silver2);
-  letter-spacing: 0.3px;
-  margin-bottom: 5px;
+.result-platform-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 4px;
 }
-
+.result-author { font-size: 12px; font-weight: 700; color: var(--silver2); letter-spacing: 0.3px; margin-bottom: 5px; }
 .result-desc {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--silver3);
-  line-height: 1.4;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  margin-bottom: 8px;
+  font-size: 14px; font-weight: 400; color: var(--silver3); line-height: 1.4;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; margin-bottom: 8px;
 }
-
-.result-stats {
-  display: flex;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 500;
-  margin-bottom: 12px;
-}
-
-/* Chrome open button */
+.result-stats { display: flex; gap: 14px; font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 12px; }
 .result-link-btn {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface2);
-  border: 1px solid var(--silver4);
-  border-radius: 10px;
-  padding: 11px 14px;
-  text-decoration: none;
-  color: var(--silver);
-  font-size: 13px;
-  font-weight: 600;
+  position: relative; overflow: hidden; display: flex;
+  align-items: center; justify-content: space-between;
+  background: var(--surface2); border: 1px solid var(--silver4);
+  border-radius: 10px; padding: 11px 14px; text-decoration: none;
+  color: var(--silver); font-size: 13px; font-weight: 600;
   transition: background 0.18s, transform 0.15s;
 }
-
 .result-link-btn::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -75%;
-  width: 50%;
-  height: 100%;
+  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
   background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
-  transform: skewX(-20deg);
-  transition: left 0.4s ease;
+  transform: skewX(-20deg); transition: left 0.4s ease;
 }
-
 .result-link-btn:hover::before { left: 125%; }
 .result-link-btn:hover { background: var(--surface3); transform: translateY(-1px); }
 .result-link-btn:active { opacity: 0.7; transform: scale(0.98); }
 .result-link-arrow { color: var(--silver3); font-size: 16px; }
 
 .error-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--separator);
-  border-radius: 16px;
-  padding: 18px;
-  margin: 0 16px;
-  color: var(--silver2);
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--separator);
+  border-radius: 16px; padding: 18px; margin: 0 16px;
+  color: var(--silver2); font-size: 15px; font-weight: 500; line-height: 1.5;
 }
-
 .error-sub { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 400; }
-
-.custom-wrap {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <div class="app-header">
-  <div class="header-eyebrow">TikTok Discovery</div>
+  <div class="header-eyebrow">Luxury Content Discovery</div>
   <div class="app-title">Reel Vault</div>
   <div class="app-subtitle">Find candid luxury content</div>
 </div>
@@ -570,36 +461,83 @@ body {
   </div>
 </div>
 
-<!-- Vibe Preset -->
+<!-- Platforms -->
 <div class="section">
-  <div class="section-label">Vibe</div>
-  <div class="list-group">
-    <div class="list-row">
-      <div class="row-icon">🎥</div>
-      <div class="row-label">Preset</div>
-      <div class="row-select-wrap">
-        <select class="row-select" id="preset" onchange="onPresetChange()">
-          <option value="rich people filmed street">Rich people on street</option>
-          <option value="billionaire caught camera walking">Billionaire caught</option>
-          <option value="luxury car filmed street candid">Luxury car candid</option>
-          <option value="celebrity filmed leaving restaurant">Celebrity leaving restaurant</option>
-          <option value="rich people filmed candid">Rich people candid</option>
-          <option value="ferrari lamborghini filmed street">Ferrari / Lambo</option>
-          <option value="luxury villa filmed candid">Luxury villa</option>
-          <option value="private jet filmed airport candid">Private jet</option>
-          <option value="yacht rich people filmed">Yacht</option>
-          <option value="custom">Custom...</option>
-        </select>
-      </div>
+  <div class="section-label">Platforms — pick one or more</div>
+  <div class="platform-grid">
+
+    <div class="platform-tile active" data-platform="tiktok" onclick="togglePlatform(this)">
+      <div class="platform-check"><div class="platform-check-dot"></div></div>
+      <div class="platform-icon">🎵</div>
+      <div class="platform-name">TikTok</div>
     </div>
+
+    <div class="platform-tile" data-platform="instagram" onclick="togglePlatform(this)">
+      <div class="platform-check"><div class="platform-check-dot"></div></div>
+      <div class="platform-icon">📸</div>
+      <div class="platform-name">Reels</div>
+    </div>
+
+    <div class="platform-tile" data-platform="youtube" onclick="togglePlatform(this)">
+      <div class="platform-check"><div class="platform-check-dot"></div></div>
+      <div class="platform-icon">▶️</div>
+      <div class="platform-name">Shorts</div>
+    </div>
+
   </div>
 </div>
 
-<!-- Custom keyword -->
-<div class="section" id="customSection" style="display:none">
-  <div class="custom-wrap">
-    <div class="row-icon">✏️</div>
-    <input class="row-input" type="text" id="customKeyword" placeholder="Enter custom keyword..." oninput="updatePreview()" />
+<!-- Vibe Presets -->
+<div class="section">
+  <div class="section-label">Vibe</div>
+  <div class="preset-grid" id="presetGrid">
+
+    <div class="preset-card active" data-value="rich people filmed street" onclick="selectPreset(this)">
+      <span class="preset-emoji">🚶</span>
+      <div class="preset-title">Rich on street</div>
+    </div>
+
+    <div class="preset-card" data-value="billionaire caught camera walking" onclick="selectPreset(this)">
+      <span class="preset-emoji">📷</span>
+      <div class="preset-title">Billionaire caught</div>
+    </div>
+
+    <div class="preset-card" data-value="luxury car filmed street candid" onclick="selectPreset(this)">
+      <span class="preset-emoji">🚗</span>
+      <div class="preset-title">Luxury car candid</div>
+    </div>
+
+    <div class="preset-card" data-value="celebrity filmed leaving restaurant" onclick="selectPreset(this)">
+      <span class="preset-emoji">🍽️</span>
+      <div class="preset-title">Celebrity spotted</div>
+    </div>
+
+    <div class="preset-card" data-value="ferrari lamborghini filmed street" onclick="selectPreset(this)">
+      <span class="preset-emoji">🏎️</span>
+      <div class="preset-title">Ferrari / Lambo</div>
+    </div>
+
+    <div class="preset-card" data-value="private jet filmed airport candid" onclick="selectPreset(this)">
+      <span class="preset-emoji">✈️</span>
+      <div class="preset-title">Private jet</div>
+    </div>
+
+    <div class="preset-card" data-value="yacht rich people filmed" onclick="selectPreset(this)">
+      <span class="preset-emoji">⛵</span>
+      <div class="preset-title">Yacht life</div>
+    </div>
+
+    <div class="preset-card" data-value="luxury villa filmed candid" onclick="selectPreset(this)">
+      <span class="preset-emoji">🏰</span>
+      <div class="preset-title">Luxury villa</div>
+    </div>
+
+    <div class="preset-card preset-card-custom" data-value="custom" onclick="selectPreset(this)">
+      <span class="preset-emoji">✏️</span>
+      <div class="preset-title">Custom search</div>
+      <input class="preset-custom-input" id="customKeyword" type="text" placeholder="Type your search..." oninput="updatePreview()" onclick="event.stopPropagation()" />
+    </div>
+
   </div>
 </div>
 
@@ -660,7 +598,7 @@ body {
 
     <div class="list-row">
       <div class="row-icon">🎬</div>
-      <div class="row-label">Videos</div>
+      <div class="row-label">Videos per platform</div>
       <div class="row-select-wrap">
         <select class="row-select" id="maxResults">
           <option value="5">5</option>
@@ -680,6 +618,7 @@ body {
   <div class="query-card">
     <div class="query-eyebrow">Searching for</div>
     <div class="query-text" id="previewText">rich people filmed street</div>
+    <div class="platform-pills" id="previewPlatforms"></div>
     <div class="filter-pills">
       <span class="filter-pill">🚫 Talking heads filtered</span>
       <span class="filter-pill">👁 Vision filter active</span>
@@ -689,7 +628,7 @@ body {
 
 <!-- Buttons -->
 <div class="btn-row">
-  <button class="search-btn" id="searchBtn" onclick="startSearch()">Search TikTok</button>
+  <button class="search-btn" id="searchBtn" onclick="startSearch()"><span id="searchBtnLabel">Search</span></button>
   <button class="clear-btn" onclick="clearAll()">Clear</button>
 </div>
 
@@ -712,8 +651,63 @@ body {
 <div id="results"></div>
 
 <script>
-  const ACTOR = "clockworks~tiktok-scraper";
-  const BASE  = "https://api.apify.com/v2";
+  const BASE = "https://api.apify.com/v2";
+
+  // ── Platform definitions ─────────────────────────────────────────
+  const PLATFORMS = {
+    tiktok: {
+      label: "TikTok", emoji: "🎵",
+      actor: "clockworks~tiktok-scraper",
+      buildBody: (query, n) => ({
+        searchQueries: [query], maxResults: n, resultsPerPage: n,
+        shouldDownloadVideos: false, shouldDownloadCovers: false, searchSection: "/video"
+      }),
+      parseItems: raw => raw,
+      getUrl:    i => i.webVideoUrl || i.videoUrl || i.url || "",
+      getAuthor: i => i.authorMeta?.name || i.author || "unknown",
+      getDesc:   i => i.text || i.description || i.desc || "",
+      getViews:  i => i.playCount  || i.viewCount  || "",
+      getLikes:  i => i.diggCount  || i.likeCount  || "",
+      getLinkLabel: () => "Open on TikTok",
+      getThumbnail: i => i.videoMeta?.coverUrl || i.videoMeta?.originalCoverUrl || i.covers?.default || i.cover || i.thumbnail || "",
+      getWidth:  i => i.videoMeta?.width  || i.width  || 0,
+      getHeight: i => i.videoMeta?.height || i.height || 0,
+    },
+    instagram: {
+      label: "Reels", emoji: "📸",
+      actor: "apify~instagram-reel-scraper",
+      buildBody: (query, n) => ({
+        hashtags: [query.replace(/\s+/g,"")], resultsLimit: n
+      }),
+      parseItems: raw => raw,
+      getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
+      getAuthor: i => i.ownerUsername || i.owner?.username || "unknown",
+      getDesc:   i => i.caption || i.description || "",
+      getViews:  i => i.videoPlayCount || i.videoViewCount || "",
+      getLikes:  i => i.likesCount || i.likes || "",
+      getLinkLabel: () => "Open on Instagram",
+      getThumbnail: i => i.displayUrl || i.thumbnailUrl || i.previewImageUrl || "",
+      getWidth:  i => i.videoWidth  || 0,
+      getHeight: i => i.videoHeight || 0,
+    },
+    youtube: {
+      label: "Shorts", emoji: "▶️",
+      actor: "streamers~youtube-scraper",
+      buildBody: (query, n) => ({
+        searchKeywords: query + " #shorts", maxResults: n, type: "video"
+      }),
+      parseItems: raw => raw,
+      getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
+      getAuthor: i => i.channelName || i.channel || i.author || "unknown",
+      getDesc:   i => i.title || i.description || "",
+      getViews:  i => i.viewCount || i.views || "",
+      getLikes:  i => i.likes || "",
+      getLinkLabel: () => "Open on YouTube",
+      getThumbnail: i => i.thumbnailUrl || i.thumbnail || "",
+      getWidth:  i => 0,
+      getHeight: i => 0,
+    }
+  };
 
   const BLOCK_WORDS = [
     "spotting","car spot","carspot","i spotted","we spotted",
@@ -725,15 +719,220 @@ body {
     "compilation","best of","worst of","you won't believe",
     "found out","reveals","exposed","breaking news","news"
   ];
+  const BLOCK_USERNAMES = ["spot","spotter","carspot","review","daily","news","media","channel","official","podcast","talk"];
 
-  const BLOCK_USERNAMES = [
-    "spot","spotter","carspot","review","daily","news",
-    "media","channel","official","podcast","talk"
-  ];
+  // ── State ────────────────────────────────────────────────────────
+  let activePlatforms = new Set(["tiktok"]);
+  let activePresetValue = "rich people filmed street";
 
-  function isBlockedByText(item) {
-    const desc   = (item.text || item.description || item.desc || "").toLowerCase();
-    const author = (item.authorMeta?.name || item.author || "").toLowerCase();
+  // ── Platform toggle ──────────────────────────────────────────────
+  function togglePlatform(el) {
+    const key = el.dataset.platform;
+    if (activePlatforms.has(key)) {
+      if (activePlatforms.size === 1) return; // must keep at least one
+      activePlatforms.delete(key);
+      el.classList.remove("active");
+    } else {
+      activePlatforms.add(key);
+      el.classList.add("active");
+    }
+    updatePreview();
+  }
+
+  // ── Preset cards ─────────────────────────────────────────────────
+  function selectPreset(el) {
+    document.querySelectorAll("#presetGrid .preset-card").forEach(c => {
+      c.classList.remove("active");
+      c.querySelector(".preset-custom-input")?.classList.remove("visible");
+    });
+    el.classList.add("active");
+    activePresetValue = el.dataset.value;
+    const inp = el.querySelector(".preset-custom-input");
+    if (inp) {
+      inp.classList.add("visible");
+      setTimeout(() => inp.focus(), 50);
+    }
+    updatePreview();
+  }
+
+  function selectSeg(el, groupId) {
+    document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+    updatePreview();
+  }
+
+  function selectChip(el) {
+    document.querySelectorAll("#locationGroup .chip").forEach(c => c.classList.remove("active"));
+    el.classList.add("active");
+    updatePreview();
+  }
+
+  function buildQuery() {
+    let base = activePresetValue;
+    if (base === "custom") {
+      base = document.getElementById("customKeyword").value.trim() || "rich people filmed street";
+    }
+    const subject  = document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value || "";
+    const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
+    let q = base;
+    if (subject)  q += ` ${subject}`;
+    if (location) q += ` ${location}`;
+    return q;
+  }
+
+  function updatePreview() {
+    document.getElementById("previewText").textContent = buildQuery();
+    const pills = document.getElementById("previewPlatforms");
+    pills.innerHTML = [...activePlatforms].map(k => `<span class="platform-pill">${PLATFORMS[k].emoji} ${PLATFORMS[k].label}</span>`).join("");
+    const count = activePlatforms.size;
+    const maxR  = parseInt(document.getElementById("maxResults").value);
+    document.getElementById("searchBtnLabel").textContent =
+      count === 1 ? `Search ${PLATFORMS[[...activePlatforms][0]].label}` : `Search ${count} Platforms`;
+  }
+
+  function setStatus(msg, loading = false) {
+    document.getElementById("statusText").textContent = msg;
+    document.getElementById("spinner").style.display = loading ? "block" : "none";
+  }
+
+  function setVisionProgress(current, total) {
+    const wrap = document.getElementById("visionBarWrap");
+    wrap.style.display = total > 0 ? "block" : "none";
+    document.getElementById("visionBarCount").textContent = `${current} / ${total}`;
+    document.getElementById("visionBarFill").style.width  = `${Math.round((current / total) * 100)}%`;
+    document.getElementById("visionBarLabel").textContent = current < total ? "Checking thumbnails..." : "Vision check complete ✓";
+  }
+
+  function clearAll() {
+    document.getElementById("results").innerHTML = "";
+    document.getElementById("visionBarWrap").style.display = "none";
+    setStatus("");
+  }
+
+  async function apiFetch(path, token, options = {}) {
+    const res  = await fetch(`${BASE}${path}`, { ...options, headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", ...(options.headers||{}) }});
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0,200)); }
+    if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
+    return json;
+  }
+
+  // ── Main search — runs all active platforms in sequence ──────────
+  async function startSearch() {
+    const token        = document.getElementById("token").value.trim();
+    const anthropicKey = document.getElementById("anthropicKey").value.trim();
+    const maxResults   = parseInt(document.getElementById("maxResults").value);
+    const query        = buildQuery();
+
+    if (!token) return alert("Paste your Apify API token first.");
+    if (activePlatforms.size === 0) return alert("Select at least one platform.");
+
+    const btn = document.getElementById("searchBtn");
+    btn.disabled = true;
+    clearAll();
+
+    const allResults = [];
+
+    for (const platformKey of activePlatforms) {
+      const p = PLATFORMS[platformKey];
+      setStatus(`Searching ${p.label}...`, true);
+
+      try {
+        const fetchCount = maxResults * 3;
+        const runData = await apiFetch(`/acts/${p.actor}/runs`, token, {
+          method: "POST",
+          body: JSON.stringify(p.buildBody(query, fetchCount))
+        });
+
+        const runId     = runData.data?.id;
+        const datasetId = runData.data?.defaultDatasetId;
+        if (!runId) throw new Error(`No run ID for ${p.label}. Check your token.`);
+
+        await pollUntilDone(token, runId, p.label);
+        setStatus(`Filtering ${p.label}...`, true);
+
+        const resultData = await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`, token);
+        const raw        = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
+        const parsed     = p.parseItems(raw);
+        const hasURL     = parsed.filter(item => p.getUrl(item));
+
+        const keywordFiltered = hasURL.filter(item => !isBlockedByText(item, p));
+        let afterOrientation  = keywordFiltered;
+        const checkOrientation = document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value === "vertical";
+        if (checkOrientation) {
+          afterOrientation = keywordFiltered.filter(item => {
+            const w = p.getWidth(item), h = p.getHeight(item);
+            return !(w > 0 && h > 0 && h <= w);
+          });
+        }
+
+        const textFilter    = document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value || "all";
+        const useTextVision = anthropicKey && textFilter !== "off";
+        let finalItems      = afterOrientation;
+        let visionRemoved   = 0;
+
+        if (useTextVision && afterOrientation.length > 0) {
+          setStatus(`Vision check: ${p.label}...`, true);
+          const toCheck = afterOrientation.slice(0, maxResults * 2);
+          setVisionProgress(0, toCheck.length);
+          const visionResults = [];
+          for (let i = 0; i < toCheck.length; i++) {
+            const item      = toCheck[i];
+            const thumbnail = p.getThumbnail(item);
+            if (!thumbnail) { visionResults.push(item); setVisionProgress(i+1, toCheck.length); if (visionResults.length >= maxResults) break; continue; }
+            const result = await checkThumbnail(thumbnail, anthropicKey, textFilter);
+            setVisionProgress(i+1, toCheck.length);
+            if (result.blockText) { visionRemoved++; continue; }
+            visionResults.push(item);
+            if (visionResults.length >= maxResults) break;
+          }
+          finalItems = visionResults;
+        }
+
+        const kept = finalItems.slice(0, maxResults);
+        kept.forEach(item => allResults.push({ item, platform: p }));
+
+      } catch (e) {
+        // Show inline error for this platform but continue with others
+        const box = document.getElementById("results");
+        const errDiv = document.createElement("div");
+        errDiv.className = "error-card";
+        errDiv.style.margin = "0 16px 10px";
+        errDiv.innerHTML = `${p.emoji} <strong>${p.label}</strong>: ${esc(e.message)}<div class="error-sub">Skipped. Check your token or try again.</div>`;
+        box.appendChild(errDiv);
+      }
+    }
+
+    btn.disabled = false;
+    setStatus("");
+    document.getElementById("visionBarWrap").style.display = "none";
+
+    if (allResults.length > 0) {
+      displayResults(allResults, query);
+    } else if (!document.getElementById("results").querySelector(".error-card")) {
+      document.getElementById("results").innerHTML = `<div class="error-card" style="margin:0 16px">No clean videos found for "${esc(query)}".<div class="error-sub">Try a different preset or turn off some filters.</div></div>`;
+    }
+  }
+
+  async function pollUntilDone(token, runId, platformLabel) {
+    const MAX_MS = 180_000, INTERVAL = 5_000;
+    let elapsed = 0;
+    while (elapsed < MAX_MS) {
+      await new Promise(r => setTimeout(r, INTERVAL));
+      elapsed += INTERVAL;
+      const data = await apiFetch(`/actor-runs/${runId}`, token);
+      const s    = data.data?.status;
+      setStatus(`Scraping ${platformLabel}... ${Math.round(elapsed/1000)}s`, true);
+      if (s === "SUCCEEDED") return;
+      if (["FAILED","ABORTED","TIMED-OUT"].includes(s)) throw new Error(`Run ${s}. Try a different preset.`);
+    }
+    throw new Error("Timed out. Try again.");
+  }
+
+  function isBlockedByText(item, p) {
+    const desc   = p.getDesc(item).toLowerCase();
+    const author = p.getAuthor(item).toLowerCase();
     for (const w of BLOCK_WORDS)     { if (desc.includes(w))   return true; }
     for (const w of BLOCK_USERNAMES) { if (author.includes(w)) return true; }
     return false;
@@ -773,192 +972,35 @@ body {
     });
   }
 
-  function selectSeg(el, groupId) {
-    document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("active"));
-    el.classList.add("active");
-    updatePreview();
-  }
-
-  function selectChip(el) {
-    document.querySelectorAll("#locationGroup .chip").forEach(c => c.classList.remove("active"));
-    el.classList.add("active");
-    updatePreview();
-  }
-
-  function onPresetChange() {
-    const isCustom = document.getElementById("preset").value === "custom";
-    document.getElementById("customSection").style.display = isCustom ? "block" : "none";
-    updatePreview();
-  }
-
-  function buildQuery() {
-    const preset   = document.getElementById("preset").value;
-    const custom   = document.getElementById("customKeyword").value.trim();
-    const subject  = document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value || "";
-    const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
-    let base  = preset === "custom" ? (custom || "rich people filmed street") : preset;
-    let query = base;
-    if (subject)  query += ` ${subject}`;
-    if (location) query += ` ${location}`;
-    return query;
-  }
-
-  function updatePreview() { document.getElementById("previewText").textContent = buildQuery(); }
-
-  function setStatus(msg, loading = false) {
-    document.getElementById("statusText").textContent = msg;
-    document.getElementById("spinner").style.display = loading ? "block" : "none";
-  }
-
-  function setVisionProgress(current, total) {
-    const wrap = document.getElementById("visionBarWrap");
-    wrap.style.display = total > 0 ? "block" : "none";
-    document.getElementById("visionBarCount").textContent = `${current} / ${total}`;
-    document.getElementById("visionBarFill").style.width  = `${Math.round((current / total) * 100)}%`;
-    document.getElementById("visionBarLabel").textContent = current < total ? "Checking thumbnails..." : "Vision check complete ✓";
-  }
-
-  function clearAll() {
-    document.getElementById("results").innerHTML = "";
-    document.getElementById("visionBarWrap").style.display = "none";
-    setStatus("");
-  }
-
-  async function apiFetch(path, token, options = {}) {
-    const res  = await fetch(`${BASE}${path}`, { ...options, headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", ...(options.headers || {}) }});
-    const text = await res.text();
-    let json;
-    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0,200)); }
-    if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
-    return json;
-  }
-
-  async function startSearch() {
-    const token        = document.getElementById("token").value.trim();
-    const anthropicKey = document.getElementById("anthropicKey").value.trim();
-    const maxResults   = parseInt(document.getElementById("maxResults").value);
-    const query        = buildQuery();
-
-    if (!token) return alert("Paste your Apify API token first.");
-
-    const btn = document.getElementById("searchBtn");
-    btn.disabled = true;
-    clearAll();
-    setStatus("Searching...", true);
-
-    try {
-      const fetchCount = maxResults * 3;
-      const runData = await apiFetch(`/acts/${ACTOR}/runs`, token, {
-        method: "POST",
-        body: JSON.stringify({ searchQueries: [query], maxResults: fetchCount, resultsPerPage: fetchCount, shouldDownloadVideos: false, shouldDownloadCovers: false, searchSection: "/video" })
-      });
-
-      const runId     = runData.data?.id;
-      const datasetId = runData.data?.defaultDatasetId;
-      if (!runId) throw new Error("No run ID returned. Check your token.");
-
-      setStatus("Scraping TikTok...", true);
-      await pollUntilDone(token, runId);
-      setStatus("Filtering results...", true);
-
-      const resultData = await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`, token);
-      const raw        = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
-      const hasURL     = raw.filter(item => item.webVideoUrl || item.videoUrl || item.url);
-
-      const keywordFiltered = hasURL.filter(item => !isBlockedByText(item));
-      const keywordRemoved  = hasURL.length - keywordFiltered.length;
-
-      let orientationRemoved = 0;
-      const checkOrientation = document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value === "vertical";
-      let afterOrientation   = keywordFiltered;
-
-      if (checkOrientation) {
-        afterOrientation = keywordFiltered.filter(item => {
-          const w = item.videoMeta?.width || item.width || 0;
-          const h = item.videoMeta?.height || item.height || 0;
-          if (w > 0 && h > 0 && h <= w) { orientationRemoved++; return false; }
-          return true;
-        });
-      }
-
-      const textFilter    = document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value || "all";
-      const useTextVision = anthropicKey && textFilter !== "off";
-      let visionRemoved   = 0;
-      let finalItems      = afterOrientation;
-
-      if (useTextVision && afterOrientation.length > 0) {
-        setStatus("Running vision check...", true);
-        const toCheck = afterOrientation.slice(0, maxResults * 2);
-        setVisionProgress(0, toCheck.length);
-
-        const visionResults = [];
-        for (let i = 0; i < toCheck.length; i++) {
-          const item      = toCheck[i];
-          const thumbnail = item.videoMeta?.coverUrl || item.videoMeta?.originalCoverUrl || item.covers?.default || item.covers?.origin || item.cover || item.thumbnail || item.thumbnailUrl || "";
-
-          if (!thumbnail) { visionResults.push(item); setVisionProgress(i+1, toCheck.length); if (visionResults.length >= maxResults) break; continue; }
-
-          const result = await checkThumbnail(thumbnail, anthropicKey, textFilter);
-          setVisionProgress(i+1, toCheck.length);
-          if (result.blockText) { visionRemoved++; continue; }
-          visionResults.push(item);
-          if (visionResults.length >= maxResults) break;
-        }
-        finalItems = visionResults;
-      }
-
-      displayResults(finalItems.slice(0, maxResults), query, keywordRemoved, visionRemoved, orientationRemoved);
-
-    } catch (e) {
-      setStatus("");
-      document.getElementById("results").innerHTML = `<div class="error-card">${esc(e.message)}<div class="error-sub">Check your token and try again.</div></div>`;
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
-  async function pollUntilDone(token, runId) {
-    const MAX_MS = 180_000, INTERVAL = 5_000;
-    let elapsed = 0;
-    while (elapsed < MAX_MS) {
-      await new Promise(r => setTimeout(r, INTERVAL));
-      elapsed += INTERVAL;
-      const data = await apiFetch(`/actor-runs/${runId}`, token);
-      const s    = data.data?.status;
-      setStatus(`Scraping TikTok... ${Math.round(elapsed/1000)}s`, true);
-      if (s === "SUCCEEDED") return;
-      if (["FAILED","ABORTED","TIMED-OUT"].includes(s)) throw new Error(`Run ${s}. Try a different preset.`);
-    }
-    throw new Error("Timed out. Try again.");
-  }
-
-  function displayResults(items, query, keywordRemoved, visionRemoved, orientationRemoved) {
+  function displayResults(allResults, query) {
     const box = document.getElementById("results");
-    setStatus("");
 
-    if (items.length === 0) {
-      box.innerHTML = `<div class="error-card" style="margin:0 16px">No clean videos found for "${esc(query)}".<div class="error-sub">Try a different preset or turn off some filters.</div></div>`;
-      return;
-    }
+    // Count per platform
+    const perPlatform = {};
+    allResults.forEach(({ platform }) => {
+      perPlatform[platform.label] = (perPlatform[platform.label] || 0) + 1;
+    });
 
-    let meta = `<div class="results-meta"><span class="badge-count">✓ ${items.length} videos</span>`;
-    if (keywordRemoved     > 0) meta += `<span class="badge-removed">🚫 ${keywordRemoved} removed</span>`;
-    if (visionRemoved      > 0) meta += `<span class="badge-removed">👁 ${visionRemoved} removed</span>`;
-    if (orientationRemoved > 0) meta += `<span class="badge-removed">📐 ${orientationRemoved} removed</span>`;
+    let meta = `<div class="results-meta"><span class="badge-count">✓ ${allResults.length} videos</span>`;
+    Object.entries(perPlatform).forEach(([label, count]) => {
+      const p = Object.values(PLATFORMS).find(x => x.label === label);
+      meta += `<span class="badge-platform">${p?.emoji || ""} ${label} ${count}</span>`;
+    });
     meta += `</div>`;
-    box.innerHTML = meta;
+    box.innerHTML += meta;
 
-    items.forEach((item, i) => {
-      const url    = item.webVideoUrl || item.videoUrl || item.url || "";
-      const author = item.authorMeta?.name || item.author || "unknown";
-      const desc   = item.text || item.description || item.desc || "";
-      const views  = item.playCount  || item.viewCount  || "";
-      const likes  = item.diggCount  || item.likeCount  || "";
+    allResults.forEach(({ item, platform: p }, i) => {
+      const url    = p.getUrl(item);
+      const author = p.getAuthor(item);
+      const desc   = p.getDesc(item);
+      const views  = p.getViews(item);
+      const likes  = p.getLikes(item);
 
       const card = document.createElement("div");
       card.className = "result-card";
-      card.style.animationDelay = `${i * 0.05}s`;
+      card.style.animationDelay = `${i * 0.04}s`;
       card.innerHTML = `
+        <div class="result-platform-badge">${p.emoji} ${p.label}</div>
         <div class="result-author">@${esc(author)}</div>
         ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
         <div class="result-stats">
@@ -966,7 +1008,7 @@ body {
           ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
         </div>
         <a class="result-link-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
-          <span>Open on TikTok</span>
+          <span>${esc(p.getLinkLabel())}</span>
           <span class="result-link-arrow">↗</span>
         </a>`;
       box.appendChild(card);
@@ -977,7 +1019,7 @@ body {
     return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  document.addEventListener("keydown", e => { if (e.key === "Enter") startSearch(); });
+  document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id !== "customKeyword") startSearch(); });
   updatePreview();
 </script>
 </body>
