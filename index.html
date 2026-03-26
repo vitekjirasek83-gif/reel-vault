@@ -675,33 +675,40 @@ body {
     },
     instagram: {
       label: "Reels", emoji: "📸",
-      actor: "apify~instagram-reel-scraper",
+      // Official Apify hashtag scraper — searches by hashtag and returns reels
+      actor: "apify~instagram-hashtag-scraper",
       buildBody: (query, n) => ({
-        hashtags: [query.replace(/\s+/g,"")], resultsLimit: n
+        hashtags: [query.replace(/\s+/g, "")],
+        resultsLimit: n,
+        scrapeType: "reels"
       }),
-      parseItems: raw => raw,
+      parseItems: raw => raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/")),
       getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
-      getAuthor: i => i.ownerUsername || i.owner?.username || "unknown",
+      getAuthor: i => i.ownerUsername || i.ownerId || "unknown",
       getDesc:   i => i.caption || i.description || "",
-      getViews:  i => i.videoPlayCount || i.videoViewCount || "",
+      getViews:  i => i.videoViewCount || i.playsCount || i.plays || "",
       getLikes:  i => i.likesCount || i.likes || "",
       getLinkLabel: () => "Open on Instagram",
       getThumbnail: i => i.displayUrl || i.thumbnailUrl || i.previewImageUrl || "",
-      getWidth:  i => i.videoWidth  || 0,
-      getHeight: i => i.videoHeight || 0,
+      getWidth:  i => i.dimensionsWidth  || i.videoWidth  || 0,
+      getHeight: i => i.dimensionsHeight || i.videoHeight || 0,
     },
     youtube: {
       label: "Shorts", emoji: "▶️",
-      actor: "streamers~youtube-scraper",
+      // Dedicated YouTube Shorts scraper with keyword search mode
+      actor: "webdatalabs~youtube-shorts-scraper",
       buildBody: (query, n) => ({
-        searchKeywords: query + " #shorts", maxResults: n, type: "video"
+        mode: "search",
+        query: query,
+        maxResults: n,
+        shortsOnly: true
       }),
       parseItems: raw => raw,
-      getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
-      getAuthor: i => i.channelName || i.channel || i.author || "unknown",
+      getUrl:    i => i.url || i.shortUrl || (i.videoId ? `https://www.youtube.com/shorts/${i.videoId}` : ""),
+      getAuthor: i => i.channelName || i.channel?.name || i.author || "unknown",
       getDesc:   i => i.title || i.description || "",
       getViews:  i => i.viewCount || i.views || "",
-      getLikes:  i => i.likes || "",
+      getLikes:  i => i.likeCount || i.likes || "",
       getLinkLabel: () => "Open on YouTube",
       getThumbnail: i => i.thumbnailUrl || i.thumbnail || "",
       getWidth:  i => 0,
