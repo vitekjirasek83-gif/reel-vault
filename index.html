@@ -675,14 +675,19 @@ body {
     },
     instagram: {
       label: "Reels", emoji: "📸",
-      // Official Apify hashtag scraper — searches by hashtag and returns reels
+      // Official Apify instagram-hashtag-scraper — correct field name is 'type' not 'scrapeType'
       actor: "apify~instagram-hashtag-scraper",
-      buildBody: (query, n) => ({
-        hashtags: [query.replace(/\s+/g, "")],
-        resultsLimit: n,
-        scrapeType: "reels"
-      }),
-      parseItems: raw => raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/")),
+      buildBody: (query, n) => {
+        // Build 2-3 focused hashtags from the query words
+        const words = query.trim().split(/\s+/).filter(w => w.length > 3);
+        const tags = [...new Set([
+          words.slice(0, 2).join(""),   // e.g. "richpeople"
+          words[0] || "luxury",         // e.g. "rich"
+          "luxurylifestyle"
+        ])].slice(0, 3);
+        return { hashtags: tags, resultsLimit: n, type: "reels" };
+      },
+      parseItems: raw => raw.filter(i => i.videoUrl || i.url?.includes("/reel/") || i.isVideo),
       getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
       getAuthor: i => i.ownerUsername || i.ownerId || "unknown",
       getDesc:   i => i.caption || i.description || "",
@@ -695,20 +700,21 @@ body {
     },
     youtube: {
       label: "Shorts", emoji: "▶️",
-      // Dedicated YouTube Shorts scraper with keyword search mode
-      actor: "webdatalabs~youtube-shorts-scraper",
+      // streamers~youtube-scraper with a YouTube search URL pre-filtered to Shorts (&sp=EgIYAQ%3D%3D)
+      actor: "streamers~youtube-scraper",
       buildBody: (query, n) => ({
-        mode: "search",
-        query: query,
+        startUrls: [{
+          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query + " candid filmed")}&sp=EgIYAQ%3D%3D`
+        }],
         maxResults: n,
-        shortsOnly: true
+        type: "shorts"
       }),
       parseItems: raw => raw,
-      getUrl:    i => i.url || i.shortUrl || (i.videoId ? `https://www.youtube.com/shorts/${i.videoId}` : ""),
-      getAuthor: i => i.channelName || i.channel?.name || i.author || "unknown",
+      getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
+      getAuthor: i => i.channelName || i.channel || i.author || "unknown",
       getDesc:   i => i.title || i.description || "",
       getViews:  i => i.viewCount || i.views || "",
-      getLikes:  i => i.likeCount || i.likes || "",
+      getLikes:  i => i.likes || "",
       getLinkLabel: () => "Open on YouTube",
       getThumbnail: i => i.thumbnailUrl || i.thumbnail || "",
       getWidth:  i => 0,
@@ -716,17 +722,46 @@ body {
     }
   };
 
+  // Words that indicate talking-head / vlog / story content — applied to ALL platforms
   const BLOCK_WORDS = [
-    "spotting","car spot","carspot","i spotted","we spotted",
-    "review","podcast","interview","talking about","he recalls",
-    "she recalls","story time","storytime","reaction","reacting",
-    "explains","i was there","told me","i remember","reminiscing",
-    "commentary","voiceover","narrator","i saw","i seen",
-    "discuss","opinion","ranked","ranking","top 10","top 5",
-    "compilation","best of","worst of","you won't believe",
-    "found out","reveals","exposed","breaking news","news"
+    // Story / vlog / life content
+    "my life","day in my life","week in my life","living my","my morning","my routine",
+    "storytime","story time","i told","she told","he told","they told",
+    "my story","our story","real story","true story","what happened",
+    "i cried","i was crying","emotional","i broke down","vulnerable",
+    "growing up","my childhood","back when i","when i was","i used to",
+    "i remember","reminiscing","throwback","years ago","back in the day",
+    // Talking head / commentary
+    "podcast","interview","talking about","explains","he recalls","she recalls",
+    "reaction","reacting","commentary","voiceover","narrator","i saw","i seen",
+    "discuss","opinion","let me explain","you need to know","the truth about",
+    "i think","i believe","my thoughts","my opinion","here's why",
+    // Ranking / list / edu content
+    "ranked","ranking","top 10","top 5","top 3","number one","number 1",
+    "best of","worst of","most expensive","how much does","how rich",
+    "net worth","billionaire list","forbes","richest","wealthiest",
+    // Car spotting channels
+    "spotting","car spot","carspot","i spotted","we spotted","just spotted",
+    // Review / analysis
+    "review","unboxing","first look","hands on","deep dive","breakdown",
+    // Clickbait
+    "you won't believe","can't believe","impossible","shocking","insane wealth",
+    "found out","reveals","exposed","leaked","drama","beef","cancelled",
+    "breaking news","news","update","announcement",
+    // Compilation / montage (non-candid)
+    "compilation","best moments","highlights","montage","edited",
+    // Aspirational / motivational (usually voiceover)
+    "motivation","motivational","mindset","grind","hustle","success tips",
+    "how i became","how to become","how to be rich","secret to","the key to",
+    "this is why","reason why","that's why"
   ];
-  const BLOCK_USERNAMES = ["spot","spotter","carspot","review","daily","news","media","channel","official","podcast","talk"];
+
+  const BLOCK_USERNAMES = [
+    "spot","spotter","carspot","review","daily","news","media","channel",
+    "official","podcast","talk","vlog","vlogs","react","reacts","commentary",
+    "motivation","motivate","finance","money","wealth","invest","investing",
+    "explain","explains","breakdown","analysis","report","tv","network"
+  ];
 
   // ── State ────────────────────────────────────────────────────────
   let activePlatforms = new Set(["tiktok"]);
