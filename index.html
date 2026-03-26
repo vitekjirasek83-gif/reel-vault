@@ -683,25 +683,24 @@ body {
       label: "Reels", emoji: "📸",
       actor: "apify~instagram-scraper",
       buildBody: (query, n) => {
-        // Map each preset/query to tight people-focused hashtag explore pages
         const q = query.toLowerCase();
         let tags;
-        if (q.includes("yacht"))                         tags = ["yachtlife","yachtparty","superyacht"];
-        else if (q.includes("jet"))                      tags = ["privatejet","privatejetlife","jetlife"];
-        else if (q.includes("villa"))                    tags = ["villalife","luxuryvilla","villaholiday"];
-        else if (q.includes("monaco"))                   tags = ["monaco","monacolife","montecarlo"];
-        else if (q.includes("dubai"))                    tags = ["dubai","dubailife","dubaisocial"];
-        else if (q.includes("miami"))                    tags = ["miamilife","miamibeach","miamistyle"];
-        else if (q.includes("mykonos"))                  tags = ["mykonos","mykonosparty","mykonosgram"];
-        else if (q.includes("tropez"))                   tags = ["sainttropez","sttropez","tropezlife"];
-        else if (q.includes("marbella"))                 tags = ["marbella","marbellalife","marbellaparty"];
-        else if (q.includes("moscow"))                   tags = ["moscow","moscowlife","moscowgirls"];
-        else if (q.includes("couple"))                   tags = ["richcouple","luxurycouple","wealthylife"];
-        else if (q.includes("woman")||q.includes("girl")) tags = ["richgirl","luxurygirl","wealthylife"];
-        else if (q.includes("man")||q.includes("guy"))   tags = ["richman","luxurylife","wealthymen"];
-        else if (q.includes("restaurant"))               tags = ["finedining","luxuryrestaurant","richpeople"];
-        else if (q.includes("billionaire"))              tags = ["billionaire","billionairelifestyle","richpeople"];
-        else                                             tags = ["richpeople","wealthylife","candid"];
+        if      (q.includes("yacht"))                          tags = ["yachtlife","yachtparty","superyacht"];
+        else if (q.includes("jet"))                            tags = ["privatejet","privatejetlife","jetlife"];
+        else if (q.includes("villa"))                          tags = ["villalife","luxuryvilla","villaholiday"];
+        else if (q.includes("monaco"))                         tags = ["monaco","monacolife","montecarlo"];
+        else if (q.includes("dubai"))                          tags = ["dubai","dubailife","dubaisocial"];
+        else if (q.includes("miami"))                          tags = ["miamilife","miamibeach","miamistyle"];
+        else if (q.includes("mykonos"))                        tags = ["mykonos","mykonosparty","mykonosgram"];
+        else if (q.includes("tropez"))                         tags = ["sainttropez","sttropez","tropezlife"];
+        else if (q.includes("marbella"))                       tags = ["marbella","marbellalife","marbellaparty"];
+        else if (q.includes("moscow"))                         tags = ["moscow","moscowlife","moscowgirls"];
+        else if (q.includes("couple"))                         tags = ["richcouple","luxurycouple","wealthylife"];
+        else if (q.includes("woman")||q.includes("girl"))      tags = ["richgirl","luxurygirl","wealthylife"];
+        else if (q.includes("man")||q.includes("guy"))         tags = ["richman","luxurylife","wealthymen"];
+        else if (q.includes("restaurant"))                     tags = ["finedining","luxuryrestaurant","richpeople"];
+        else if (q.includes("billionaire"))                    tags = ["billionaire","billionairelifestyle","richpeople"];
+        else                                                   tags = ["richpeople","wealthylife","candid"];
         return {
           directUrls: tags.map(t => `https://www.instagram.com/explore/tags/${t}/`),
           resultsType: "reels",
@@ -710,7 +709,6 @@ body {
         };
       },
       parseItems: raw => {
-        // Log first item to console so we can see real field names if debugging needed
         if (raw[0]) console.log("[IG raw item]", JSON.stringify(raw[0]).slice(0, 500));
         return raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/") || i.isVideo === true);
       },
@@ -727,41 +725,21 @@ body {
     youtube: {
       label: "Shorts", emoji: "▶️",
       actor: "streamers~youtube-scraper",
+      // type: "shorts" is the correct value — tells the actor to only return YouTube Shorts
       buildBody: (query, n) => ({
-        searchKeywords: query + " #shorts",
+        searchKeywords: query,
         maxResults: n,
-        type: "video"
+        type: "shorts"
       }),
       parseItems: raw => {
-        // Log first item so we can see the real duration field name
-        if (raw[0]) console.log("[YT raw item]", JSON.stringify(raw[0]).slice(0, 500));
-        return raw.filter(i => {
-          // Try every possible duration field the scraper might return
-          const url = i.url || "";
-          // If URL already contains /shorts/ it's definitely a Short
-          if (url.includes("/shorts/")) return true;
-          // Parse duration from any format
-          const d = i.duration ?? i.durationText ?? i.durationSeconds ?? i.lengthSeconds ?? i.length ?? "";
-          if (d === "" || d === null || d === undefined) return true; // unknown, allow
-          if (typeof d === "number") return d <= 60;
-          // "0:45" or "1:03" or "60" as string
-          const s = String(d).trim();
-          if (s.includes(":")) {
-            const parts = s.split(":").map(Number);
-            const secs = parts.length === 3
-              ? parts[0]*3600 + parts[1]*60 + parts[2]
-              : parts[0]*60  + parts[1];
-            return secs <= 60;
-          }
-          return Number(s) <= 60;
-        });
+        if (raw[0]) console.log("[YT raw item keys]", Object.keys(raw[0]).join(", "));
+        return raw;
       },
       getUrl:    i => {
-        // Force /shorts/ URL format
-        const base = i.url || "";
-        if (base.includes("/shorts/")) return base;
-        const id = i.id || i.videoId || (base.match(/[?&]v=([^&]+)/)||[])[1] || "";
-        return id ? `https://www.youtube.com/shorts/${id}` : base;
+        const u = i.url || "";
+        if (u.includes("/shorts/")) return u;
+        const id = i.id || i.videoId || (u.match(/[?&]v=([^&]+)/)||[])[1] || "";
+        return id ? `https://www.youtube.com/shorts/${id}` : u;
       },
       getAuthor: i => i.channelName || i.channel || i.author || "unknown",
       getDesc:   i => i.title || i.description || "",
