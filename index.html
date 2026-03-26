@@ -647,6 +647,12 @@ body {
   <div class="vision-bar-bg"><div class="vision-bar-fill" id="visionBarFill"></div></div>
 </div>
 
+<!-- Debug panel (shows raw first item from scraper to diagnose field names) -->
+<div id="debugPanel" style="display:none;margin:12px 16px 0;background:#111;border:1px solid #333;border-radius:12px;padding:12px;">
+  <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:8px;">🔍 Raw scraper output — first item</div>
+  <pre id="debugText" style="font-size:11px;color:#888;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;margin:0;"></pre>
+</div>
+
 <!-- Results -->
 <div id="results"></div>
 
@@ -677,27 +683,25 @@ body {
       label: "Reels", emoji: "📸",
       actor: "apify~instagram-scraper",
       buildBody: (query, n) => {
-        // Map search queries to hashtags that actually return candid people footage
-        // Avoid generic luxury tags that return cars, products, grooming etc.
+        // Map each preset/query to tight people-focused hashtag explore pages
         const q = query.toLowerCase();
-        let tags = [];
-        if (q.includes("yacht"))         tags = ["yachtlife","yachtparty","superyacht"];
-        else if (q.includes("jet"))      tags = ["privatejet","privatejetlife","jetlife"];
-        else if (q.includes("villa"))    tags = ["luxuryvilla","villalife","villaholiday"];
-        else if (q.includes("monaco"))   tags = ["monaco","monacolife","montecarlo"];
-        else if (q.includes("dubai"))    tags = ["dubai","dubailife","dubaisocial"];
-        else if (q.includes("miami"))    tags = ["miami","miamilife","miamilife"];
-        else if (q.includes("mykonos"))  tags = ["mykonos","mykonoslife","mykonosparty"];
-        else if (q.includes("tropez") || q.includes("tropez")) tags = ["sainttropez","sttropez","tropezlife"];
-        else if (q.includes("marbella")) tags = ["marbella","marbellalife","marbellaparty"];
-        else if (q.includes("moscow"))   tags = ["moscow","moscowlife","moscowgirls"];
-        else if (q.includes("couple"))   tags = ["richcouple","luxurycouple","wealthycouple"];
-        else if (q.includes("woman") || q.includes("girl")) tags = ["luxurygirl","richgirl","wealthywoman"];
-        else if (q.includes("man") || q.includes("guy"))    tags = ["richman","luxuryman","wealthyman"];
-        else if (q.includes("restaurant")) tags = ["luxuryrestaurant","finedining","richpeople"];
-        else if (q.includes("billionaire")) tags = ["billionaire","billionairelifestyle","richpeople"];
-        else                             tags = ["richpeople","candid","luxurypeople"];
-
+        let tags;
+        if (q.includes("yacht"))                         tags = ["yachtlife","yachtparty","superyacht"];
+        else if (q.includes("jet"))                      tags = ["privatejet","privatejetlife","jetlife"];
+        else if (q.includes("villa"))                    tags = ["villalife","luxuryvilla","villaholiday"];
+        else if (q.includes("monaco"))                   tags = ["monaco","monacolife","montecarlo"];
+        else if (q.includes("dubai"))                    tags = ["dubai","dubailife","dubaisocial"];
+        else if (q.includes("miami"))                    tags = ["miamilife","miamibeach","miamistyle"];
+        else if (q.includes("mykonos"))                  tags = ["mykonos","mykonosparty","mykonosgram"];
+        else if (q.includes("tropez"))                   tags = ["sainttropez","sttropez","tropezlife"];
+        else if (q.includes("marbella"))                 tags = ["marbella","marbellalife","marbellaparty"];
+        else if (q.includes("moscow"))                   tags = ["moscow","moscowlife","moscowgirls"];
+        else if (q.includes("couple"))                   tags = ["richcouple","luxurycouple","wealthylife"];
+        else if (q.includes("woman")||q.includes("girl")) tags = ["richgirl","luxurygirl","wealthylife"];
+        else if (q.includes("man")||q.includes("guy"))   tags = ["richman","luxurylife","wealthymen"];
+        else if (q.includes("restaurant"))               tags = ["finedining","luxuryrestaurant","richpeople"];
+        else if (q.includes("billionaire"))              tags = ["billionaire","billionairelifestyle","richpeople"];
+        else                                             tags = ["richpeople","wealthylife","candid"];
         return {
           directUrls: tags.map(t => `https://www.instagram.com/explore/tags/${t}/`),
           resultsType: "reels",
@@ -705,16 +709,20 @@ body {
           addParentData: false
         };
       },
-      parseItems: raw => raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/")),
+      parseItems: raw => {
+        // Log first item to console so we can see real field names if debugging needed
+        if (raw[0]) console.log("[IG raw item]", JSON.stringify(raw[0]).slice(0, 500));
+        return raw.filter(i => i.type === "Video" || i.videoUrl || i.url?.includes("/reel/") || i.isVideo === true);
+      },
       getUrl:    i => i.url || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
       getAuthor: i => i.ownerUsername || i.ownerId || "unknown",
       getDesc:   i => i.caption || i.description || "",
-      getViews:  i => i.videoViewCount || i.playsCount || i.plays || "",
+      getViews:  i => i.videoViewCount || i.videoPlayCount || i.playsCount || "",
       getLikes:  i => i.likesCount || i.likes || "",
       getLinkLabel: () => "Open on Instagram",
-      getThumbnail: i => i.displayUrl || i.thumbnailUrl || i.previewImageUrl || "",
-      getWidth:  i => i.dimensionsWidth  || i.videoWidth  || 0,
-      getHeight: i => i.dimensionsHeight || i.videoHeight || 0,
+      getThumbnail: i => i.displayUrl || i.thumbnailUrl || "",
+      getWidth:  i => i.dimensionsWidth  || 0,
+      getHeight: i => i.dimensionsHeight || 0,
     },
     youtube: {
       label: "Shorts", emoji: "▶️",
@@ -724,26 +732,42 @@ body {
         maxResults: n,
         type: "video"
       }),
-      // Duration from streamers~youtube-scraper comes as "M:SS" string e.g. "0:45" or "1:03"
-      // Shorts must be ≤60s. Parse both string and numeric forms.
-      parseItems: raw => raw.filter(i => {
-        const d = i.duration || i.durationText || "";
-        if (!d) return true; // unknown — allow through
-        if (typeof d === "number") return d <= 60;
-        // Parse "M:SS" or "H:MM:SS" string
-        const parts = String(d).split(":").map(Number);
-        let secs = 0;
-        if (parts.length === 2) secs = parts[0] * 60 + parts[1];
-        else if (parts.length === 3) secs = parts[0] * 3600 + parts[1] * 60 + parts[2];
-        else secs = Number(d) || 0;
-        return secs <= 60;
-      }),
-      getUrl:    i => i.url || (i.id ? `https://www.youtube.com/shorts/${i.id}` : ""),
+      parseItems: raw => {
+        // Log first item so we can see the real duration field name
+        if (raw[0]) console.log("[YT raw item]", JSON.stringify(raw[0]).slice(0, 500));
+        return raw.filter(i => {
+          // Try every possible duration field the scraper might return
+          const url = i.url || "";
+          // If URL already contains /shorts/ it's definitely a Short
+          if (url.includes("/shorts/")) return true;
+          // Parse duration from any format
+          const d = i.duration ?? i.durationText ?? i.durationSeconds ?? i.lengthSeconds ?? i.length ?? "";
+          if (d === "" || d === null || d === undefined) return true; // unknown, allow
+          if (typeof d === "number") return d <= 60;
+          // "0:45" or "1:03" or "60" as string
+          const s = String(d).trim();
+          if (s.includes(":")) {
+            const parts = s.split(":").map(Number);
+            const secs = parts.length === 3
+              ? parts[0]*3600 + parts[1]*60 + parts[2]
+              : parts[0]*60  + parts[1];
+            return secs <= 60;
+          }
+          return Number(s) <= 60;
+        });
+      },
+      getUrl:    i => {
+        // Force /shorts/ URL format
+        const base = i.url || "";
+        if (base.includes("/shorts/")) return base;
+        const id = i.id || i.videoId || (base.match(/[?&]v=([^&]+)/)||[])[1] || "";
+        return id ? `https://www.youtube.com/shorts/${id}` : base;
+      },
       getAuthor: i => i.channelName || i.channel || i.author || "unknown",
       getDesc:   i => i.title || i.description || "",
       getViews:  i => i.viewCount || i.views || "",
       getLikes:  i => i.likes || "",
-      getLinkLabel: () => "Open on YouTube",
+      getLinkLabel: () => "Open on YouTube Shorts",
       getThumbnail: i => i.thumbnailUrl || i.thumbnail || "",
       getWidth:  i => 0,
       getHeight: i => 0,
@@ -878,7 +902,25 @@ body {
   function clearAll() {
     document.getElementById("results").innerHTML = "";
     document.getElementById("visionBarWrap").style.display = "none";
+    document.getElementById("debugPanel").style.display = "none";
+    document.getElementById("debugText").textContent = "";
     setStatus("");
+  }
+
+  function showDebug(platformLabel, raw) {
+    if (!raw || raw.length === 0) return;
+    const panel = document.getElementById("debugPanel");
+    const pre   = document.getElementById("debugText");
+    const item  = raw[0];
+    const keys  = Object.keys(item);
+    // Show: platform, total count, all field names, and key values
+    const relevant = {};
+    ["url","id","videoId","duration","durationText","durationSeconds","lengthSeconds","length",
+     "type","isVideo","isShort","shortCode","caption","title","ownerUsername","videoUrl"].forEach(k => {
+      if (item[k] !== undefined) relevant[k] = item[k];
+    });
+    pre.textContent = `[${platformLabel}] ${raw.length} items returned\nAll keys: ${keys.join(", ")}\n\nKey fields on item[0]:\n${JSON.stringify(relevant, null, 2)}`;
+    panel.style.display = "block";
   }
 
   async function apiFetch(path, token, options = {}) {
@@ -926,6 +968,7 @@ body {
 
         const resultData = await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`, token);
         const raw        = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
+        showDebug(p.label, raw);
         const parsed     = p.parseItems(raw);
         const hasURL     = parsed.filter(item => p.getUrl(item));
 
