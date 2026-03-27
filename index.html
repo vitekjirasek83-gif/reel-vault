@@ -333,12 +333,13 @@ body{background:var(--bg);color:var(--text);font-family:'Figtree',-apple-system,
     <div class="filter-block">
       <div class="filter-block-header">
         <div class="row-icon">👁</div>
-        <div class="row-label">Text Overlay</div>
+        <div class="row-label">AI Candid Filter</div>
       </div>
+      <div style="font-size:12px;color:var(--muted);padding:0 0 10px 0">Needs Anthropic key. Checks each thumbnail — uses tokens.</div>
       <div class="segment" id="textFilterGroup">
-        <button class="seg-btn active" data-value="all" onclick="selectSeg(this,'textFilterGroup')">Block all</button>
+        <button class="seg-btn active" data-value="off" onclick="selectSeg(this,'textFilterGroup')">Off</button>
         <button class="seg-btn" data-value="small" onclick="selectSeg(this,'textFilterGroup')">Allow small</button>
-        <button class="seg-btn" data-value="off" onclick="selectSeg(this,'textFilterGroup')">Off</button>
+        <button class="seg-btn" data-value="all" onclick="selectSeg(this,'textFilterGroup')">Block all text</button>
       </div>
     </div>
     <div class="filter-block">
@@ -419,8 +420,8 @@ body{background:var(--bg);color:var(--text);font-family:'Figtree',-apple-system,
     <div class="query-text" id="previewText">rich people filmed street</div>
     <div class="platform-pills" id="previewPlatforms"></div>
     <div class="filter-pills">
-      <span class="filter-pill">🚫 Keyword filtered</span>
-      <span class="filter-pill">👁 AI candid check</span>
+      <span class="filter-pill">🚫 Wedding/grooming filtered</span>
+      <span class="filter-pill">👁 AI filter: off (enable above)</span>
     </div>
   </div>
 </div>
@@ -548,29 +549,12 @@ const PLATFORMS = {
   }
 };
 
-// ── Block list ───────────────────────────────────────────────────────────────
+// ── Block list — minimal, only obvious garbage ───────────────────────────────
 const BLOCK_WORDS = [
-  "wedding","bride","groom","bridal","engagement","proposal","married","ceremony",
-  "reception","vows","honeymoon","gala","red carpet","prom","graduation",
-  "beard","grooming","skincare","haircut","morning routine","workout","gym",
-  "fitness","makeup","beauty routine","transformation",
-  "car show","supercar","hypercar","ferrari","lamborghini","bugatti","mclaren",
-  "exhaust","revving","drift","burnout","horsepower","garage tour","car collection",
-  "car spot","spotting","i spotted",
-  "interior design","home tour","house tour","room tour","penthouse tour","real estate",
-  "my life","day in my life","storytime","story time","my story",
-  "podcast","interview","reaction","commentary","voiceover",
-  "top 10","top 5","net worth","forbes","richest","wealthiest",
-  "how to","tips","advice","tutorial","review","unboxing",
-  "motivation","mindset","hustle","invest","finance",
-  "compilation","best moments","highlights","ranked","ranking","montage"
+  "wedding","bride","groom","bridal","ceremony","vows",
+  "beard routine","skincare routine","morning routine","gym transformation"
 ];
-const BLOCK_USERNAMES = [
-  "car","auto","garage","ferrari","lambo","supercar",
-  "wedding","bride","beauty","makeup","grooming","skincare","fitness","gym",
-  "review","news","podcast","vlog","commentary","motivation","finance","invest",
-  "interior","design","decor","realestate"
-];
+const BLOCK_USERNAMES = ["wedding","bride","bridal"];
 
 function isBlockedByText(item,p){
   const desc  =(p.getDesc(item)  ||"").toLowerCase();
@@ -796,7 +780,7 @@ async function startSearch(){
     const p=PLATFORMS[platformKey];
     setStatus(`Searching ${p.label}...`,true);
     try{
-      const fetchCount=maxResults*4;
+      const fetchCount=maxResults*2;
       const runData=await apiFetch(`/acts/${p.actor}/runs`,token,{
         method:"POST",body:JSON.stringify(p.buildBody(query,fetchCount))
       });
@@ -821,41 +805,24 @@ async function startSearch(){
         });
       }
 
-      const textFilter   =document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value||"all";
-      const useCandid    =!!anthropicKey;
-      const useTextVision=anthropicKey&&textFilter!=="off";
+      const textFilter   =document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value||"off";
+      // AI vision only runs when: Anthropic key entered AND text filter is not "off"
+      const useVision    =!!anthropicKey && textFilter!=="off";
       let finalItems     =afterOrient;
-      let visionRemoved  =0;
 
-      if((useCandid||useTextVision)&&afterOrient.length>0){
-        setStatus(`👁 AI vision: ${p.label}...`,true);
-        const toCheck=afterOrient.slice(0,maxResults*4);
+      if(useVision && afterOrient.length>0){
+        setStatus(`👁 AI filter: ${p.label}...`,true);
+        const toCheck=afterOrient.slice(0,maxResults*2);
         setVisionProgress(0,toCheck.length);
         const visionResults=[];
-
         for(let i=0;i<toCheck.length;i++){
           const item     =toCheck[i];
           const thumbnail=p.getThumbnail(item);
           setVisionProgress(i+1,toCheck.length);
-
-          if(!thumbnail){
-            visionResults.push(item);
-            if(visionResults.length>=maxResults)break;
-            continue;
-          }
-
-          // Pass 1: Candid scene check
-          if(useCandid){
-            const candid=await checkCandid(thumbnail,anthropicKey);
-            if(!candid.pass){visionRemoved++;continue}
-          }
-
-          // Pass 2: Text overlay check
-          if(useTextVision){
-            const overlay=await checkTextOverlay(thumbnail,anthropicKey,textFilter);
-            if(overlay.block){visionRemoved++;continue}
-          }
-
+          if(!thumbnail){visionResults.push(item);if(visionResults.length>=maxResults)break;continue}
+          // Only candid check — skip text overlay to save tokens
+          const candid=await checkCandid(thumbnail,anthropicKey);
+          if(!candid.pass)continue;
           visionResults.push(item);
           if(visionResults.length>=maxResults)break;
         }
