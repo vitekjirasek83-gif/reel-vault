@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reel Vault</title>
+<title>Reel Vault v4</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #000000;
+  --bg: #000;
   --surface: #1c1c1e;
   --surface2: #2c2c2e;
   --surface3: #3a3a3c;
@@ -18,423 +18,180 @@
   --silver4: rgba(235,235,245,0.12);
   --silver5: rgba(235,235,245,0.06);
   --separator: rgba(235,235,245,0.08);
-  --text: #ffffff;
+  --text: #fff;
   --muted: rgba(255,255,255,0.4);
-  --chrome: linear-gradient(135deg, #c8c8c8 0%, #f0f0f0 25%, #a8a8a8 45%, #ffffff 55%, #b0b0b0 75%, #e0e0e0 100%);
+  --chrome: linear-gradient(135deg,#c8c8c8 0%,#f0f0f0 25%,#a8a8a8 45%,#fff 55%,#b0b0b0 75%,#e0e0e0 100%);
+  --green: #30d158;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Figtree', -apple-system, sans-serif;
-  min-height: 100vh;
-  padding-bottom: 80px;
-  -webkit-font-smoothing: antialiased;
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Figtree',-apple-system,sans-serif;min-height:100vh;padding-bottom:100px;-webkit-font-smoothing:antialiased}
 
 /* ── Header ── */
-.app-header {
-  padding: 60px 22px 20px;
-  background: linear-gradient(180deg, #111 0%, #000 100%);
-}
-.header-eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  background: var(--chrome); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 6px; display: inline-block;
-}
-.app-title { font-size: 40px; font-weight: 800; letter-spacing: -1px; color: var(--text); line-height: 1; }
-.app-subtitle { font-size: 14px; color: var(--muted); margin-top: 5px; font-weight: 400; }
+.app-header{padding:60px 22px 20px;background:linear-gradient(180deg,#111 0%,#000 100%)}
+.header-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--chrome);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;display:inline-block}
+.app-title{font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1}
+.app-subtitle{font-size:14px;color:var(--muted);margin-top:5px;font-weight:400}
+.version-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;background:var(--surface2);color:var(--muted);border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:middle}
 
 /* ── Section ── */
-.section { padding: 0 16px; margin-top: 28px; }
-.section-label {
-  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 10px; padding-left: 4px;
-}
+.section{padding:0 16px;margin-top:28px}
+.section-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-left:4px}
 
-/* ── Platform checkbox tiles ── */
-.platform-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-}
-
-.platform-tile {
-  background: var(--surface);
-  border: 1.5px solid var(--surface3);
-  border-radius: 14px;
-  padding: 14px 12px 12px;
-  cursor: pointer;
-  transition: all 0.18s;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  user-select: none;
-}
-
-.platform-tile:hover:not(.active) {
-  border-color: var(--silver3);
-  background: var(--silver5);
-  transform: translateY(-1px);
-}
-.platform-tile:active { transform: scale(0.95); transition: transform 0.08s; }
-
-.platform-tile.active {
-  background: var(--surface2);
-  border-color: rgba(235,235,245,0.4);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
-  animation: tilePop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Glare sweep on active */
-.platform-tile.active::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -80%; width: 60%; height: 100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
-  transform: skewX(-15deg);
-  animation: tileGlare 0.5s ease 0.05s forwards;
-}
-
-@keyframes tileGlare { 0% { left: -80%; opacity:1; } 100% { left: 130%; opacity:0; } }
-@keyframes tilePop {
-  0%   { transform: scale(0.87); opacity: 0.4; }
-  55%  { transform: scale(1.05); }
-  100% { transform: scale(1);    opacity: 1; }
-}
-
-.platform-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  background: var(--surface3);
-  transition: background 0.18s;
-}
-.platform-tile.active .platform-icon { background: var(--surface3); }
-
-.platform-name {
-  font-size: 12px; font-weight: 700; color: var(--silver2);
-  letter-spacing: -0.1px;
-  transition: color 0.18s;
-}
-.platform-tile.active .platform-name { color: var(--silver); }
-
-.platform-check {
-  position: absolute;
-  top: 8px; right: 8px;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid var(--silver3);
-  background: transparent;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.18s;
-}
-.platform-tile.active .platform-check {
-  border-color: var(--silver);
-  background: var(--silver);
-}
-.platform-check-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #111;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-.platform-tile.active .platform-check-dot { opacity: 1; }
+/* ── Platform tiles ── */
+.platform-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.platform-tile{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:14px 12px 12px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:7px;user-select:none}
+.platform-tile:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
+.platform-tile:active{transform:scale(0.95);transition:transform 0.08s}
+.platform-tile.active{background:var(--surface2);border-color:rgba(235,235,245,0.4);box-shadow:0 2px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.12);animation:tilePop 0.28s cubic-bezier(0.34,1.56,0.64,1)}
+.platform-tile.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.14) 50%,transparent 100%);transform:skewX(-15deg);animation:tileGlare 0.5s ease 0.05s forwards}
+@keyframes tileGlare{0%{left:-80%;opacity:1}100%{left:130%;opacity:0}}
+@keyframes tilePop{0%{transform:scale(0.87);opacity:0.4}55%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.platform-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--surface3)}
+.platform-name{font-size:12px;font-weight:700;color:var(--silver2);letter-spacing:-0.1px;transition:color 0.18s}
+.platform-tile.active .platform-name{color:var(--silver)}
+.platform-check{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--silver3);display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.platform-tile.active .platform-check{border-color:var(--silver);background:var(--silver)}
+.platform-check-dot{width:6px;height:6px;border-radius:50%;background:#111;opacity:0;transition:opacity 0.15s}
+.platform-tile.active .platform-check-dot{opacity:1}
 
 /* ── List group ── */
-.list-group { background: var(--surface); border-radius: 16px; overflow: hidden; }
-.list-row {
-  display: flex; align-items: center; padding: 14px 16px; gap: 14px;
-  border-bottom: 1px solid var(--separator); transition: background 0.18s;
-}
-.list-row:last-child { border-bottom: none; }
-.list-row:hover { background: var(--silver5); }
+.list-group{background:var(--surface);border-radius:16px;overflow:hidden}
+.list-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid var(--separator);transition:background 0.18s}
+.list-row:last-child{border-bottom:none}
+.list-row:hover{background:var(--silver5)}
+.row-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--surface2)}
+.row-label{font-size:16px;font-weight:500;color:var(--text);flex:1}
+.row-sublabel{font-size:12px;color:var(--muted);margin-top:1px}
+.row-input{background:none;border:none;outline:none;font-family:inherit;font-size:15px;color:var(--silver2);flex:1;min-width:0}
+.row-input::placeholder{color:var(--muted);font-size:15px}
+.row-select-wrap{flex:1;display:flex;justify-content:flex-end}
+.row-select{appearance:none;-webkit-appearance:none;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--silver);cursor:pointer;text-align:right;max-width:180px}
 
-.row-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0; background: var(--surface2);
-}
-.row-label { font-size: 16px; font-weight: 500; color: var(--text); flex: 1; }
-.row-input {
-  background: none; border: none; outline: none; font-family: inherit;
-  font-size: 15px; color: var(--silver2); flex: 1; min-width: 0;
-}
-.row-input::placeholder { color: var(--muted); font-size: 15px; }
-.row-select-wrap { flex: 1; display: flex; justify-content: flex-end; }
-.row-select {
-  appearance: none; -webkit-appearance: none;
-  background: none; border: none; outline: none; font-family: inherit;
-  font-size: 15px; font-weight: 500; color: var(--silver); cursor: pointer;
-  text-align: right; max-width: 180px;
-}
+/* ── Preset grid ── */
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.preset-card{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:13px 14px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;user-select:none}
+.preset-card:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
+.preset-card:active{transform:scale(0.96);transition:transform 0.08s}
+.preset-card.active{background:var(--surface2);border-color:rgba(235,235,245,0.38);box-shadow:0 2px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1);animation:chipPop 0.28s cubic-bezier(0.34,1.56,0.64,1)}
+.preset-card.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.14) 50%,transparent 100%);transform:skewX(-15deg);animation:chipGlare 0.5s ease 0.05s forwards}
+@keyframes chipGlare{0%{left:-80%;opacity:1}100%{left:130%;opacity:0}}
+@keyframes chipPop{0%{transform:scale(0.85);opacity:0.4}55%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.preset-card-custom{grid-column:1/-1}
+.preset-emoji{font-size:18px;margin-bottom:5px;display:block}
+.preset-title{font-size:13px;font-weight:700;color:var(--silver2);line-height:1.2;transition:color 0.18s}
+.preset-card.active .preset-title{color:var(--silver)}
+.preset-custom-input{background:none;border:none;outline:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);width:100%;margin-top:8px;padding-top:8px;border-top:1px solid var(--separator);display:none}
+.preset-custom-input::placeholder{color:var(--muted)}
+.preset-custom-input.visible{display:block}
 
-/* ── Preset cards ── */
-.preset-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.preset-card {
-  background: var(--surface);
-  border: 1.5px solid var(--surface3);
-  border-radius: 14px;
-  padding: 13px 14px;
-  cursor: pointer;
-  transition: all 0.18s;
-  position: relative;
-  overflow: hidden;
-  user-select: none;
-}
-
-.preset-card:hover:not(.active) {
-  border-color: var(--silver3);
-  background: var(--silver5);
-  transform: translateY(-1px);
-}
-.preset-card:active { transform: scale(0.96); transition: transform 0.08s; }
-
-.preset-card.active {
-  background: var(--surface2);
-  border-color: rgba(235,235,245,0.38);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-  animation: chipPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.preset-card.active::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -80%; width: 60%; height: 100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
-  transform: skewX(-15deg);
-  animation: chipGlare 0.5s ease 0.05s forwards;
-}
-
-.preset-card-custom {
-  grid-column: 1 / -1;
-}
-
-.preset-emoji { font-size: 18px; margin-bottom: 5px; display: block; }
-.preset-title {
-  font-size: 13px; font-weight: 700; color: var(--silver2);
-  line-height: 1.2; margin-bottom: 2px;
-  transition: color 0.18s;
-}
-.preset-card.active .preset-title { color: var(--silver); }
-
-/* Custom input inside preset-card */
-.preset-custom-input {
-  background: none; border: none; outline: none; font-family: inherit;
-  font-size: 13px; font-weight: 600; color: var(--silver2);
-  width: 100%; margin-top: 8px; padding-top: 8px;
-  border-top: 1px solid var(--separator);
-  display: none;
-}
-.preset-custom-input::placeholder { color: var(--muted); }
-.preset-custom-input.visible { display: block; }
-
-/* ── Segment control ── */
-.segment {
-  background: var(--surface2); border-radius: 12px;
-  padding: 3px; display: flex; gap: 2px;
-}
-.seg-btn {
-  flex: 1; border: none; background: none; border-radius: 9px;
-  font-family: inherit; font-size: 13px; font-weight: 600;
-  color: var(--muted); padding: 8px 6px; cursor: pointer;
-  transition: all 0.2s; letter-spacing: -0.1px;
-}
-.seg-btn:hover:not(.active) { color: var(--silver2); }
-.seg-btn:not(.active):active { transform: scale(0.92); transition: transform 0.08s; }
-.seg-btn.active {
-  background: var(--surface3); color: var(--text);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  animation: segPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes segPop {
-  0%   { transform: scale(0.88); opacity: 0.5; }
-  60%  { transform: scale(1.06); }
-  100% { transform: scale(1);    opacity: 1; }
-}
+/* ── Segment ── */
+.segment{background:var(--surface2);border-radius:12px;padding:3px;display:flex;gap:2px}
+.seg-btn{flex:1;border:none;background:none;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 6px;cursor:pointer;transition:all 0.2s;letter-spacing:-0.1px}
+.seg-btn:hover:not(.active){color:var(--silver2)}
+.seg-btn:not(.active):active{transform:scale(0.92);transition:transform 0.08s}
+.seg-btn.active{background:var(--surface3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.5);animation:segPop 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes segPop{0%{transform:scale(0.88);opacity:0.5}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 
 /* ── Chips ── */
-.chips-row {
-  display: flex; gap: 8px; overflow-x: auto;
-  padding: 0 16px 4px; scrollbar-width: none;
-}
-.chips-row::-webkit-scrollbar { display: none; }
-.chip {
-  background: var(--surface); border: 1.5px solid var(--surface3);
-  border-radius: 20px; font-family: inherit; font-size: 13px; font-weight: 600;
-  color: var(--silver2); padding: 8px 16px; cursor: pointer;
-  white-space: nowrap; transition: all 0.18s; flex-shrink: 0;
-}
-.chip:hover:not(.active) {
-  border-color: var(--silver3); color: var(--silver);
-  background: var(--silver5); transform: translateY(-1px);
-}
-.chip:active { transform: scale(0.94); transition: transform 0.08s; }
-.chip.active {
-  background: var(--surface2); border-color: rgba(235,235,245,0.35);
-  color: var(--silver); position: relative; overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
-  animation: chipPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.chip.active::after {
-  content: ''; position: absolute; top: 0; left: -80%;
-  width: 60%; height: 100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-  transform: skewX(-15deg);
-  animation: chipGlare 0.5s ease 0.05s forwards;
-}
-@keyframes chipGlare { 0% { left:-80%; opacity:1; } 100% { left:130%; opacity:0; } }
-@keyframes chipPop {
-  0%   { transform: scale(0.85); opacity: 0.4; }
-  55%  { transform: scale(1.08); }
-  100% { transform: scale(1);    opacity: 1; }
-}
+.chips-row{display:flex;gap:8px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}
+.chips-row::-webkit-scrollbar{display:none}
+.chip{background:var(--surface);border:1.5px solid var(--surface3);border-radius:20px;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);padding:8px 16px;cursor:pointer;white-space:nowrap;transition:all 0.18s;flex-shrink:0}
+.chip:hover:not(.active){border-color:var(--silver3);color:var(--silver);background:var(--silver5);transform:translateY(-1px)}
+.chip:active{transform:scale(0.94);transition:transform 0.08s}
+.chip.active{background:var(--surface2);border-color:rgba(235,235,245,0.35);color:var(--silver);position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15);animation:chipPop 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+.chip.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.18) 50%,transparent 100%);transform:skewX(-15deg);animation:chipGlare 0.5s ease 0.05s forwards}
 
-/* ── Filter rows ── */
-.filter-block { padding: 14px 16px; border-bottom: 1px solid var(--separator); }
-.filter-block:last-child { border-bottom: none; }
-.filter-block-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+/* ── Filter blocks ── */
+.filter-block{padding:14px 16px;border-bottom:1px solid var(--separator)}
+.filter-block:last-child{border-bottom:none}
+.filter-block-header{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+
+/* ── Vibe Reference Box ── */
+.vibe-ref-box{background:var(--surface);border-radius:16px;overflow:hidden}
+.vibe-ref-textarea{width:100%;background:var(--surface);border:none;outline:none;resize:none;font-family:inherit;font-size:13px;color:var(--silver2);padding:14px 16px;min-height:80px;line-height:1.5}
+.vibe-ref-textarea::placeholder{color:var(--muted)}
+.vibe-ref-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--separator)}
+.vibe-ref-hint{font-size:11px;color:var(--muted);font-weight:500}
+.vibe-ref-btn{background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:8px 14px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden}
+.vibe-ref-btn:hover{background:var(--surface3);color:var(--silver);transform:translateY(-1px)}
+.vibe-ref-btn:disabled{opacity:0.4;cursor:not-allowed}
+.vibe-ref-status{font-size:12px;color:var(--muted);padding:8px 16px;font-style:italic;display:none}
+.vibe-ref-result{background:var(--surface2);border-radius:12px;margin:0 16px 14px;padding:12px 14px;display:none}
+.vibe-ref-result-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.vibe-ref-result-text{font-size:13px;font-weight:600;color:var(--silver);line-height:1.4}
+
+/* ── Scheduler ── */
+.scheduler-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid var(--separator)}
+.scheduler-row:last-child{border-bottom:none}
+.scheduler-toggle{position:relative;width:44px;height:26px;flex-shrink:0}
+.scheduler-toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:13px;cursor:pointer;transition:background 0.2s}
+.scheduler-toggle input:checked + .toggle-track{background:var(--green)}
+.toggle-knob{position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.4)}
+.scheduler-toggle input:checked + .toggle-track .toggle-knob{transform:translateX(18px)}
+.time-inputs{display:flex;gap:6px;align-items:center}
+.time-input{background:var(--surface3);border:1px solid var(--silver4);border-radius:8px;font-family:inherit;font-size:15px;font-weight:600;color:var(--silver);text-align:center;width:52px;padding:6px 4px;outline:none}
+.time-sep{font-size:18px;font-weight:700;color:var(--silver3);margin-bottom:2px}
+.scheduler-next{font-size:12px;color:var(--muted);margin-top:2px}
 
 /* ── Query preview ── */
-.query-card { background: var(--surface); border-radius: 16px; padding: 16px; }
-.query-eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
-}
-.query-text { font-size: 17px; font-weight: 600; color: var(--silver); line-height: 1.3; margin-bottom: 10px; }
-.filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.filter-pill {
-  background: var(--silver5); border-radius: 20px; font-size: 11px;
-  font-weight: 600; color: var(--muted); padding: 4px 10px;
-}
-.platform-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-.platform-pill {
-  background: var(--surface2); border: 1px solid var(--silver4);
-  border-radius: 20px; font-size: 11px; font-weight: 700;
-  color: var(--silver2); padding: 3px 9px;
-}
+.query-card{background:var(--surface);border-radius:16px;padding:16px}
+.query-eyebrow{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.query-text{font-size:17px;font-weight:600;color:var(--silver);line-height:1.3;margin-bottom:10px}
+.filter-pills{display:flex;flex-wrap:wrap;gap:6px}
+.filter-pill{background:var(--silver5);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);padding:4px 10px}
+.platform-pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.platform-pill{background:var(--surface2);border:1px solid var(--silver4);border-radius:20px;font-size:11px;font-weight:700;color:var(--silver2);padding:3px 9px}
 
 /* ── Chrome button ── */
-.btn-row { display: flex; gap: 10px; padding: 0 16px; margin-top: 16px; }
-.search-btn {
-  flex: 1; position: relative; overflow: hidden; border: none; border-radius: 14px;
-  cursor: pointer; font-family: inherit; font-size: 17px; font-weight: 700;
-  padding: 16px; letter-spacing: -0.3px; color: #111;
-  background: linear-gradient(160deg, #c0c0c0 0%, #f5f5f5 30%, #a8a8a8 50%, #f0f0f0 70%, #b8b8b8 100%);
-  box-shadow: 0 4px 20px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.search-btn::before {
-  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-  transform: skewX(-20deg); transition: left 0.5s ease;
-}
-.search-btn:hover::before { left: 125%; }
-.search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
-.search-btn:active { transform: scale(0.97) translateY(0); }
-.search-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
-.search-btn:disabled::before { display: none; }
+.btn-row{display:flex;gap:10px;padding:0 16px;margin-top:16px}
+.search-btn{flex:1;position:relative;overflow:hidden;border:none;border-radius:14px;cursor:pointer;font-family:inherit;font-size:17px;font-weight:700;padding:16px;letter-spacing:-0.3px;color:#111;background:linear-gradient(160deg,#c0c0c0 0%,#f5f5f5 30%,#a8a8a8 50%,#f0f0f0 70%,#b8b8b8 100%);box-shadow:0 4px 20px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.2);transition:transform 0.15s,box-shadow 0.15s}
+.search-btn::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);transform:skewX(-20deg);transition:left 0.5s ease}
+.search-btn:hover::before{left:125%}
+.search-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,255,255,0.18),inset 0 1px 0 rgba(255,255,255,0.6)}
+.search-btn:active{transform:scale(0.97) translateY(0)}
+.search-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none}
+.search-btn:disabled::before{display:none}
+.clear-btn{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--silver4);border-radius:14px;color:var(--silver2);cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;padding:16px 22px;transition:background 0.18s,transform 0.1s,color 0.18s}
+.clear-btn:hover{background:var(--surface2);color:var(--silver);transform:translateY(-1px)}
+.clear-btn:active{transform:scale(0.97)}
 
-.clear-btn {
-  position: relative; overflow: hidden; background: var(--surface);
-  border: 1px solid var(--silver4); border-radius: 14px;
-  color: var(--silver2); cursor: pointer; font-family: inherit;
-  font-size: 15px; font-weight: 600; padding: 16px 22px;
-  transition: background 0.18s, transform 0.1s, color 0.18s;
-}
-.clear-btn:hover { background: var(--surface2); color: var(--silver); transform: translateY(-1px); }
-.clear-btn:active { transform: scale(0.97); }
-
-/* ── Status ── */
-.status-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 20px 0; min-height: 36px;
-}
-.spinner {
-  width: 16px; height: 16px; border: 2px solid var(--silver4);
-  border-top-color: var(--silver); border-radius: 50%;
-  animation: spin 0.7s linear infinite; display: none; flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.status-txt { font-size: 13px; color: var(--muted); font-weight: 500; }
-
-/* ── Vision bar ── */
-.vision-bar-wrap { padding: 8px 20px 0; display: none; }
-.vision-bar-row  { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
-.vision-bar-bg   { background: var(--surface2); border-radius: 4px; height: 3px; overflow: hidden; }
-.vision-bar-fill { background: linear-gradient(90deg, #888, #fff); height: 100%; border-radius: 4px; transition: width 0.3s ease; width: 0%; }
+/* ── Status / Vision bar ── */
+.status-row{display:flex;align-items:center;gap:10px;padding:12px 20px 0;min-height:36px}
+.spinner{width:16px;height:16px;border:2px solid var(--silver4);border-top-color:var(--silver);border-radius:50%;animation:spin 0.7s linear infinite;display:none;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status-txt{font-size:13px;color:var(--muted);font-weight:500}
+.vision-bar-wrap{padding:8px 20px 0;display:none}
+.vision-bar-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.vision-bar-bg{background:var(--surface2);border-radius:4px;height:3px;overflow:hidden}
+.vision-bar-fill{background:linear-gradient(90deg,#888,#fff);height:100%;border-radius:4px;transition:width 0.3s ease;width:0%}
 
 /* ── Results ── */
-#results { margin-top: 24px; }
-.results-meta { padding: 0 16px; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.badge-count {
-  background: var(--surface2); border: 1px solid rgba(235,235,245,0.2);
-  color: var(--silver); border-radius: 20px; font-size: 12px; font-weight: 700; padding: 4px 12px;
-}
-.badge-platform {
-  background: var(--surface2); border: 1px solid var(--silver4);
-  color: var(--silver2); border-radius: 20px; font-size: 12px; font-weight: 600; padding: 4px 10px;
-}
-.badge-removed {
-  background: var(--surface); color: var(--muted);
-  border-radius: 20px; font-size: 12px; font-weight: 600; padding: 4px 10px;
-}
-.result-card {
-  background: var(--surface); border-radius: 16px; padding: 16px;
-  margin: 0 16px 10px; animation: slideUp 0.3s ease both;
-  border: 1px solid var(--separator); transition: background 0.18s, transform 0.15s;
-}
-.result-card:hover { background: #222; transform: translateY(-1px); }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.result-platform-badge {
-  display: inline-block; font-size: 10px; font-weight: 700;
-  color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.result-author { font-size: 12px; font-weight: 700; color: var(--silver2); letter-spacing: 0.3px; margin-bottom: 5px; }
-.result-desc {
-  font-size: 14px; font-weight: 400; color: var(--silver3); line-height: 1.4;
-  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; margin-bottom: 8px;
-}
-.result-stats { display: flex; gap: 14px; font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 12px; }
-.result-link-btn {
-  position: relative; overflow: hidden; display: flex;
-  align-items: center; justify-content: space-between;
-  background: var(--surface2); border: 1px solid var(--silver4);
-  border-radius: 10px; padding: 11px 14px; text-decoration: none;
-  color: var(--silver); font-size: 13px; font-weight: 600;
-  transition: background 0.18s, transform 0.15s;
-}
-.result-link-btn::before {
-  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
-  transform: skewX(-20deg); transition: left 0.4s ease;
-}
-.result-link-btn:hover::before { left: 125%; }
-.result-link-btn:hover { background: var(--surface3); transform: translateY(-1px); }
-.result-link-btn:active { opacity: 0.7; transform: scale(0.98); }
-.result-link-arrow { color: var(--silver3); font-size: 16px; }
+#results{margin-top:24px}
+.results-meta{padding:0 16px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.badge-count{background:var(--surface2);border:1px solid rgba(235,235,245,0.2);color:var(--silver);border-radius:20px;font-size:12px;font-weight:700;padding:4px 12px}
+.badge-platform{background:var(--surface2);border:1px solid var(--silver4);color:var(--silver2);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
+.badge-removed{background:var(--surface);color:var(--muted);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
+.result-card{background:var(--surface);border-radius:16px;padding:16px;margin:0 16px 10px;animation:slideUp 0.3s ease both;border:1px solid var(--separator);transition:background 0.18s,transform 0.15s}
+.result-card:hover{background:#222;transform:translateY(-1px)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.result-platform-badge{display:inline-block;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px}
+.result-author{font-size:12px;font-weight:700;color:var(--silver2);letter-spacing:0.3px;margin-bottom:5px}
+.result-desc{font-size:14px;font-weight:400;color:var(--silver3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:8px}
+.result-stats{display:flex;gap:14px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:12px}
+.result-link-btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--silver4);border-radius:10px;padding:11px 14px;text-decoration:none;color:var(--silver);font-size:13px;font-weight:600;transition:background 0.18s,transform 0.15s}
+.result-link-btn::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%);transform:skewX(-20deg);transition:left 0.4s ease}
+.result-link-btn:hover::before{left:125%}
+.result-link-btn:hover{background:var(--surface3);transform:translateY(-1px)}
+.result-link-btn:active{opacity:0.7;transform:scale(0.98)}
+.result-link-arrow{color:var(--silver3);font-size:16px}
+.error-card{background:rgba(255,255,255,0.04);border:1px solid var(--separator);border-radius:16px;padding:18px;margin:0 16px;color:var(--silver2);font-size:15px;font-weight:500;line-height:1.5}
+.error-sub{font-size:13px;color:var(--muted);margin-top:6px;font-weight:400}
 
-.error-card {
-  background: rgba(255,255,255,0.04); border: 1px solid var(--separator);
-  border-radius: 16px; padding: 18px; margin: 0 16px;
-  color: var(--silver2); font-size: 15px; font-weight: 500; line-height: 1.5;
-}
-.error-sub { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 400; }
+/* ── Scheduler active indicator ── */
+.scheduler-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--green);margin-left:auto}
+.scheduler-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
 <body>
@@ -442,8 +199,8 @@ body {
 <!-- Header -->
 <div class="app-header">
   <div class="header-eyebrow">Luxury Content Discovery</div>
-  <div class="app-title">Reel Vault</div>
-  <div class="app-subtitle">Find candid luxury content</div>
+  <div class="app-title">Reel Vault <span class="version-badge">v4</span></div>
+  <div class="app-subtitle">Candid rich people — street, locations, caught on camera</div>
 </div>
 
 <!-- API Keys -->
@@ -456,88 +213,91 @@ body {
     </div>
     <div class="list-row">
       <div class="row-icon">🤖</div>
-      <input class="row-input" type="password" id="anthropicKey" placeholder="Anthropic Key (optional)" />
+      <input class="row-input" type="password" id="anthropicKey" placeholder="Anthropic Key — enables AI vision filter" />
     </div>
   </div>
 </div>
 
 <!-- Platforms -->
 <div class="section">
-  <div class="section-label">Platforms — pick one or more</div>
+  <div class="section-label">Platforms</div>
   <div class="platform-grid">
-
     <div class="platform-tile active" data-platform="tiktok" onclick="togglePlatform(this)">
       <div class="platform-check"><div class="platform-check-dot"></div></div>
       <div class="platform-icon">🎵</div>
       <div class="platform-name">TikTok</div>
     </div>
-
     <div class="platform-tile" data-platform="instagram" onclick="togglePlatform(this)">
       <div class="platform-check"><div class="platform-check-dot"></div></div>
       <div class="platform-icon">📸</div>
       <div class="platform-name">Reels</div>
     </div>
-
     <div class="platform-tile" data-platform="youtube" onclick="togglePlatform(this)">
       <div class="platform-check"><div class="platform-check-dot"></div></div>
       <div class="platform-icon">▶️</div>
       <div class="platform-name">Shorts</div>
     </div>
+  </div>
+</div>
 
+<!-- Vibe Reference -->
+<div class="section">
+  <div class="section-label">Vibe Reference — paste video URLs to match</div>
+  <div class="vibe-ref-box">
+    <textarea class="vibe-ref-textarea" id="vibeRefUrls" placeholder="Paste Instagram or TikTok video URLs here, one per line&#10;e.g. https://www.instagram.com/reel/DJEY7SCzQzR/&#10;&#10;Claude will analyse the thumbnails and build a custom search from what it sees."></textarea>
+    <div class="vibe-ref-footer">
+      <span class="vibe-ref-hint">Needs Anthropic key</span>
+      <button class="vibe-ref-btn" id="vibeRefBtn" onclick="analyseVibeRefs()">✨ Analyse &amp; Apply</button>
+    </div>
+  </div>
+  <div class="vibe-ref-status" id="vibeRefStatus"></div>
+  <div class="vibe-ref-result" id="vibeRefResult">
+    <div class="vibe-ref-result-label">AI detected vibe</div>
+    <div class="vibe-ref-result-text" id="vibeRefText"></div>
   </div>
 </div>
 
 <!-- Vibe Presets -->
 <div class="section">
-  <div class="section-label">Vibe</div>
+  <div class="section-label">Vibe Preset</div>
   <div class="preset-grid" id="presetGrid">
-
     <div class="preset-card active" data-value="rich people filmed street" onclick="selectPreset(this)">
       <span class="preset-emoji">🚶</span>
       <div class="preset-title">Rich on street</div>
     </div>
-
-    <div class="preset-card" data-value="billionaire caught camera walking" onclick="selectPreset(this)">
+    <div class="preset-card" data-value="billionaire caught camera" onclick="selectPreset(this)">
       <span class="preset-emoji">📷</span>
       <div class="preset-title">Billionaire caught</div>
     </div>
-
-    <div class="preset-card" data-value="luxury car filmed street candid" onclick="selectPreset(this)">
-      <span class="preset-emoji">🚗</span>
-      <div class="preset-title">Luxury car candid</div>
-    </div>
-
-    <div class="preset-card" data-value="celebrity filmed leaving restaurant" onclick="selectPreset(this)">
+    <div class="preset-card" data-value="celebrity filmed restaurant candid" onclick="selectPreset(this)">
       <span class="preset-emoji">🍽️</span>
       <div class="preset-title">Celebrity spotted</div>
     </div>
-
-    <div class="preset-card" data-value="ferrari lamborghini filmed street" onclick="selectPreset(this)">
-      <span class="preset-emoji">🏎️</span>
-      <div class="preset-title">Ferrari / Lambo</div>
-    </div>
-
     <div class="preset-card" data-value="private jet filmed airport candid" onclick="selectPreset(this)">
       <span class="preset-emoji">✈️</span>
       <div class="preset-title">Private jet</div>
     </div>
-
     <div class="preset-card" data-value="yacht rich people filmed" onclick="selectPreset(this)">
       <span class="preset-emoji">⛵</span>
-      <div class="preset-title">Yacht life</div>
+      <div class="preset-title">Yacht</div>
     </div>
-
     <div class="preset-card" data-value="luxury villa filmed candid" onclick="selectPreset(this)">
       <span class="preset-emoji">🏰</span>
-      <div class="preset-title">Luxury villa</div>
+      <div class="preset-title">Villa</div>
     </div>
-
+    <div class="preset-card" data-value="rich girls monaco candid street" onclick="selectPreset(this)">
+      <span class="preset-emoji">💃</span>
+      <div class="preset-title">Rich girls</div>
+    </div>
+    <div class="preset-card" data-value="billionaire man luxury candid" onclick="selectPreset(this)">
+      <span class="preset-emoji">🕴️</span>
+      <div class="preset-title">Rich guys</div>
+    </div>
     <div class="preset-card preset-card-custom" data-value="custom" onclick="selectPreset(this)">
       <span class="preset-emoji">✏️</span>
-      <div class="preset-title">Custom search</div>
-      <input class="preset-custom-input" id="customKeyword" type="text" placeholder="Type your search..." oninput="updatePreview()" onclick="event.stopPropagation()" />
+      <div class="preset-title">Custom</div>
+      <input class="preset-custom-input" id="customKeyword" type="text" placeholder="Enter your search..." oninput="updatePreview()" onclick="event.stopPropagation()" />
     </div>
-
   </div>
 </div>
 
@@ -553,9 +313,7 @@ body {
 </div>
 
 <!-- Location -->
-<div class="section">
-  <div class="section-label">Location</div>
-</div>
+<div class="section"><div class="section-label">Location</div></div>
 <div class="chips-row" id="locationGroup">
   <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
   <div class="chip" data-value="Monaco" onclick="selectChip(this)">🇲🇨 Monaco</div>
@@ -572,7 +330,6 @@ body {
 <div class="section" style="margin-top:28px">
   <div class="section-label">Filters</div>
   <div class="list-group">
-
     <div class="filter-block">
       <div class="filter-block-header">
         <div class="row-icon">👁</div>
@@ -584,7 +341,6 @@ body {
         <button class="seg-btn" data-value="off" onclick="selectSeg(this,'textFilterGroup')">Off</button>
       </div>
     </div>
-
     <div class="filter-block">
       <div class="filter-block-header">
         <div class="row-icon">📱</div>
@@ -595,7 +351,6 @@ body {
         <button class="seg-btn" data-value="any" onclick="selectSeg(this,'orientationGroup')">Any</button>
       </div>
     </div>
-
     <div class="list-row">
       <div class="row-icon">🎬</div>
       <div class="row-label">Videos per platform</div>
@@ -609,7 +364,51 @@ body {
         </select>
       </div>
     </div>
+  </div>
+</div>
 
+<!-- Scheduler -->
+<div class="section">
+  <div class="section-label">Auto-Run Scheduler</div>
+  <div class="list-group">
+    <div class="scheduler-row">
+      <div class="row-icon">⏰</div>
+      <div>
+        <div class="row-label">Schedule daily run</div>
+        <div class="row-sublabel scheduler-next" id="schedulerNext">Off</div>
+      </div>
+      <div id="schedulerLive" class="scheduler-live" style="display:none">
+        <div class="scheduler-live-dot"></div> Active
+      </div>
+      <label class="scheduler-toggle">
+        <input type="checkbox" id="schedulerEnabled" onchange="updateScheduler()">
+        <div class="toggle-track"><div class="toggle-knob"></div></div>
+      </label>
+    </div>
+    <div class="scheduler-row" id="schedulerTimeRow" style="display:none">
+      <div class="row-icon">🕐</div>
+      <div class="row-label">Run at</div>
+      <div class="time-inputs">
+        <input class="time-input" type="number" id="schedHour" min="0" max="23" value="9" onchange="updateScheduler()" />
+        <span class="time-sep">:</span>
+        <input class="time-input" type="number" id="schedMin" min="0" max="59" value="0" onchange="updateScheduler()" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Memory -->
+<div class="section">
+  <div class="section-label">Seen History</div>
+  <div class="list-group">
+    <div class="list-row">
+      <div class="row-icon">🧠</div>
+      <div>
+        <div class="row-label">Already seen</div>
+        <div class="row-sublabel" id="seenCount">Loading...</div>
+      </div>
+      <button onclick="clearSeenUrls()" style="background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:7px 14px;cursor:pointer;transition:all 0.18s;margin-left:auto" onmouseover="this.style.color='var(--silver)'" onmouseout="this.style.color='var(--silver2)'">Clear history</button>
+    </div>
   </div>
 </div>
 
@@ -621,7 +420,7 @@ body {
     <div class="platform-pills" id="previewPlatforms"></div>
     <div class="filter-pills">
       <span class="filter-pill">🚫 Keyword filtered</span>
-      <span class="filter-pill">👁 AI candid check (needs Anthropic key)</span>
+      <span class="filter-pill">👁 AI candid check</span>
     </div>
   </div>
 </div>
@@ -638,585 +437,648 @@ body {
   <div class="status-txt" id="statusText"></div>
 </div>
 
-<!-- Vision progress bar -->
+<!-- Vision bar -->
 <div class="vision-bar-wrap" id="visionBarWrap">
   <div class="vision-bar-row">
-    <span id="visionBarLabel">Checking thumbnails...</span>
+    <span id="visionBarLabel">👁 AI checking thumbnails...</span>
     <span id="visionBarCount"></span>
   </div>
   <div class="vision-bar-bg"><div class="vision-bar-fill" id="visionBarFill"></div></div>
-</div>
-
-<!-- Debug panel (shows raw first item from scraper to diagnose field names) -->
-<div id="debugPanel" style="display:none;margin:12px 16px 0;background:#111;border:1px solid #333;border-radius:12px;padding:12px;">
-  <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:8px;">🔍 Raw scraper output — first item</div>
-  <pre id="debugText" style="font-size:11px;color:#888;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;margin:0;"></pre>
 </div>
 
 <!-- Results -->
 <div id="results"></div>
 
 <script>
-  const BASE = "https://api.apify.com/v2";
+const BASE = "https://api.apify.com/v2";
 
-  // ── Platform definitions ─────────────────────────────────────────
-  const PLATFORMS = {
-    tiktok: {
-      label: "TikTok", emoji: "🎵",
-      actor: "clockworks~tiktok-scraper",
-      buildBody: (query, n) => ({
-        searchQueries: [query], maxResults: n, resultsPerPage: n,
-        shouldDownloadVideos: false, shouldDownloadCovers: false, searchSection: "/video"
-      }),
-      parseItems: raw => raw,
-      getUrl:    i => i.webVideoUrl || i.videoUrl || i.url || "",
-      getAuthor: i => i.authorMeta?.name || i.author || "unknown",
-      getDesc:   i => i.text || i.description || i.desc || "",
-      getViews:  i => i.playCount  || i.viewCount  || "",
-      getLikes:  i => i.diggCount  || i.likeCount  || "",
-      getLinkLabel: () => "Open on TikTok",
-      getThumbnail: i => i.videoMeta?.coverUrl || i.videoMeta?.originalCoverUrl || i.covers?.default || i.cover || i.thumbnail || "",
-      getWidth:  i => i.videoMeta?.width  || i.width  || 0,
-      getHeight: i => i.videoMeta?.height || i.height || 0,
+// ── Platform definitions ─────────────────────────────────────────────────────
+const PLATFORMS = {
+  tiktok: {
+    label:"TikTok", emoji:"🎵",
+    actor:"clockworks~tiktok-scraper",
+    buildBody:(query,n)=>({
+      searchQueries:[query],maxResults:n,resultsPerPage:n,
+      shouldDownloadVideos:false,shouldDownloadCovers:false,searchSection:"/video"
+    }),
+    parseItems:raw=>raw,
+    getUrl:   i=>i.webVideoUrl||i.videoUrl||i.url||"",
+    getAuthor:i=>i.authorMeta?.name||i.author||"unknown",
+    getDesc:  i=>i.text||i.description||i.desc||"",
+    getViews: i=>i.playCount||i.viewCount||"",
+    getLikes: i=>i.diggCount||i.likeCount||"",
+    getLinkLabel:()=>"Open on TikTok",
+    getThumbnail:i=>i.videoMeta?.coverUrl||i.videoMeta?.originalCoverUrl||i.covers?.default||i.cover||i.thumbnail||"",
+    getWidth: i=>i.videoMeta?.width||i.width||0,
+    getHeight:i=>i.videoMeta?.height||i.height||0,
+  },
+
+  instagram: {
+    label:"Reels", emoji:"📸",
+    // Use apify~instagram-scraper with startUrls pointing to /reels/ page of curated accounts.
+    // These are VERIFIED accounts confirmed to post candid rich-people street content.
+    actor:"apify~instagram-scraper",
+    buildBody:(query,n)=>{
+      const q = query.toLowerCase();
+      let accounts;
+      if      (q.includes("monaco")||q.includes("monte carlo"))
+        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone","monaco.today"];
+      else if (q.includes("dubai"))
+        accounts=["rich.dubai.people","richkidsdubai1","rich_people_of_dubai"];
+      else if (q.includes("miami"))
+        accounts=["richkidsofmiami","miamibeachlife_","miami.luxurylife"];
+      else if (q.includes("mykonos"))
+        accounts=["mykonos_life","richkidsofmykonos","mykonos.people"];
+      else if (q.includes("tropez"))
+        accounts=["sttropez_life","richkidsofsttropez","tropez.people"];
+      else if (q.includes("marbella"))
+        accounts=["marbellalife","richkidsofmarbella","marbella.people"];
+      else if (q.includes("moscow"))
+        accounts=["moscow.luxury","richkidsofmoscow","moscowpeople_"];
+      else if (q.includes("los angeles")||q.includes(" la "))
+        accounts=["richkidsofbeverlyhills","larich_","losangeles.luxury"];
+      else if (q.includes("yacht"))
+        accounts=["superyacht.life","yachtlife_luxury","megayacht_"];
+      else if (q.includes("jet"))
+        accounts=["privatejet.life","privatejetworld","jetset.luxury"];
+      else if (q.includes("girl")||q.includes("woman"))
+        accounts=["bilionarescab","rich.monaco.people","rich.dubai.people"];
+      else if (q.includes("man")||q.includes("guy")||q.includes("billionaire"))
+        accounts=["bilionarescab","the_billionare_lifestyle","rich.dubai.people","richkidsdubai1"];
+      else
+        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people","richkidsdubai1"];
+
+      return {
+        // startUrls pointing to the /reels/ tab of each account
+        startUrls: accounts.map(a=>({url:`https://www.instagram.com/${a}/reels/`})),
+        resultsType:"posts",
+        resultsLimit:n,
+        addParentData:false
+      };
     },
-    instagram: {
-      label: "Reels", emoji: "📸",
-      actor: "apify~instagram-reel-scraper",
-      buildBody: (query, n) => {
-        const q = query.toLowerCase();
+    parseItems:raw=>raw.filter(i=>i.type==="Video"||i.videoUrl||i.url?.includes("/reel/")||i.isVideo),
+    getUrl:   i=>i.url||(i.shortCode?`https://www.instagram.com/reel/${i.shortCode}/`:""),
+    getAuthor:i=>i.ownerUsername||i.ownerId||"unknown",
+    getDesc:  i=>i.caption||i.description||"",
+    getViews: i=>i.videoViewCount||i.videoPlayCount||"",
+    getLikes: i=>i.likesCount||i.likes||"",
+    getLinkLabel:()=>"Open on Instagram",
+    getThumbnail:i=>i.displayUrl||i.thumbnailUrl||"",
+    getWidth: i=>i.dimensionsWidth||0,
+    getHeight:i=>i.dimensionsHeight||0,
+  },
 
-        // ── VERIFIED real accounts confirmed to post candid rich-people street content ──
-        // These accounts have been confirmed from real reference reels + search results.
-        // The AI candid vision filter acts as final quality control on top.
-
-        let usernames;
-
-        if (q.includes("monaco") || q.includes("monte carlo"))
-          // Confirmed: bilionarescab & the_billionare_lifestyle from reference reels
-          // + rich.monaco.people (339K), monacoone (76K), monaco.today (102K)
-          usernames = ["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone","monaco.today"];
-
-        else if (q.includes("dubai"))
-          // rich.dubai.people is 1M followers, richkidsdubai1 is 268K
-          usernames = ["rich.dubai.people","richkidsdubai1","rich_people_of_dubai","dubai.reels.life","peopleanduae"];
-
-        else if (q.includes("miami"))
-          usernames = ["richkidsofmiami","miami.luxurylife","miamibeachlife_","richmiami_","luxurymiami"];
-
-        else if (q.includes("mykonos"))
-          usernames = ["mykonos_life","richkidsofmykonos","mykonosvibes_","greeksummer_life","mykonos.people"];
-
-        else if (q.includes("tropez") || q.includes("saint tropez"))
-          usernames = ["sttropez_life","richkidsofsttropez","tropez.people","frenchriviera.life","riviera_luxury"];
-
-        else if (q.includes("marbella"))
-          usernames = ["marbellalife","richkidsofmarbella","marbella.people","puertobanus.life","costadelsol_life"];
-
-        else if (q.includes("moscow"))
-          usernames = ["moscow.luxury","richkidsofmoscow","moscowpeople_","moscow_life_","russia.luxury"];
-
-        else if (q.includes("los angeles") || q.includes(" la ") || q.includes("beverly"))
-          usernames = ["richkidsofbeverlyhills","larich_","luxuryla","losangeles.luxury","beverlyhills.life"];
-
-        else if (q.includes("yacht"))
-          usernames = ["superyacht.life","yachtlife_luxury","megayacht_","yachtpeople_","superyachtworld"];
-
-        else if (q.includes("jet") || q.includes("private jet"))
-          usernames = ["privatejet.life","privatejetworld","jetset.luxury","privatejet_","jetsetlife_luxury"];
-
-        else if (q.includes("restaurant") || q.includes("dining"))
-          usernames = ["luxuryrestaurant_","finedining.life","richpeopleeat","restaurant.luxury","dining.luxury"];
-
-        else if (q.includes("woman") || q.includes("girl"))
-          usernames = ["bilionarescab","rich.monaco.people","rich.dubai.people","richkidsdubai1","the_billionare_lifestyle"];
-
-        else if (q.includes("man") || q.includes("guy") || q.includes("billionaire"))
-          usernames = ["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people","richkidsdubai1"];
-
-        else if (q.includes("couple"))
-          usernames = ["rich.monaco.people","rich.dubai.people","bilionarescab","monacoone","richkidsdubai1"];
-
-        else
-          // Default: the two confirmed reference accounts + biggest verified accounts
-          usernames = ["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people","richkidsdubai1"];
-
-        return {
-          username: usernames,
-          resultsLimit: n,
-          skipPinnedReels: true
-        };
-      },
-      parseItems: raw => raw,
-      getUrl:    i => i.url || i.reelUrl || (i.shortCode ? `https://www.instagram.com/reel/${i.shortCode}/` : ""),
-      getAuthor: i => i.ownerUsername || i.username || i.owner?.username || "unknown",
-      getDesc:   i => i.caption || i.text || i.description || "",
-      getViews:  i => i.playsCount || i.videoViewCount || i.viewsCount || "",
-      getLikes:  i => i.likesCount || i.likes || "",
-      getLinkLabel: () => "Open on Instagram",
-      getThumbnail: i => i.thumbnailUrl || i.displayUrl || i.coverUrl || "",
-      getWidth:  i => 0,
-      getHeight: i => 0,
+  youtube: {
+    label:"Shorts", emoji:"▶️",
+    actor:"streamers~youtube-scraper",
+    buildBody:(query,n)=>({
+      searchKeywords:query,
+      maxResults:n,
+      type:"shorts"
+    }),
+    parseItems:raw=>raw,
+    getUrl:   i=>{
+      const u=i.url||"";
+      if(u.includes("/shorts/"))return u;
+      const id=i.id||i.videoId||(u.match(/[?&]v=([^&]+)/)||[])[1]||"";
+      return id?`https://www.youtube.com/shorts/${id}`:u;
     },
-    youtube: {
-      label: "Shorts", emoji: "▶️",
-      actor: "streamers~youtube-scraper",
-      // type: "shorts" is the correct value — tells the actor to only return YouTube Shorts
-      buildBody: (query, n) => ({
-        searchKeywords: query,
-        maxResults: n,
-        type: "shorts"
-      }),
-      parseItems: raw => {
-        if (raw[0]) console.log("[YT raw item keys]", Object.keys(raw[0]).join(", "));
-        return raw;
-      },
-      getUrl:    i => {
-        const u = i.url || "";
-        if (u.includes("/shorts/")) return u;
-        const id = i.id || i.videoId || (u.match(/[?&]v=([^&]+)/)||[])[1] || "";
-        return id ? `https://www.youtube.com/shorts/${id}` : u;
-      },
-      getAuthor: i => i.channelName || i.channel || i.author || "unknown",
-      getDesc:   i => i.title || i.description || "",
-      getViews:  i => i.viewCount || i.views || "",
-      getLikes:  i => i.likes || "",
-      getLinkLabel: () => "Open on YouTube Shorts",
-      getThumbnail: i => i.thumbnailUrl || i.thumbnail || "",
-      getWidth:  i => 0,
-      getHeight: i => 0,
-    }
-  };
-
-  // ── Block list: any match = REMOVED ─────────────────────────────
-  const BLOCK_WORDS = [
-    // Weddings / events / formal
-    "wedding","bride","groom","bridal","brides","engagement","proposal","married","ceremony",
-    "reception","vows","honeymoon","anniversary","prom","quinceañera","baptism","christening",
-    "birthday party","sweet 16","bar mitzvah","graduation","gala","charity event","red carpet",
-    // Grooming / beauty / fitness
-    "beard","grooming","skincare","skin care","haircut","hair routine","morning routine",
-    "workout","gym","fitness","exercise","training","diet","nutrition","weight loss",
-    "makeup","beauty routine","self care","glow up","transformation",
-    // Car content
-    "car show","car showcase","supercar","hypercar","exotic car","ferrari","lamborghini",
-    "bugatti","mclaren","porsche","rolls royce","bentley","exhaust","revving","drift",
-    "burnout","0-60","horsepower","bhp","v12","v10","garage tour","car collection","car tour",
-    "spotting","car spot","carspot","i spotted","we spotted",
-    // Interior / design / product
-    "interior design","home tour","house tour","room tour","penthouse tour",
-    "interior decor","architecture","design inspiration","furniture","real estate tour",
-    // Talking head / vlog / story
-    "my life","day in my life","storytime","story time","my story","what happened",
-    "podcast","interview","reaction","reacting","commentary","voiceover",
-    "i think","my thoughts","my opinion","here's why","let me explain",
-    // Ranking / edu / finance
-    "top 10","top 5","net worth","forbes","richest","wealthiest","billionaire list",
-    "how to","how i","tips","advice","guide","tutorial","review","unboxing",
-    "motivation","mindset","grind","hustle","success","invest","finance","money tips",
-    // Clickbait / compilation
-    "you won't believe","shocking","exposed","leaked","drama","compilation",
-    "best moments","highlights","montage","ranked","ranking"
-  ];
-
-  // ── Block usernames: any match = REMOVED ─────────────────────────
-  const BLOCK_USERNAMES = [
-    "car","auto","garage","ferrari","lambo","supercar","hypercar",
-    "wedding","bride","bridal","beauty","makeup","grooming","skincare","fitness","gym","workout",
-    "review","daily","news","media","official","podcast","talk","vlog","react","commentary",
-    "motivation","finance","money","wealth","invest","tutorial","tips","guide",
-    "interior","design","decor","realestate","architecture"
-  ];
-
-  function isBlockedByText(item, p) {
-    const desc   = (p.getDesc(item)   || "").toLowerCase();
-    const author = (p.getAuthor(item) || "").toLowerCase();
-    for (const w of BLOCK_WORDS)     { if (desc.includes(w))   return true; }
-    for (const w of BLOCK_USERNAMES) { if (author.includes(w)) return true; }
-    return false;
+    getAuthor:i=>i.channelName||i.channel||i.author||"unknown",
+    getDesc:  i=>i.title||i.description||"",
+    getViews: i=>i.viewCount||i.views||"",
+    getLikes: i=>i.likes||"",
+    getLinkLabel:()=>"Open on YouTube Shorts",
+    getThumbnail:i=>i.thumbnailUrl||i.thumbnail||"",
+    getWidth: i=>0,
+    getHeight:i=>0,
   }
+};
 
-  // ── State ────────────────────────────────────────────────────────
-  let activePlatforms = new Set(["tiktok"]);
-  let activePresetValue = "rich people filmed street";
+// ── Block list ───────────────────────────────────────────────────────────────
+const BLOCK_WORDS = [
+  "wedding","bride","groom","bridal","engagement","proposal","married","ceremony",
+  "reception","vows","honeymoon","gala","red carpet","prom","graduation",
+  "beard","grooming","skincare","haircut","morning routine","workout","gym",
+  "fitness","makeup","beauty routine","transformation",
+  "car show","supercar","hypercar","ferrari","lamborghini","bugatti","mclaren",
+  "exhaust","revving","drift","burnout","horsepower","garage tour","car collection",
+  "car spot","spotting","i spotted",
+  "interior design","home tour","house tour","room tour","penthouse tour","real estate",
+  "my life","day in my life","storytime","story time","my story",
+  "podcast","interview","reaction","commentary","voiceover",
+  "top 10","top 5","net worth","forbes","richest","wealthiest",
+  "how to","tips","advice","tutorial","review","unboxing",
+  "motivation","mindset","hustle","invest","finance",
+  "compilation","best moments","highlights","ranked","ranking","montage"
+];
+const BLOCK_USERNAMES = [
+  "car","auto","garage","ferrari","lambo","supercar",
+  "wedding","bride","beauty","makeup","grooming","skincare","fitness","gym",
+  "review","news","podcast","vlog","commentary","motivation","finance","invest",
+  "interior","design","decor","realestate"
+];
 
-  // ── Platform toggle ──────────────────────────────────────────────
-  function togglePlatform(el) {
-    const key = el.dataset.platform;
-    if (activePlatforms.has(key)) {
-      if (activePlatforms.size === 1) return; // must keep at least one
-      activePlatforms.delete(key);
-      el.classList.remove("active");
-    } else {
-      activePlatforms.add(key);
-      el.classList.add("active");
-    }
-    updatePreview();
-  }
+function isBlockedByText(item,p){
+  const desc  =(p.getDesc(item)  ||"").toLowerCase();
+  const author=(p.getAuthor(item)||"").toLowerCase();
+  for(const w of BLOCK_WORDS)    {if(desc.includes(w))   return true}
+  for(const w of BLOCK_USERNAMES){if(author.includes(w)) return true}
+  return false;
+}
 
-  // ── Preset cards ─────────────────────────────────────────────────
-  function selectPreset(el) {
-    document.querySelectorAll("#presetGrid .preset-card").forEach(c => {
-      c.classList.remove("active");
-      c.querySelector(".preset-custom-input")?.classList.remove("visible");
-    });
-    el.classList.add("active");
-    activePresetValue = el.dataset.value;
-    const inp = el.querySelector(".preset-custom-input");
-    if (inp) {
-      inp.classList.add("visible");
-      setTimeout(() => inp.focus(), 50);
-    }
-    updatePreview();
-  }
+// ── State ────────────────────────────────────────────────────────────────────
+let activePlatforms   = new Set(["tiktok"]);
+let activePresetValue = "rich people filmed street";
+let vibePromptOverride = null; // set by vibe reference analyser
+let schedulerTimer    = null;
 
-  function selectSeg(el, groupId) {
-    document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b => b.classList.remove("active"));
-    el.classList.add("active");
-    updatePreview();
-  }
+// ── Platform toggle ──────────────────────────────────────────────────────────
+function togglePlatform(el){
+  const key=el.dataset.platform;
+  if(activePlatforms.has(key)){
+    if(activePlatforms.size===1)return;
+    activePlatforms.delete(key);el.classList.remove("active");
+  } else {activePlatforms.add(key);el.classList.add("active")}
+  updatePreview();
+}
 
-  function selectChip(el) {
-    document.querySelectorAll("#locationGroup .chip").forEach(c => c.classList.remove("active"));
-    el.classList.add("active");
-    updatePreview();
-  }
+// ── Preset selection ─────────────────────────────────────────────────────────
+function selectPreset(el){
+  document.querySelectorAll("#presetGrid .preset-card").forEach(c=>{
+    c.classList.remove("active");
+    c.querySelector(".preset-custom-input")?.classList.remove("visible");
+  });
+  el.classList.add("active");
+  activePresetValue=el.dataset.value;
+  vibePromptOverride=null; // clear vibe override when manually picking preset
+  document.getElementById("vibeRefResult").style.display="none";
+  const inp=el.querySelector(".preset-custom-input");
+  if(inp){inp.classList.add("visible");setTimeout(()=>inp.focus(),50)}
+  updatePreview();
+}
 
-  function buildQuery() {
-    let base = activePresetValue;
-    if (base === "custom") {
-      base = document.getElementById("customKeyword").value.trim() || "rich people filmed street";
-    }
-    const subject  = document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value || "";
-    const location = document.querySelector("#locationGroup .chip.active")?.dataset.value || "";
-    let q = base;
-    if (subject)  q += ` ${subject}`;
-    if (location) q += ` ${location}`;
-    return q;
-  }
+function selectSeg(el,groupId){
+  document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");updatePreview();
+}
+function selectChip(el){
+  document.querySelectorAll("#locationGroup .chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");updatePreview();
+}
 
-  function updatePreview() {
-    document.getElementById("previewText").textContent = buildQuery();
-    const pills = document.getElementById("previewPlatforms");
-    pills.innerHTML = [...activePlatforms].map(k => `<span class="platform-pill">${PLATFORMS[k].emoji} ${PLATFORMS[k].label}</span>`).join("");
-    const count = activePlatforms.size;
-    const maxR  = parseInt(document.getElementById("maxResults").value);
-    document.getElementById("searchBtnLabel").textContent =
-      count === 1 ? `Search ${PLATFORMS[[...activePlatforms][0]].label}` : `Search ${count} Platforms`;
-  }
+function buildQuery(){
+  let base=activePresetValue;
+  if(base==="custom"){base=document.getElementById("customKeyword").value.trim()||"rich people filmed street"}
+  const subject =document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value||"";
+  const location=document.querySelector("#locationGroup .chip.active")?.dataset.value||"";
+  let q=base;
+  if(subject)  q+=` ${subject}`;
+  if(location) q+=` ${location}`;
+  return q;
+}
 
-  function setStatus(msg, loading = false) {
-    document.getElementById("statusText").textContent = msg;
-    document.getElementById("spinner").style.display = loading ? "block" : "none";
-  }
+function updatePreview(){
+  document.getElementById("previewText").textContent=buildQuery();
+  const pills=document.getElementById("previewPlatforms");
+  pills.innerHTML=[...activePlatforms].map(k=>`<span class="platform-pill">${PLATFORMS[k].emoji} ${PLATFORMS[k].label}</span>`).join("");
+  const count=activePlatforms.size;
+  document.getElementById("searchBtnLabel").textContent=
+    count===1?`Search ${PLATFORMS[[...activePlatforms][0]].label}`:`Search ${count} Platforms`;
+}
 
-  function setVisionProgress(current, total) {
-    const wrap = document.getElementById("visionBarWrap");
-    wrap.style.display = total > 0 ? "block" : "none";
-    document.getElementById("visionBarCount").textContent = `${current} / ${total}`;
-    document.getElementById("visionBarFill").style.width  = `${Math.round((current / total) * 100)}%`;
-    document.getElementById("visionBarLabel").textContent = current < total ? "👁 AI checking thumbnails..." : "✓ Vision filter complete";
-  }
+// ── Vibe Reference Analyser ──────────────────────────────────────────────────
+async function analyseVibeRefs(){
+  const key=document.getElementById("anthropicKey").value.trim();
+  if(!key){alert("Paste your Anthropic key first — AI analysis needs it.");return}
 
-  function clearAll() {
-    document.getElementById("results").innerHTML = "";
-    document.getElementById("visionBarWrap").style.display = "none";
-    document.getElementById("debugPanel").style.display = "none";
-    document.getElementById("debugText").textContent = "";
-    setStatus("");
-  }
+  const raw=document.getElementById("vibeRefUrls").value.trim();
+  const urls=raw.split(/\n/).map(s=>s.trim()).filter(s=>s.length>10&&(s.includes("instagram")||s.includes("tiktok")));
+  if(!urls.length){alert("Paste at least one Instagram or TikTok video URL.");return}
 
-  function showDebug(platformLabel, raw) {
-    if (!raw || raw.length === 0) return;
-    const panel = document.getElementById("debugPanel");
-    const pre   = document.getElementById("debugText");
-    const item  = raw[0];
-    const keys  = Object.keys(item);
-    // Show: platform, total count, all field names, and key values
-    const relevant = {};
-    ["url","id","videoId","duration","durationText","durationSeconds","lengthSeconds","length",
-     "type","isVideo","isShort","shortCode","caption","title","ownerUsername","videoUrl"].forEach(k => {
-      if (item[k] !== undefined) relevant[k] = item[k];
-    });
-    pre.textContent = `[${platformLabel}] ${raw.length} items returned\nAll keys: ${keys.join(", ")}\n\nKey fields on item[0]:\n${JSON.stringify(relevant, null, 2)}`;
-    panel.style.display = "block";
-  }
+  const btn=document.getElementById("vibeRefBtn");
+  const statusEl=document.getElementById("vibeRefStatus");
+  btn.disabled=true;
+  statusEl.style.display="block";
+  statusEl.textContent="⏳ Fetching thumbnails...";
 
-  async function apiFetch(path, token, options = {}) {
-    const res  = await fetch(`${BASE}${path}`, { ...options, headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", ...(options.headers||{}) }});
-    const text = await res.text();
-    let json;
-    try { json = JSON.parse(text); } catch { throw new Error(text.slice(0,200)); }
-    if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
-    return json;
-  }
-
-  // ── Main search — runs all active platforms in sequence ──────────
-  async function startSearch() {
-    const token        = document.getElementById("token").value.trim();
-    const anthropicKey = document.getElementById("anthropicKey").value.trim();
-    const maxResults   = parseInt(document.getElementById("maxResults").value);
-    const query        = buildQuery();
-
-    if (!token) return alert("Paste your Apify API token first.");
-    if (activePlatforms.size === 0) return alert("Select at least one platform.");
-
-    const btn = document.getElementById("searchBtn");
-    btn.disabled = true;
-    clearAll();
-
-    const allResults = [];
-
-    for (const platformKey of activePlatforms) {
-      const p = PLATFORMS[platformKey];
-      setStatus(`Searching ${p.label}...`, true);
-
-      try {
-        const fetchCount = maxResults * 3;
-        const runData = await apiFetch(`/acts/${p.actor}/runs`, token, {
-          method: "POST",
-          body: JSON.stringify(p.buildBody(query, fetchCount))
-        });
-
-        const runId     = runData.data?.id;
-        const datasetId = runData.data?.defaultDatasetId;
-        if (!runId) throw new Error(`No run ID for ${p.label}. Check your token.`);
-
-        await pollUntilDone(token, runId, p.label);
-        setStatus(`Filtering ${p.label}...`, true);
-
-        const resultData = await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`, token);
-        const raw        = Array.isArray(resultData) ? resultData : resultData.data?.items || [];
-        showDebug(p.label, raw);
-        const parsed     = p.parseItems(raw);
-        const hasURL     = parsed.filter(item => p.getUrl(item));
-
-        const keywordFiltered = hasURL.filter(item => !isBlockedByText(item, p));
-        let afterOrientation  = keywordFiltered;
-        const checkOrientation = document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value === "vertical";
-        if (checkOrientation) {
-          afterOrientation = keywordFiltered.filter(item => {
-            const w = p.getWidth(item), h = p.getHeight(item);
-            return !(w > 0 && h > 0 && h <= w);
-          });
-        }
-
-        const textFilter    = document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value || "all";
-        const useCandid     = !!anthropicKey; // candid check runs whenever there's an Anthropic key
-        const useTextVision = anthropicKey && textFilter !== "off";
-        let finalItems      = afterOrientation;
-        let visionRemoved   = 0;
-
-        if ((useCandid || useTextVision) && afterOrientation.length > 0) {
-          setStatus(`👁 AI vision filter: ${p.label}...`, true);
-          const toCheck = afterOrientation.slice(0, maxResults * 4); // check more candidates
-          setVisionProgress(0, toCheck.length);
-          const visionResults = [];
-
-          for (let i = 0; i < toCheck.length; i++) {
-            const item      = toCheck[i];
-            const thumbnail = p.getThumbnail(item);
-            setVisionProgress(i + 1, toCheck.length);
-
-            if (!thumbnail) {
-              // No thumbnail — skip vision, let text filter decide
-              visionResults.push(item);
-              if (visionResults.length >= maxResults) break;
-              continue;
-            }
-
-            // ── Pass 1: Candid scene check ──────────────────────────
-            if (useCandid) {
-              const candid = await checkCandid(thumbnail, anthropicKey);
-              if (!candid.pass) { visionRemoved++; continue; }
-            }
-
-            // ── Pass 2: Text overlay check ──────────────────────────
-            if (useTextVision) {
-              const overlay = await checkTextOverlay(thumbnail, anthropicKey, textFilter);
-              if (overlay.block) { visionRemoved++; continue; }
-            }
-
-            visionResults.push(item);
-            if (visionResults.length >= maxResults) break;
-          }
-          finalItems = visionResults;
-        }
-
-        const kept = finalItems.slice(0, maxResults);
-        kept.forEach(item => allResults.push({ item, platform: p }));
-
-      } catch (e) {
-        // Show inline error for this platform but continue with others
-        const box = document.getElementById("results");
-        const errDiv = document.createElement("div");
-        errDiv.className = "error-card";
-        errDiv.style.margin = "0 16px 10px";
-        errDiv.innerHTML = `${p.emoji} <strong>${p.label}</strong>: ${esc(e.message)}<div class="error-sub">Skipped. Check your token or try again.</div>`;
-        box.appendChild(errDiv);
+  // Extract shortcodes from Instagram URLs
+  const thumbUrls=[];
+  for(const url of urls.slice(0,6)){
+    // Build thumbnail URL using Instagram's CDN embed trick
+    // We use the oEmbed endpoint which is public
+    try{
+      const code=(url.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/)||[])[2]||
+                 (url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)||[])[1];
+      if(!code)continue;
+      // For Instagram, use oEmbed to get thumbnail
+      if(url.includes("instagram")){
+        const oembed=await fetch(`https://www.instagram.com/api/v1/oembed/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(()=>null);
+        if(oembed?.thumbnail_url) thumbUrls.push(oembed.thumbnail_url);
       }
-    }
+    }catch{}
+  }
 
-    btn.disabled = false;
-    setStatus("");
-    document.getElementById("visionBarWrap").style.display = "none";
+  // If we got thumbnails, analyse them. Otherwise fall back to text-only analysis of the URLs.
+  statusEl.textContent=`✨ AI analysing ${thumbUrls.length} thumbnails...`;
 
-    if (allResults.length > 0) {
-      displayResults(allResults, query);
-    } else if (!document.getElementById("results").querySelector(".error-card")) {
-      document.getElementById("results").innerHTML = `<div class="error-card" style="margin:0 16px">No clean videos found for "${esc(query)}".<div class="error-sub">Try a different preset or turn off some filters.</div></div>`;
+  let vibeDescription="";
+
+  if(thumbUrls.length>0){
+    // Fetch and encode first thumbnail
+    try{
+      const imgRes=await fetch(thumbUrls[0]);
+      const blob=await imgRes.blob();
+      const base64=await blobToBase64(blob);
+      const mime=blob.type||"image/jpeg";
+      const prompt=`You are a search assistant for a luxury content discovery app. Look at this video thumbnail and describe in 1-2 sentences: what type of person is shown, what they're doing, where they are, and the overall vibe/aesthetic. Then suggest a search query (3-6 words) that would find similar candid videos of wealthy people. Format your reply as:
+VIBE: [1-2 sentence description]
+QUERY: [search terms]`;
+      const result=await callClaude(key,prompt,base64,mime,120);
+      const vibeMatch=result.match(/VIBE:\s*(.+)/i);
+      const queryMatch=result.match(/QUERY:\s*(.+)/i);
+      if(vibeMatch) vibeDescription=vibeMatch[1].trim();
+      if(queryMatch){
+        const detectedQuery=queryMatch[1].trim();
+        // Apply detected query as custom preset
+        activePresetValue="custom";
+        document.querySelectorAll("#presetGrid .preset-card").forEach(c=>c.classList.remove("active"));
+        const customCard=document.querySelector('[data-value="custom"]');
+        customCard?.classList.add("active");
+        const customInp=document.getElementById("customKeyword");
+        customInp.value=detectedQuery;
+        customInp.classList.add("visible");
+        // Store vibe prompt override for the candid check
+        vibePromptOverride=`This app finds candid videos matching this specific vibe: ${vibeDescription}. Does this thumbnail match that vibe? Reply only YES or NO.`;
+        updatePreview();
+      }
+    }catch(e){vibeDescription="Could not analyse thumbnail — will use URL context only."}
+  } else {
+    // No thumbnails — just use URL patterns as hint
+    vibeDescription="Based on the URLs provided, searching for similar candid luxury content.";
+  }
+
+  statusEl.style.display="none";
+  const resultBox=document.getElementById("vibeRefResult");
+  document.getElementById("vibeRefText").textContent=vibeDescription||"Vibe detected — custom search applied.";
+  resultBox.style.display="block";
+  btn.disabled=false;
+}
+
+// ── Scheduler ────────────────────────────────────────────────────────────────
+function updateScheduler(){
+  const enabled=document.getElementById("schedulerEnabled").checked;
+  const timeRow=document.getElementById("schedulerTimeRow");
+  const liveEl =document.getElementById("schedulerLive");
+  const nextEl =document.getElementById("schedulerNext");
+
+  timeRow.style.display=enabled?"flex":"none";
+  if(schedulerTimer){clearTimeout(schedulerTimer);schedulerTimer=null}
+
+  if(!enabled){
+    liveEl.style.display="none";nextEl.textContent="Off";return;
+  }
+
+  liveEl.style.display="flex";
+  scheduleNextRun();
+}
+
+function scheduleNextRun(){
+  const h=parseInt(document.getElementById("schedHour").value)||0;
+  const m=parseInt(document.getElementById("schedMin").value)||0;
+  const now=new Date();
+  const target=new Date();
+  target.setHours(h,m,0,0);
+  if(target<=now) target.setDate(target.getDate()+1);
+  const msUntil=target-now;
+  const nextEl=document.getElementById("schedulerNext");
+  nextEl.textContent=`Next run: ${target.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+  schedulerTimer=setTimeout(()=>{
+    startSearch();
+    setTimeout(scheduleNextRun,1000);
+  },msUntil);
+}
+
+// ── Core search ──────────────────────────────────────────────────────────────
+function setStatus(msg,loading=false){
+  document.getElementById("statusText").textContent=msg;
+  document.getElementById("spinner").style.display=loading?"block":"none";
+}
+function setVisionProgress(current,total){
+  const wrap=document.getElementById("visionBarWrap");
+  wrap.style.display=total>0?"block":"none";
+  document.getElementById("visionBarCount").textContent=`${current} / ${total}`;
+  document.getElementById("visionBarFill").style.width=`${Math.round(current/total*100)}%`;
+  document.getElementById("visionBarLabel").textContent=current<total?"👁 AI checking thumbnails...":"✓ Vision filter complete";
+}
+function clearAll(){
+  document.getElementById("results").innerHTML="";
+  document.getElementById("visionBarWrap").style.display="none";
+  setStatus("");
+}
+
+async function apiFetch(path,token,options={}){
+  const res=await fetch(`${BASE}${path}`,{...options,headers:{"Authorization":`Bearer ${token}`,"Content-Type":"application/json",...(options.headers||{})}});
+  const text=await res.text();
+  let json;try{json=JSON.parse(text)}catch{throw new Error(text.slice(0,200))}
+  if(!res.ok)throw new Error(json?.error?.message||`HTTP ${res.status}`);
+  return json;
+}
+
+async function startSearch(){
+  const token       =document.getElementById("token").value.trim();
+  const anthropicKey=document.getElementById("anthropicKey").value.trim();
+  const maxResults  =parseInt(document.getElementById("maxResults").value);
+  const query       =buildQuery();
+
+  if(!token)return alert("Paste your Apify API token first.");
+  if(!activePlatforms.size)return alert("Select at least one platform.");
+
+  const btn=document.getElementById("searchBtn");
+  btn.disabled=true;clearAll();
+
+  const allResults=[];
+
+  for(const platformKey of activePlatforms){
+    const p=PLATFORMS[platformKey];
+    setStatus(`Searching ${p.label}...`,true);
+    try{
+      const fetchCount=maxResults*4;
+      const runData=await apiFetch(`/acts/${p.actor}/runs`,token,{
+        method:"POST",body:JSON.stringify(p.buildBody(query,fetchCount))
+      });
+      const runId    =runData.data?.id;
+      const datasetId=runData.data?.defaultDatasetId;
+      if(!runId)throw new Error(`No run ID for ${p.label}.`);
+
+      await pollUntilDone(token,runId,p.label);
+      setStatus(`Filtering ${p.label}...`,true);
+
+      const resultData=await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`,token);
+      const raw       =Array.isArray(resultData)?resultData:resultData.data?.items||[];
+      const parsed    =p.parseItems(raw);
+      const hasURL    =parsed.filter(item=>p.getUrl(item));
+      const kwFiltered=hasURL.filter(item=>!isBlockedByText(item,p));
+
+      let afterOrient=kwFiltered;
+      if(document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value==="vertical"){
+        afterOrient=kwFiltered.filter(item=>{
+          const w=p.getWidth(item),h=p.getHeight(item);
+          return !(w>0&&h>0&&h<=w);
+        });
+      }
+
+      const textFilter   =document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value||"all";
+      const useCandid    =!!anthropicKey;
+      const useTextVision=anthropicKey&&textFilter!=="off";
+      let finalItems     =afterOrient;
+      let visionRemoved  =0;
+
+      if((useCandid||useTextVision)&&afterOrient.length>0){
+        setStatus(`👁 AI vision: ${p.label}...`,true);
+        const toCheck=afterOrient.slice(0,maxResults*4);
+        setVisionProgress(0,toCheck.length);
+        const visionResults=[];
+
+        for(let i=0;i<toCheck.length;i++){
+          const item     =toCheck[i];
+          const thumbnail=p.getThumbnail(item);
+          setVisionProgress(i+1,toCheck.length);
+
+          if(!thumbnail){
+            visionResults.push(item);
+            if(visionResults.length>=maxResults)break;
+            continue;
+          }
+
+          // Pass 1: Candid scene check
+          if(useCandid){
+            const candid=await checkCandid(thumbnail,anthropicKey);
+            if(!candid.pass){visionRemoved++;continue}
+          }
+
+          // Pass 2: Text overlay check
+          if(useTextVision){
+            const overlay=await checkTextOverlay(thumbnail,anthropicKey,textFilter);
+            if(overlay.block){visionRemoved++;continue}
+          }
+
+          visionResults.push(item);
+          if(visionResults.length>=maxResults)break;
+        }
+        finalItems=visionResults;
+      }
+
+      finalItems.slice(0,maxResults).forEach(item=>allResults.push({item,platform:p}));
+    }catch(e){
+      const box=document.getElementById("results");
+      const d=document.createElement("div");
+      d.className="error-card";d.style.margin="0 16px 10px";
+      d.innerHTML=`${p.emoji} <strong>${p.label}</strong>: ${esc(e.message)}<div class="error-sub">Skipped.</div>`;
+      box.appendChild(d);
     }
   }
 
-  async function pollUntilDone(token, runId, platformLabel) {
-    const MAX_MS = 180_000, INTERVAL = 5_000;
-    let elapsed = 0;
-    while (elapsed < MAX_MS) {
-      await new Promise(r => setTimeout(r, INTERVAL));
-      elapsed += INTERVAL;
-      const data = await apiFetch(`/actor-runs/${runId}`, token);
-      const s    = data.data?.status;
-      setStatus(`Scraping ${platformLabel}... ${Math.round(elapsed/1000)}s`, true);
-      if (s === "SUCCEEDED") return;
-      if (["FAILED","ABORTED","TIMED-OUT"].includes(s)) throw new Error(`Run ${s}. Try a different preset.`);
-    }
-    throw new Error("Timed out. Try again.");
+  btn.disabled=false;setStatus("");
+  document.getElementById("visionBarWrap").style.display="none";
+  if(allResults.length>0) displayResults(allResults,query);
+  else if(!document.getElementById("results").querySelector(".error-card"))
+    document.getElementById("results").innerHTML=`<div class="error-card" style="margin:0 16px">No results for "${esc(query)}".<div class="error-sub">Try a different vibe or loosen filters.</div></div>`;
+}
+
+async function pollUntilDone(token,runId,label){
+  const MAX=180000,INT=5000;let elapsed=0;
+  while(elapsed<MAX){
+    await new Promise(r=>setTimeout(r,INT));elapsed+=INT;
+    const d=await apiFetch(`/actor-runs/${runId}`,token);
+    const s=d.data?.status;
+    setStatus(`Scraping ${label}... ${Math.round(elapsed/1000)}s`,true);
+    if(s==="SUCCEEDED")return;
+    if(["FAILED","ABORTED","TIMED-OUT"].includes(s))throw new Error(`Run ${s}.`);
   }
+  throw new Error("Timed out.");
+}
 
+// ── Vision functions ─────────────────────────────────────────────────────────
+async function checkCandid(thumbnailUrl,anthropicKey){
+  if(!thumbnailUrl||!anthropicKey)return{pass:true};
+  try{
+    const imgRes=await fetch(thumbnailUrl);
+    if(!imgRes.ok)return{pass:true};
+    const blob=await imgRes.blob();
+    const base64=await blobToBase64(blob);
+    const mime=blob.type||"image/jpeg";
 
-  // ── Vision: text overlay check (existing) ───────────────────────
-  async function checkTextOverlay(thumbnailUrl, anthropicKey, textFilter) {
-    if (!thumbnailUrl || !anthropicKey) return { block: false };
-    try {
-      const imgRes = await fetch(thumbnailUrl);
-      if (!imgRes.ok) return { block: false };
-      const blob   = await imgRes.blob();
-      const base64 = await blobToBase64(blob);
-      const mime   = blob.type || "image/jpeg";
-      const prompt = textFilter === "all"
-        ? `Does this image contain ANY text, words, quotes, captions, subtitles, lyrics, dates or letters that are part of the video content? The ONLY exception is tiny semi-transparent corner watermarks. Reply only YES or NO.`
-        : `Does this image contain text that is LARGE or prominent enough that it could NOT be covered by a small overlay without sticking out? Small subtle text = NO. Large dominant text = YES. Tiny watermarks = NO. Reply only YES or NO.`;
-      const res = await callClaude(anthropicKey, prompt, base64, mime, 5);
-      const answer = res.toUpperCase();
-      return { block: answer === "YES" || answer.startsWith("YES") };
-    } catch { return { block: false }; }
-  }
+    // Use vibe override prompt if set by vibe reference analyser
+    const prompt=vibePromptOverride||`You are filtering video thumbnails for an app that finds candid footage of wealthy people in public — on streets, at ports, restaurants, beaches, clubs, or luxury locations.
 
-  // ── Vision: candid scene check (NEW — the main filter) ──────────
-  // Asks Claude: is this actually a real person in a public/outdoor/luxury setting?
-  // Returns { pass: true } if it looks like candid street/location footage.
-  async function checkCandid(thumbnailUrl, anthropicKey) {
-    if (!thumbnailUrl || !anthropicKey) return { pass: true }; // no key = allow through
-    try {
-      const imgRes = await fetch(thumbnailUrl);
-      if (!imgRes.ok) return { pass: true };
-      const blob   = await imgRes.blob();
-      const base64 = await blobToBase64(blob);
-      const mime   = blob.type || "image/jpeg";
-      const prompt = `You are filtering video thumbnails for an app that finds candid footage of wealthy people in public — on streets, at ports, restaurants, beaches, clubs, or luxury locations. Caught-on-camera style.
-
-Look at this thumbnail and answer YES if it shows:
-- Real person(s) in a public outdoor or semi-outdoor setting (street, port, beach, restaurant terrace, airport, club entrance, pool area)
-- Candid or paparazzi-style shot — person may or may not know they're being filmed
-- Luxury context: designer clothes, jewellery, exotic location, yacht, private jet interior, upscale venue
+Answer YES if it shows:
+- Real person(s) in a public outdoor or semi-outdoor setting
+- Candid or caught-on-camera style shot
+- Luxury context: designer clothes, jewellery, exotic location, yacht, upscale venue
 
 Answer NO if it shows:
-- Wedding, ceremony, formal event, red carpet
-- Indoor grooming, skincare, workout, gym, beauty routine  
-- Car interior or car-focused shot with no visible person
-- Interior design, home tour, room/house with no people
-- Talking head facing the camera directly in a studio or bedroom
-- Motivational quote or text overlay as the main subject
-- Product, food, or object with no person
-- Group of people at a planned formal event
+- Wedding, ceremony, formal event
+- Indoor grooming, skincare, workout or gym
+- Car interior with no visible person
+- Interior design or home tour with no people
+- Talking head facing camera in studio/bedroom
+- Text/motivational quote as main subject
+- Product or food with no person
 
 Reply only YES or NO.`;
-      const res = await callClaude(anthropicKey, prompt, base64, mime, 5);
-      const answer = res.toUpperCase().trim();
-      return { pass: answer === "YES" || answer.startsWith("YES") };
-    } catch { return { pass: true }; } // on error, allow through
+
+    const res=await callClaude(anthropicKey,prompt,base64,mime,5);
+    return{pass:res.toUpperCase().startsWith("YES")};
+  }catch{return{pass:true}}
+}
+
+async function checkTextOverlay(thumbnailUrl,anthropicKey,textFilter){
+  if(!thumbnailUrl||!anthropicKey)return{block:false};
+  try{
+    const imgRes=await fetch(thumbnailUrl);
+    if(!imgRes.ok)return{block:false};
+    const blob=await imgRes.blob();
+    const base64=await blobToBase64(blob);
+    const mime=blob.type||"image/jpeg";
+    const prompt=textFilter==="all"
+      ?`Does this image contain ANY text, words, captions, subtitles, or letters? Exception: tiny semi-transparent watermarks. Reply only YES or NO.`
+      :`Does this image contain text LARGE enough it could not be covered by a small overlay? Reply only YES or NO.`;
+    const res=await callClaude(anthropicKey,prompt,base64,mime,5);
+    return{block:res.toUpperCase().startsWith("YES")};
+  }catch{return{block:false}}
+}
+
+async function callClaude(anthropicKey,prompt,base64,mime,maxTokens=5){
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:maxTokens,messages:[{role:"user",content:[
+      {type:"image",source:{type:"base64",media_type:mime,data:base64}},
+      {type:"text",text:prompt}
+    ]}]})
+  });
+  const data=await res.json();
+  return data?.content?.[0]?.text?.trim()||"";
+}
+
+function blobToBase64(blob){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();r.onloadend=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(blob);
+  });
+}
+
+// ── Seen URLs memory (persists across sessions via window.storage) ────────────
+const SEEN_KEY = "reelvault:seen_urls";
+let seenUrls = new Set(); // loaded on init
+
+async function loadSeenUrls() {
+  try {
+    const result = await window.storage.get(SEEN_KEY);
+    if (result?.value) {
+      const arr = JSON.parse(result.value);
+      seenUrls = new Set(arr);
+    }
+  } catch { seenUrls = new Set(); }
+}
+
+async function saveSeenUrls() {
+  try {
+    // Keep max 2000 URLs to avoid bloat — trim oldest (front of array)
+    let arr = [...seenUrls];
+    if (arr.length > 2000) arr = arr.slice(arr.length - 2000);
+    seenUrls = new Set(arr);
+    await window.storage.set(SEEN_KEY, JSON.stringify(arr));
+  } catch {}
+}
+
+async function clearSeenUrls() {
+  seenUrls = new Set();
+  try { await window.storage.delete(SEEN_KEY); } catch {}
+  document.getElementById("seenCount").textContent = "0 seen";
+  document.getElementById("results").innerHTML =
+    `<div class="error-card" style="margin:0 16px">History cleared — all videos will appear fresh next search.<div class="error-sub">Run a search to start building new history.</div></div>`;
+}
+
+async function updateSeenCount() {
+  const el = document.getElementById("seenCount");
+  if (el) el.textContent = `${seenUrls.size.toLocaleString()} seen`;
+}
+
+// ── Display ──────────────────────────────────────────────────────────────────
+async function displayResults(allResults, query) {
+  const box = document.getElementById("results");
+  let skipped = 0;
+  const fresh = [];
+
+  for (const r of allResults) {
+    const url = r.platform.getUrl(r.item);
+    // Normalise URL — strip query params for dedup
+    const normUrl = url.split("?")[0].replace(/\/$/, "");
+    if (normUrl && seenUrls.has(normUrl)) { skipped++; continue; }
+    fresh.push(r);
   }
 
-  // ── Shared Claude API call ────────────────────────────────────────
-  async function callClaude(anthropicKey, prompt, base64, mime, maxTokens = 5) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: maxTokens,
-        messages: [{ role: "user", content: [
-          { type: "image", source: { type: "base64", media_type: mime, data: base64 } },
-          { type: "text", text: prompt }
-        ]}]
-      })
-    });
-    const data = await res.json();
-    return data?.content?.[0]?.text?.trim() || "";
+  const perPlatform = {};
+  fresh.forEach(({ platform }) => {
+    perPlatform[platform.label] = (perPlatform[platform.label] || 0) + 1;
+  });
+
+  let meta = `<div class="results-meta"><span class="badge-count">✓ ${fresh.length} new videos</span>`;
+  Object.entries(perPlatform).forEach(([label, count]) => {
+    const p = Object.values(PLATFORMS).find(x => x.label === label);
+    meta += `<span class="badge-platform">${p?.emoji || ""} ${label} ${count}</span>`;
+  });
+  if (skipped > 0)
+    meta += `<span class="badge-removed">🔁 ${skipped} already seen, skipped</span>`;
+  meta += `</div>`;
+  box.innerHTML += meta;
+
+  if (fresh.length === 0 && skipped > 0) {
+    box.innerHTML += `<div class="error-card" style="margin:0 16px">All results were already seen.<div class="error-sub">Try a different preset, or clear history to start fresh.</div></div>`;
+    return;
   }
 
-  function blobToBase64(blob) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onloadend = () => res(r.result.split(",")[1]);
-      r.onerror   = rej;
-      r.readAsDataURL(blob);
-    });
-  }
+  fresh.forEach(({ item, platform: p }, i) => {
+    const url    = p.getUrl(item);
+    const normUrl = url.split("?")[0].replace(/\/$/, "");
+    const author = p.getAuthor(item);
+    const desc   = p.getDesc(item);
+    const views  = p.getViews(item);
+    const likes  = p.getLikes(item);
+    const card   = document.createElement("div");
+    card.className = "result-card"; card.style.animationDelay = `${i * 0.04}s`;
+    card.innerHTML = `
+      <div class="result-platform-badge">${p.emoji} ${p.label}</div>
+      <div class="result-author">@${esc(author)}</div>
+      ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
+      <div class="result-stats">
+        ${views ? `<span>👁 ${Number(views).toLocaleString()}</span>` : ""}
+        ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
+      </div>
+      <a class="result-link-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+        <span>${esc(p.getLinkLabel())}</span>
+        <span class="result-link-arrow">↗</span>
+      </a>`;
+    box.appendChild(card);
 
-  function displayResults(allResults, query) {
-    const box = document.getElementById("results");
+    // Mark as seen
+    if (normUrl) seenUrls.add(normUrl);
+  });
 
-    // Count per platform
-    const perPlatform = {};
-    allResults.forEach(({ platform }) => {
-      perPlatform[platform.label] = (perPlatform[platform.label] || 0) + 1;
-    });
+  // Persist seen URLs after each display
+  await saveSeenUrls();
+  await updateSeenCount();
+}
 
-    let meta = `<div class="results-meta"><span class="badge-count">✓ ${allResults.length} videos</span>`;
-    Object.entries(perPlatform).forEach(([label, count]) => {
-      const p = Object.values(PLATFORMS).find(x => x.label === label);
-      meta += `<span class="badge-platform">${p?.emoji || ""} ${label} ${count}</span>`;
-    });
-    meta += `</div>`;
-    box.innerHTML += meta;
+function esc(str) {
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
 
-    allResults.forEach(({ item, platform: p }, i) => {
-      const url    = p.getUrl(item);
-      const author = p.getAuthor(item);
-      const desc   = p.getDesc(item);
-      const views  = p.getViews(item);
-      const likes  = p.getLikes(item);
+document.addEventListener("keydown", e => { if (e.key==="Enter" && e.target.id!=="customKeyword" && e.target.id!=="vibeRefUrls") startSearch() });
 
-      const card = document.createElement("div");
-      card.className = "result-card";
-      card.style.animationDelay = `${i * 0.04}s`;
-      card.innerHTML = `
-        <div class="result-platform-badge">${p.emoji} ${p.label}</div>
-        <div class="result-author">@${esc(author)}</div>
-        ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
-        <div class="result-stats">
-          ${views ? `<span>👁 ${Number(views).toLocaleString()}</span>` : ""}
-          ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
-        </div>
-        <a class="result-link-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
-          <span>${esc(p.getLinkLabel())}</span>
-          <span class="result-link-arrow">↗</span>
-        </a>`;
-      box.appendChild(card);
-    });
-  }
-
-  function esc(str) {
-    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  }
-
-  document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id !== "customKeyword") startSearch(); });
-  updatePreview();
+// Init: load seen URLs on startup
+loadSeenUrls().then(updateSeenCount);
+updatePreview();
 </script>
 </body>
 </html>
