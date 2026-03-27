@@ -516,8 +516,21 @@ const PLATFORMS = {
         addParentData:false
       };
     },
-    parseItems:raw=>raw.filter(i=>i.type==="Video"||i.videoUrl||i.url?.includes("/reel/")||i.isVideo),
-    getUrl:   i=>i.url||(i.shortCode?`https://www.instagram.com/reel/${i.shortCode}/`:""),
+    parseItems:raw=>{
+      // Accept any item that is a video — field name varies by scraper version
+      // GraphVideo, Video, isVideo:true, videoUrl present, or /reel/ or /p/ with video duration
+      return raw.filter(i=>
+        i.type==="Video"||i.type==="GraphVideo"||i.type==="Reel"||
+        i.isVideo===true||i.videoUrl||i.videoPlayCount!==undefined||
+        i.url?.includes("/reel/")||i.url?.includes("/p/")
+      );
+    },
+    getUrl:   i=>{
+      if(i.url) return i.url;
+      // Build reel URL from shortCode
+      if(i.shortCode) return `https://www.instagram.com/reel/${i.shortCode}/`;
+      return "";
+    },
     getAuthor:i=>i.ownerUsername||i.ownerId||"unknown",
     getDesc:  i=>i.caption||i.description||"",
     getViews: i=>i.videoViewCount||i.videoPlayCount||"",
@@ -531,10 +544,11 @@ const PLATFORMS = {
   youtube: {
     label:"Shorts", emoji:"▶️",
     actor:"streamers~youtube-scraper",
+    // type:"video" + "#shorts" in query = the config confirmed working in v2
     buildBody:(query,n)=>({
-      searchKeywords:query,
+      searchKeywords:query + " #shorts",
       maxResults:n,
-      type:"shorts"
+      type:"video"
     }),
     parseItems:raw=>raw,
     getUrl:   i=>{
