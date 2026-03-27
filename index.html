@@ -3,360 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reel Vault v4</title>
+<title>Reel Vault v5</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap');
-
-:root {
-  --bg: #000;
-  --surface: #1c1c1e;
-  --surface2: #2c2c2e;
-  --surface3: #3a3a3c;
-  --silver: #e8e8e8;
-  --silver2: rgba(235,235,245,0.6);
-  --silver3: rgba(235,235,245,0.3);
-  --silver4: rgba(235,235,245,0.12);
-  --silver5: rgba(235,235,245,0.06);
-  --separator: rgba(235,235,245,0.08);
-  --text: #fff;
-  --muted: rgba(255,255,255,0.4);
-  --chrome: linear-gradient(135deg,#c8c8c8 0%,#f0f0f0 25%,#a8a8a8 45%,#fff 55%,#b0b0b0 75%,#e0e0e0 100%);
-  --green: #30d158;
+:root{
+  --bg:#000;--surface:#1c1c1e;--surface2:#2c2c2e;--surface3:#3a3a3c;
+  --silver:#e8e8e8;--silver2:rgba(235,235,245,0.6);--silver3:rgba(235,235,245,0.3);
+  --silver4:rgba(235,235,245,0.12);--silver5:rgba(235,235,245,0.06);
+  --sep:rgba(235,235,245,0.08);--text:#fff;--muted:rgba(255,255,255,0.4);
+  --green:#30d158;
+  --chrome:linear-gradient(135deg,#c8c8c8 0%,#f0f0f0 25%,#a8a8a8 45%,#fff 55%,#b0b0b0 75%,#e0e0e0 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Figtree',-apple-system,sans-serif;min-height:100vh;padding-bottom:100px;-webkit-font-smoothing:antialiased}
 
-/* ── Header ── */
-.app-header{padding:60px 22px 20px;background:linear-gradient(180deg,#111 0%,#000 100%)}
-.header-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--chrome);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;display:inline-block}
-.app-title{font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1}
-.app-subtitle{font-size:14px;color:var(--muted);margin-top:5px;font-weight:400}
-.version-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;background:var(--surface2);color:var(--muted);border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+/* Header */
+.hdr{padding:60px 22px 20px;background:linear-gradient(180deg,#111 0%,#000 100%)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--chrome);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;margin-bottom:6px}
+.title{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1}
+.subtitle{font-size:14px;color:var(--muted);margin-top:5px}
+.vbadge{font-size:10px;font-weight:700;letter-spacing:1px;background:var(--surface2);color:var(--muted);border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:middle;display:inline-block}
 
-/* ── Section ── */
-.section{padding:0 16px;margin-top:28px}
-.section-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-left:4px}
+/* Section */
+.sec{padding:0 16px;margin-top:28px}
+.sec-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-left:4px}
 
-/* ── Platform tiles ── */
-.platform-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.platform-tile{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:14px 12px 12px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:7px;user-select:none}
-.platform-tile:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
-.platform-tile:active{transform:scale(0.95);transition:transform 0.08s}
-.platform-tile.active{background:var(--surface2);border-color:rgba(235,235,245,0.4);box-shadow:0 2px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.12);animation:tilePop 0.28s cubic-bezier(0.34,1.56,0.64,1)}
-.platform-tile.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.14) 50%,transparent 100%);transform:skewX(-15deg);animation:tileGlare 0.5s ease 0.05s forwards}
-@keyframes tileGlare{0%{left:-80%;opacity:1}100%{left:130%;opacity:0}}
-@keyframes tilePop{0%{transform:scale(0.87);opacity:0.4}55%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
-.platform-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--surface3)}
-.platform-name{font-size:12px;font-weight:700;color:var(--silver2);letter-spacing:-0.1px;transition:color 0.18s}
-.platform-tile.active .platform-name{color:var(--silver)}
-.platform-check{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--silver3);display:flex;align-items:center;justify-content:center;transition:all 0.18s}
-.platform-tile.active .platform-check{border-color:var(--silver);background:var(--silver)}
-.platform-check-dot{width:6px;height:6px;border-radius:50%;background:#111;opacity:0;transition:opacity 0.15s}
-.platform-tile.active .platform-check-dot{opacity:1}
+/* List group */
+.lg{background:var(--surface);border-radius:16px;overflow:hidden}
+.lr{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid var(--sep);transition:background .18s}
+.lr:last-child{border-bottom:none}
+.lr:hover{background:var(--silver5)}
+.icon{width:32px;height:32px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.lbl{font-size:16px;font-weight:500;flex:1}
+.sub{font-size:12px;color:var(--muted);margin-top:1px}
+.inp{background:none;border:none;outline:none;font-family:inherit;font-size:15px;color:var(--silver2);flex:1;min-width:0}
+.inp::placeholder{color:var(--muted)}
+.sel-wrap{flex:1;display:flex;justify-content:flex-end}
+.sel{appearance:none;-webkit-appearance:none;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--silver);cursor:pointer;text-align:right;max-width:180px}
 
-/* ── List group ── */
-.list-group{background:var(--surface);border-radius:16px;overflow:hidden}
-.list-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid var(--separator);transition:background 0.18s}
-.list-row:last-child{border-bottom:none}
-.list-row:hover{background:var(--silver5)}
-.row-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--surface2)}
-.row-label{font-size:16px;font-weight:500;color:var(--text);flex:1}
-.row-sublabel{font-size:12px;color:var(--muted);margin-top:1px}
-.row-input{background:none;border:none;outline:none;font-family:inherit;font-size:15px;color:var(--silver2);flex:1;min-width:0}
-.row-input::placeholder{color:var(--muted);font-size:15px}
-.row-select-wrap{flex:1;display:flex;justify-content:flex-end}
-.row-select{appearance:none;-webkit-appearance:none;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--silver);cursor:pointer;text-align:right;max-width:180px}
+/* Platform tiles */
+.pg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.pt{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:14px 12px 12px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:7px;user-select:none}
+.pt:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
+.pt.active{background:var(--surface2);border-color:rgba(235,235,245,.4);box-shadow:0 2px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);animation:tpop .28s cubic-bezier(.34,1.56,.64,1)}
+.pt.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.14) 50%,transparent 100%);transform:skewX(-15deg);animation:tglare .5s ease .05s forwards}
+@keyframes tglare{0%{left:-80%;opacity:1}100%{left:130%;opacity:0}}
+@keyframes tpop{0%{transform:scale(.87);opacity:.4}55%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.pi{width:36px;height:36px;border-radius:10px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px}
+.pn{font-size:12px;font-weight:700;color:var(--silver2);transition:color .18s}
+.pt.active .pn{color:var(--silver)}
+.pck{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--silver3);display:flex;align-items:center;justify-content:center}
+.pt.active .pck{border-color:var(--silver);background:var(--silver)}
+.pckd{width:6px;height:6px;border-radius:50%;background:#111;opacity:0;transition:opacity .15s}
+.pt.active .pckd{opacity:1}
 
-/* ── Preset grid ── */
-.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.preset-card{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:13px 14px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;user-select:none}
-.preset-card:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
-.preset-card:active{transform:scale(0.96);transition:transform 0.08s}
-.preset-card.active{background:var(--surface2);border-color:rgba(235,235,245,0.38);box-shadow:0 2px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1);animation:chipPop 0.28s cubic-bezier(0.34,1.56,0.64,1)}
-.preset-card.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.14) 50%,transparent 100%);transform:skewX(-15deg);animation:chipGlare 0.5s ease 0.05s forwards}
-@keyframes chipGlare{0%{left:-80%;opacity:1}100%{left:130%;opacity:0}}
-@keyframes chipPop{0%{transform:scale(0.85);opacity:0.4}55%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
-.preset-card-custom{grid-column:1/-1}
-.preset-emoji{font-size:18px;margin-bottom:5px;display:block}
-.preset-title{font-size:13px;font-weight:700;color:var(--silver2);line-height:1.2;transition:color 0.18s}
-.preset-card.active .preset-title{color:var(--silver)}
-.preset-custom-input{background:none;border:none;outline:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);width:100%;margin-top:8px;padding-top:8px;border-top:1px solid var(--separator);display:none}
-.preset-custom-input::placeholder{color:var(--muted)}
-.preset-custom-input.visible{display:block}
+/* Segment */
+.seg{background:var(--surface2);border-radius:12px;padding:3px;display:flex;gap:2px}
+.sb{flex:1;border:none;background:none;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 6px;cursor:pointer;transition:all .2s}
+.sb:hover:not(.active){color:var(--silver2)}
+.sb.active{background:var(--surface3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.5);animation:spop .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes spop{0%{transform:scale(.88);opacity:.5}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 
-/* ── Segment ── */
-.segment{background:var(--surface2);border-radius:12px;padding:3px;display:flex;gap:2px}
-.seg-btn{flex:1;border:none;background:none;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 6px;cursor:pointer;transition:all 0.2s;letter-spacing:-0.1px}
-.seg-btn:hover:not(.active){color:var(--silver2)}
-.seg-btn:not(.active):active{transform:scale(0.92);transition:transform 0.08s}
-.seg-btn.active{background:var(--surface3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.5);animation:segPop 0.25s cubic-bezier(0.34,1.56,0.64,1)}
-@keyframes segPop{0%{transform:scale(0.88);opacity:0.5}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
-
-/* ── Chips ── */
-.chips-row{display:flex;gap:8px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}
-.chips-row::-webkit-scrollbar{display:none}
-.chip{background:var(--surface);border:1.5px solid var(--surface3);border-radius:20px;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);padding:8px 16px;cursor:pointer;white-space:nowrap;transition:all 0.18s;flex-shrink:0}
+/* Chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{background:var(--surface);border:1.5px solid var(--surface3);border-radius:20px;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);padding:8px 16px;cursor:pointer;white-space:nowrap;transition:all .18s;flex-shrink:0}
 .chip:hover:not(.active){border-color:var(--silver3);color:var(--silver);background:var(--silver5);transform:translateY(-1px)}
-.chip:active{transform:scale(0.94);transition:transform 0.08s}
-.chip.active{background:var(--surface2);border-color:rgba(235,235,245,0.35);color:var(--silver);position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15);animation:chipPop 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-.chip.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.18) 50%,transparent 100%);transform:skewX(-15deg);animation:chipGlare 0.5s ease 0.05s forwards}
+.chip.active{background:var(--surface2);border-color:rgba(235,235,245,.35);color:var(--silver);position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);animation:cpop .3s cubic-bezier(.34,1.56,.64,1)}
+.chip.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.18) 50%,transparent 100%);transform:skewX(-15deg);animation:tglare .5s ease .05s forwards}
+@keyframes cpop{0%{transform:scale(.85);opacity:.4}55%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 
-/* ── Filter blocks ── */
-.filter-block{padding:14px 16px;border-bottom:1px solid var(--separator)}
-.filter-block:last-child{border-bottom:none}
-.filter-block-header{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+/* Preset grid */
+.pregrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.precard{background:var(--surface);border:1.5px solid var(--surface3);border-radius:14px;padding:13px 14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;user-select:none}
+.precard:hover:not(.active){border-color:var(--silver3);background:var(--silver5);transform:translateY(-1px)}
+.precard.active{background:var(--surface2);border-color:rgba(235,235,245,.38);box-shadow:0 2px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1);animation:cpop .28s cubic-bezier(.34,1.56,.64,1)}
+.precard.active::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.14) 50%,transparent 100%);transform:skewX(-15deg);animation:tglare .5s ease .05s forwards}
+.precard-wide{grid-column:1/-1}
+.pre-emoji{font-size:18px;margin-bottom:5px;display:block}
+.pre-title{font-size:13px;font-weight:700;color:var(--silver2);line-height:1.2}
+.precard.active .pre-title{color:var(--silver)}
+.custom-inp{background:none;border:none;outline:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--silver2);width:100%;margin-top:8px;padding-top:8px;border-top:1px solid var(--sep);display:none}
+.custom-inp::placeholder{color:var(--muted)}
+.custom-inp.show{display:block}
 
-/* ── Vibe Reference Box ── */
-.vibe-ref-box{background:var(--surface);border-radius:16px;overflow:hidden}
-.vibe-ref-textarea{width:100%;background:var(--surface);border:none;outline:none;resize:none;font-family:inherit;font-size:13px;color:var(--silver2);padding:14px 16px;min-height:80px;line-height:1.5}
-.vibe-ref-textarea::placeholder{color:var(--muted)}
-.vibe-ref-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--separator)}
-.vibe-ref-hint{font-size:11px;color:var(--muted);font-weight:500}
-.vibe-ref-btn{background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:8px 14px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden}
-.vibe-ref-btn:hover{background:var(--surface3);color:var(--silver);transform:translateY(-1px)}
-.vibe-ref-btn:disabled{opacity:0.4;cursor:not-allowed}
-.vibe-ref-status{font-size:12px;color:var(--muted);padding:8px 16px;font-style:italic;display:none}
-.vibe-ref-result{background:var(--surface2);border-radius:12px;margin:0 16px 14px;padding:12px 14px;display:none}
-.vibe-ref-result-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.vibe-ref-result-text{font-size:13px;font-weight:600;color:var(--silver);line-height:1.4}
+/* Filter block */
+.fb{padding:14px 16px;border-bottom:1px solid var(--sep)}
+.fb:last-child{border-bottom:none}
+.fbh{display:flex;align-items:center;gap:14px;margin-bottom:12px}
 
-/* ── Scheduler ── */
-.scheduler-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid var(--separator)}
-.scheduler-row:last-child{border-bottom:none}
-.scheduler-toggle{position:relative;width:44px;height:26px;flex-shrink:0}
-.scheduler-toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:13px;cursor:pointer;transition:background 0.2s}
-.scheduler-toggle input:checked + .toggle-track{background:var(--green)}
-.toggle-knob{position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.4)}
-.scheduler-toggle input:checked + .toggle-track .toggle-knob{transform:translateX(18px)}
-.time-inputs{display:flex;gap:6px;align-items:center}
-.time-input{background:var(--surface3);border:1px solid var(--silver4);border-radius:8px;font-family:inherit;font-size:15px;font-weight:600;color:var(--silver);text-align:center;width:52px;padding:6px 4px;outline:none}
-.time-sep{font-size:18px;font-weight:700;color:var(--silver3);margin-bottom:2px}
-.scheduler-next{font-size:12px;color:var(--muted);margin-top:2px}
+/* Query preview */
+.qcard{background:var(--surface);border-radius:16px;padding:16px}
+.qeye{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.qtxt{font-size:17px;font-weight:600;color:var(--silver);line-height:1.3;margin-bottom:10px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--silver5);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);padding:4px 10px}
+.pplat{background:var(--surface2);border:1px solid var(--silver4);border-radius:20px;font-size:11px;font-weight:700;color:var(--silver2);padding:3px 9px;display:inline-flex;gap:3px;align-items:center}
 
-/* ── Query preview ── */
-.query-card{background:var(--surface);border-radius:16px;padding:16px}
-.query-eyebrow{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.query-text{font-size:17px;font-weight:600;color:var(--silver);line-height:1.3;margin-bottom:10px}
-.filter-pills{display:flex;flex-wrap:wrap;gap:6px}
-.filter-pill{background:var(--silver5);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);padding:4px 10px}
-.platform-pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
-.platform-pill{background:var(--surface2);border:1px solid var(--silver4);border-radius:20px;font-size:11px;font-weight:700;color:var(--silver2);padding:3px 9px}
-
-/* ── Chrome button ── */
+/* Buttons */
 .btn-row{display:flex;gap:10px;padding:0 16px;margin-top:16px}
-.search-btn{flex:1;position:relative;overflow:hidden;border:none;border-radius:14px;cursor:pointer;font-family:inherit;font-size:17px;font-weight:700;padding:16px;letter-spacing:-0.3px;color:#111;background:linear-gradient(160deg,#c0c0c0 0%,#f5f5f5 30%,#a8a8a8 50%,#f0f0f0 70%,#b8b8b8 100%);box-shadow:0 4px 20px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.2);transition:transform 0.15s,box-shadow 0.15s}
-.search-btn::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);transform:skewX(-20deg);transition:left 0.5s ease}
-.search-btn:hover::before{left:125%}
-.search-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,255,255,0.18),inset 0 1px 0 rgba(255,255,255,0.6)}
-.search-btn:active{transform:scale(0.97) translateY(0)}
-.search-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none}
-.search-btn:disabled::before{display:none}
-.clear-btn{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--silver4);border-radius:14px;color:var(--silver2);cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;padding:16px 22px;transition:background 0.18s,transform 0.1s,color 0.18s}
-.clear-btn:hover{background:var(--surface2);color:var(--silver);transform:translateY(-1px)}
-.clear-btn:active{transform:scale(0.97)}
+.btn-search{flex:1;position:relative;overflow:hidden;border:none;border-radius:14px;cursor:pointer;font-family:inherit;font-size:17px;font-weight:700;padding:16px;letter-spacing:-.3px;color:#111;background:linear-gradient(160deg,#c0c0c0 0%,#f5f5f5 30%,#a8a8a8 50%,#f0f0f0 70%,#b8b8b8 100%);box-shadow:0 4px 20px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(0,0,0,.2);transition:transform .15s,box-shadow .15s}
+.btn-search::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.5) 50%,transparent 100%);transform:skewX(-20deg);transition:left .5s ease}
+.btn-search:hover::before{left:125%}
+.btn-search:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,255,255,.18),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn-search:active{transform:scale(.97) translateY(0)}
+.btn-search:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-search:disabled::before{display:none}
+.btn-clear{background:var(--surface);border:1px solid var(--silver4);border-radius:14px;color:var(--silver2);cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;padding:16px 22px;transition:background .18s,transform .1s,color .18s}
+.btn-clear:hover{background:var(--surface2);color:var(--silver);transform:translateY(-1px)}
 
-/* ── Status / Vision bar ── */
+/* Status */
 .status-row{display:flex;align-items:center;gap:10px;padding:12px 20px 0;min-height:36px}
-.spinner{width:16px;height:16px;border:2px solid var(--silver4);border-top-color:var(--silver);border-radius:50%;animation:spin 0.7s linear infinite;display:none;flex-shrink:0}
+.spinner{width:16px;height:16px;border:2px solid var(--silver4);border-top-color:var(--silver);border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .status-txt{font-size:13px;color:var(--muted);font-weight:500}
-.vision-bar-wrap{padding:8px 20px 0;display:none}
-.vision-bar-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px}
-.vision-bar-bg{background:var(--surface2);border-radius:4px;height:3px;overflow:hidden}
-.vision-bar-fill{background:linear-gradient(90deg,#888,#fff);height:100%;border-radius:4px;transition:width 0.3s ease;width:0%}
+.vbar{padding:8px 20px 0;display:none}
+.vbar-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.vbar-bg{background:var(--surface2);border-radius:4px;height:3px;overflow:hidden}
+.vbar-fill{background:linear-gradient(90deg,#888,#fff);height:100%;border-radius:4px;transition:width .3s ease;width:0}
 
-/* ── Results ── */
+/* Scheduler toggle */
+.tog{position:relative;width:44px;height:26px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-track{position:absolute;inset:0;background:var(--surface3);border-radius:13px;cursor:pointer;transition:background .2s}
+.tog input:checked+.tog-track{background:var(--green)}
+.tog-knob{position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.tog input:checked+.tog-track .tog-knob{transform:translateX(18px)}
+.sched-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--green);margin-left:auto}
+.sched-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.time-row{display:flex;align-items:center;gap:6px}
+.tbox{background:var(--surface3);border:1px solid var(--silver4);border-radius:8px;font-family:inherit;font-size:15px;font-weight:600;color:var(--silver);text-align:center;width:52px;padding:6px 4px;outline:none}
+.tsep{font-size:18px;font-weight:700;color:var(--silver3);margin-bottom:2px}
+
+/* Results */
 #results{margin-top:24px}
-.results-meta{padding:0 16px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.badge-count{background:var(--surface2);border:1px solid rgba(235,235,245,0.2);color:var(--silver);border-radius:20px;font-size:12px;font-weight:700;padding:4px 12px}
-.badge-platform{background:var(--surface2);border:1px solid var(--silver4);color:var(--silver2);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
-.badge-removed{background:var(--surface);color:var(--muted);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
-.result-card{background:var(--surface);border-radius:16px;padding:16px;margin:0 16px 10px;animation:slideUp 0.3s ease both;border:1px solid var(--separator);transition:background 0.18s,transform 0.15s}
-.result-card:hover{background:#222;transform:translateY(-1px)}
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.result-platform-badge{display:inline-block;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px}
-.result-author{font-size:12px;font-weight:700;color:var(--silver2);letter-spacing:0.3px;margin-bottom:5px}
-.result-desc{font-size:14px;font-weight:400;color:var(--silver3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:8px}
-.result-stats{display:flex;gap:14px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:12px}
-.result-link-btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--silver4);border-radius:10px;padding:11px 14px;text-decoration:none;color:var(--silver);font-size:13px;font-weight:600;transition:background 0.18s,transform 0.15s}
-.result-link-btn::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%);transform:skewX(-20deg);transition:left 0.4s ease}
-.result-link-btn:hover::before{left:125%}
-.result-link-btn:hover{background:var(--surface3);transform:translateY(-1px)}
-.result-link-btn:active{opacity:0.7;transform:scale(0.98)}
-.result-link-arrow{color:var(--silver3);font-size:16px}
-.error-card{background:rgba(255,255,255,0.04);border:1px solid var(--separator);border-radius:16px;padding:18px;margin:0 16px;color:var(--silver2);font-size:15px;font-weight:500;line-height:1.5}
-.error-sub{font-size:13px;color:var(--muted);margin-top:6px;font-weight:400}
+.rmeta{padding:0 16px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.badgec{background:var(--surface2);border:1px solid rgba(235,235,245,.2);color:var(--silver);border-radius:20px;font-size:12px;font-weight:700;padding:4px 12px}
+.badgep{background:var(--surface2);border:1px solid var(--silver4);color:var(--silver2);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
+.badger{background:var(--surface);color:var(--muted);border-radius:20px;font-size:12px;font-weight:600;padding:4px 10px}
+.rcard{background:var(--surface);border-radius:16px;padding:16px;margin:0 16px 10px;animation:slideup .3s ease both;border:1px solid var(--sep);transition:background .18s,transform .15s}
+.rcard:hover{background:#222;transform:translateY(-1px)}
+@keyframes slideup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.rplat{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;display:block}
+.rauth{font-size:12px;font-weight:700;color:var(--silver2);letter-spacing:.3px;margin-bottom:5px}
+.rdesc{font-size:14px;color:var(--silver3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:8px}
+.rstats{display:flex;gap:14px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:12px}
+.rlink{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--silver4);border-radius:10px;padding:11px 14px;text-decoration:none;color:var(--silver);font-size:13px;font-weight:600;transition:background .18s,transform .15s}
+.rlink::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.1) 50%,transparent 100%);transform:skewX(-20deg);transition:left .4s ease}
+.rlink:hover::before{left:125%}
+.rlink:hover{background:var(--surface3);transform:translateY(-1px)}
+.rarrow{color:var(--silver3);font-size:16px}
+.errc{background:rgba(255,255,255,.04);border:1px solid var(--sep);border-radius:16px;padding:18px;margin:0 16px;color:var(--silver2);font-size:15px;font-weight:500;line-height:1.5}
+.errs{font-size:13px;color:var(--muted);margin-top:6px}
 
-/* ── Scheduler active indicator ── */
-.scheduler-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--green);margin-left:auto}
-.scheduler-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s ease infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+/* Vibe ref */
+.vref-box{background:var(--surface);border-radius:16px;overflow:hidden}
+.vref-ta{width:100%;background:var(--surface);border:none;outline:none;resize:none;font-family:inherit;font-size:13px;color:var(--silver2);padding:14px 16px;min-height:80px;line-height:1.5}
+.vref-ta::placeholder{color:var(--muted)}
+.vref-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--sep)}
+.vref-hint{font-size:11px;color:var(--muted);font-weight:500}
+.vref-btn{background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:8px 14px;cursor:pointer;transition:all .18s}
+.vref-btn:hover{color:var(--silver);transform:translateY(-1px)}
+.vref-btn:disabled{opacity:.4;cursor:not-allowed}
+.vref-st{font-size:12px;color:var(--muted);padding:8px 16px;font-style:italic;display:none}
+.vref-res{background:var(--surface2);border-radius:12px;margin:0 16px 14px;padding:12px 14px;display:none}
+.vref-rl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.vref-rt{font-size:13px;font-weight:600;color:var(--silver);line-height:1.4}
+
+/* Small clear btn */
+.btn-sm{background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:7px 14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-sm:hover{color:var(--silver)}
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="app-header">
-  <div class="header-eyebrow">Luxury Content Discovery</div>
-  <div class="app-title">Reel Vault <span class="version-badge">v4</span></div>
-  <div class="app-subtitle">Candid rich people — street, locations, caught on camera</div>
+<div class="hdr">
+  <div class="eyebrow">Luxury Content Discovery</div>
+  <div class="title">Reel Vault <span class="vbadge">v5</span></div>
+  <div class="subtitle">Candid rich people — street, locations, caught on camera</div>
 </div>
 
 <!-- API Keys -->
-<div class="section">
-  <div class="section-label">API Keys</div>
-  <div class="list-group">
-    <div class="list-row">
-      <div class="row-icon">🔑</div>
-      <input class="row-input" type="password" id="token" placeholder="Apify Token" />
-    </div>
-    <div class="list-row">
-      <div class="row-icon">🤖</div>
-      <input class="row-input" type="password" id="anthropicKey" placeholder="Anthropic Key — enables AI vision filter" />
-    </div>
+<div class="sec">
+  <div class="sec-label">API Keys</div>
+  <div class="lg">
+    <div class="lr"><div class="icon">🔑</div><input class="inp" type="password" id="apifyKey" placeholder="Apify Token" /></div>
+    <div class="lr"><div class="icon">🤖</div><input class="inp" type="password" id="aiKey" placeholder="Anthropic Key — enables AI scene filter (optional)" /></div>
   </div>
 </div>
 
 <!-- Platforms -->
-<div class="section">
-  <div class="section-label">Platforms</div>
-  <div class="platform-grid">
-    <div class="platform-tile active" data-platform="tiktok" onclick="togglePlatform(this)">
-      <div class="platform-check"><div class="platform-check-dot"></div></div>
-      <div class="platform-icon">🎵</div>
-      <div class="platform-name">TikTok</div>
+<div class="sec">
+  <div class="sec-label">Platforms</div>
+  <div class="pg">
+    <div class="pt active" data-p="tiktok" onclick="toggleP(this)">
+      <div class="pck"><div class="pckd"></div></div>
+      <div class="pi">🎵</div><div class="pn">TikTok</div>
     </div>
-    <div class="platform-tile" data-platform="instagram" onclick="togglePlatform(this)">
-      <div class="platform-check"><div class="platform-check-dot"></div></div>
-      <div class="platform-icon">📸</div>
-      <div class="platform-name">Reels</div>
+    <div class="pt" data-p="instagram" onclick="toggleP(this)">
+      <div class="pck"><div class="pckd"></div></div>
+      <div class="pi">📸</div><div class="pn">Reels</div>
     </div>
-    <div class="platform-tile" data-platform="youtube" onclick="togglePlatform(this)">
-      <div class="platform-check"><div class="platform-check-dot"></div></div>
-      <div class="platform-icon">▶️</div>
-      <div class="platform-name">Shorts</div>
+    <div class="pt" data-p="youtube" onclick="toggleP(this)">
+      <div class="pck"><div class="pckd"></div></div>
+      <div class="pi">▶️</div><div class="pn">Shorts</div>
     </div>
   </div>
 </div>
 
 <!-- Vibe Reference -->
-<div class="section">
-  <div class="section-label">Vibe Reference — paste video URLs to match</div>
-  <div class="vibe-ref-box">
-    <textarea class="vibe-ref-textarea" id="vibeRefUrls" placeholder="Paste Instagram or TikTok video URLs here, one per line&#10;e.g. https://www.instagram.com/reel/DJEY7SCzQzR/&#10;&#10;Claude will analyse the thumbnails and build a custom search from what it sees."></textarea>
-    <div class="vibe-ref-footer">
-      <span class="vibe-ref-hint">Needs Anthropic key</span>
-      <button class="vibe-ref-btn" id="vibeRefBtn" onclick="analyseVibeRefs()">✨ Analyse &amp; Apply</button>
+<div class="sec">
+  <div class="sec-label">Vibe Reference — paste video URLs to match</div>
+  <div class="vref-box">
+    <textarea class="vref-ta" id="vibeUrls" placeholder="Paste Instagram or TikTok video URLs, one per line&#10;Claude will analyse what's in them and apply that vibe to the search."></textarea>
+    <div class="vref-foot">
+      <span class="vref-hint">Needs Anthropic key</span>
+      <button class="vref-btn" id="vibeBtn" onclick="analyseVibe()">✨ Analyse &amp; Apply</button>
     </div>
   </div>
-  <div class="vibe-ref-status" id="vibeRefStatus"></div>
-  <div class="vibe-ref-result" id="vibeRefResult">
-    <div class="vibe-ref-result-label">AI detected vibe</div>
-    <div class="vibe-ref-result-text" id="vibeRefText"></div>
-  </div>
+  <div class="vref-st" id="vibeSt"></div>
+  <div class="vref-res" id="vibeRes"><div class="vref-rl">AI detected vibe</div><div class="vref-rt" id="vibeRt"></div></div>
 </div>
 
-<!-- Vibe Presets -->
-<div class="section">
-  <div class="section-label">Vibe Preset</div>
-  <div class="preset-grid" id="presetGrid">
-    <div class="preset-card active" data-value="rich people filmed street" onclick="selectPreset(this)">
-      <span class="preset-emoji">🚶</span>
-      <div class="preset-title">Rich on street</div>
-    </div>
-    <div class="preset-card" data-value="billionaire caught camera" onclick="selectPreset(this)">
-      <span class="preset-emoji">📷</span>
-      <div class="preset-title">Billionaire caught</div>
-    </div>
-    <div class="preset-card" data-value="celebrity filmed restaurant candid" onclick="selectPreset(this)">
-      <span class="preset-emoji">🍽️</span>
-      <div class="preset-title">Celebrity spotted</div>
-    </div>
-    <div class="preset-card" data-value="private jet filmed airport candid" onclick="selectPreset(this)">
-      <span class="preset-emoji">✈️</span>
-      <div class="preset-title">Private jet</div>
-    </div>
-    <div class="preset-card" data-value="yacht rich people filmed" onclick="selectPreset(this)">
-      <span class="preset-emoji">⛵</span>
-      <div class="preset-title">Yacht</div>
-    </div>
-    <div class="preset-card" data-value="luxury villa filmed candid" onclick="selectPreset(this)">
-      <span class="preset-emoji">🏰</span>
-      <div class="preset-title">Villa</div>
-    </div>
-    <div class="preset-card" data-value="rich girls monaco candid street" onclick="selectPreset(this)">
-      <span class="preset-emoji">💃</span>
-      <div class="preset-title">Rich girls</div>
-    </div>
-    <div class="preset-card" data-value="billionaire man luxury candid" onclick="selectPreset(this)">
-      <span class="preset-emoji">🕴️</span>
-      <div class="preset-title">Rich guys</div>
-    </div>
-    <div class="preset-card preset-card-custom" data-value="custom" onclick="selectPreset(this)">
-      <span class="preset-emoji">✏️</span>
-      <div class="preset-title">Custom</div>
-      <input class="preset-custom-input" id="customKeyword" type="text" placeholder="Enter your search..." oninput="updatePreview()" onclick="event.stopPropagation()" />
+<!-- Preset -->
+<div class="sec">
+  <div class="sec-label">Vibe Preset</div>
+  <div class="pregrid" id="preGrid">
+    <div class="precard active" data-v="rich people filmed street" onclick="selPre(this)"><span class="pre-emoji">🚶</span><div class="pre-title">Rich on street</div></div>
+    <div class="precard" data-v="billionaire caught on camera candid" onclick="selPre(this)"><span class="pre-emoji">📷</span><div class="pre-title">Billionaire caught</div></div>
+    <div class="precard" data-v="celebrity filmed restaurant candid" onclick="selPre(this)"><span class="pre-emoji">🍽️</span><div class="pre-title">Celebrity spotted</div></div>
+    <div class="precard" data-v="private jet candid filmed" onclick="selPre(this)"><span class="pre-emoji">✈️</span><div class="pre-title">Private jet</div></div>
+    <div class="precard" data-v="yacht rich people candid" onclick="selPre(this)"><span class="pre-emoji">⛵</span><div class="pre-title">Yacht</div></div>
+    <div class="precard" data-v="luxury villa candid filmed" onclick="selPre(this)"><span class="pre-emoji">🏰</span><div class="pre-title">Villa</div></div>
+    <div class="precard" data-v="rich girls monaco candid street" onclick="selPre(this)"><span class="pre-emoji">💃</span><div class="pre-title">Rich girls</div></div>
+    <div class="precard" data-v="rich guys billionaire candid" onclick="selPre(this)"><span class="pre-emoji">🕴️</span><div class="pre-title">Rich guys</div></div>
+    <div class="precard precard-wide" data-v="custom" onclick="selPre(this)">
+      <span class="pre-emoji">✏️</span><div class="pre-title">Custom</div>
+      <input class="custom-inp" id="customQ" type="text" placeholder="Your search..." oninput="updPrev()" onclick="event.stopPropagation()" />
     </div>
   </div>
 </div>
 
 <!-- Subject -->
-<div class="section">
-  <div class="section-label">Subject</div>
-  <div class="segment" id="subjectGroup">
-    <button class="seg-btn active" data-value="" onclick="selectSeg(this,'subjectGroup')">Any</button>
-    <button class="seg-btn" data-value="woman" onclick="selectSeg(this,'subjectGroup')">Woman</button>
-    <button class="seg-btn" data-value="man" onclick="selectSeg(this,'subjectGroup')">Man</button>
-    <button class="seg-btn" data-value="couple" onclick="selectSeg(this,'subjectGroup')">Couple</button>
+<div class="sec">
+  <div class="sec-label">Subject</div>
+  <div class="seg" id="subjSeg">
+    <button class="sb active" data-v="" onclick="selSeg(this,'subjSeg')">Any</button>
+    <button class="sb" data-v="woman" onclick="selSeg(this,'subjSeg')">Woman</button>
+    <button class="sb" data-v="man" onclick="selSeg(this,'subjSeg')">Man</button>
+    <button class="sb" data-v="couple" onclick="selSeg(this,'subjSeg')">Couple</button>
   </div>
 </div>
 
 <!-- Location -->
-<div class="section"><div class="section-label">Location</div></div>
-<div class="chips-row" id="locationGroup">
-  <div class="chip active" data-value="" onclick="selectChip(this)">🌍 Any</div>
-  <div class="chip" data-value="Monaco" onclick="selectChip(this)">🇲🇨 Monaco</div>
-  <div class="chip" data-value="Dubai" onclick="selectChip(this)">🇦🇪 Dubai</div>
-  <div class="chip" data-value="Miami" onclick="selectChip(this)">🇺🇸 Miami</div>
-  <div class="chip" data-value="Moscow" onclick="selectChip(this)">🇷🇺 Moscow</div>
-  <div class="chip" data-value="Marbella" onclick="selectChip(this)">🇪🇸 Marbella</div>
-  <div class="chip" data-value="Los Angeles" onclick="selectChip(this)">🌴 LA</div>
-  <div class="chip" data-value="Saint Tropez" onclick="selectChip(this)">⛵ St Tropez</div>
-  <div class="chip" data-value="Mykonos" onclick="selectChip(this)">🇬🇷 Mykonos</div>
+<div class="sec"><div class="sec-label">Location</div></div>
+<div class="chips" id="locChips">
+  <div class="chip active" data-v="" onclick="selChip(this)">🌍 Any</div>
+  <div class="chip" data-v="Monaco" onclick="selChip(this)">🇲🇨 Monaco</div>
+  <div class="chip" data-v="Dubai" onclick="selChip(this)">🇦🇪 Dubai</div>
+  <div class="chip" data-v="Miami" onclick="selChip(this)">🇺🇸 Miami</div>
+  <div class="chip" data-v="Moscow" onclick="selChip(this)">🇷🇺 Moscow</div>
+  <div class="chip" data-v="Marbella" onclick="selChip(this)">🇪🇸 Marbella</div>
+  <div class="chip" data-v="Los Angeles" onclick="selChip(this)">🌴 LA</div>
+  <div class="chip" data-v="Saint Tropez" onclick="selChip(this)">⛵ St Tropez</div>
+  <div class="chip" data-v="Mykonos" onclick="selChip(this)">🇬🇷 Mykonos</div>
 </div>
 
 <!-- Filters -->
-<div class="section" style="margin-top:28px">
-  <div class="section-label">Filters</div>
-  <div class="list-group">
-    <div class="filter-block">
-      <div class="filter-block-header">
-        <div class="row-icon">👁</div>
-        <div class="row-label">AI Candid Filter</div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);padding:0 0 10px 0">Needs Anthropic key. Checks each thumbnail — uses tokens.</div>
-      <div class="segment" id="textFilterGroup">
-        <button class="seg-btn active" data-value="off" onclick="selectSeg(this,'textFilterGroup')">Off</button>
-        <button class="seg-btn" data-value="small" onclick="selectSeg(this,'textFilterGroup')">Allow small</button>
-        <button class="seg-btn" data-value="all" onclick="selectSeg(this,'textFilterGroup')">Block all text</button>
+<div class="sec" style="margin-top:28px">
+  <div class="sec-label">Filters</div>
+  <div class="lg">
+    <div class="fb">
+      <div class="fbh"><div class="icon">👁</div><div class="lbl">AI Scene Filter<div class="sub">Needs Anthropic key — checks each thumbnail, uses tokens</div></div></div>
+      <div class="seg" id="aiSeg">
+        <button class="sb active" data-v="off" onclick="selSeg(this,'aiSeg')">Off</button>
+        <button class="sb" data-v="on" onclick="selSeg(this,'aiSeg')">On</button>
       </div>
     </div>
-    <div class="filter-block">
-      <div class="filter-block-header">
-        <div class="row-icon">📱</div>
-        <div class="row-label">Orientation</div>
-      </div>
-      <div class="segment" id="orientationGroup">
-        <button class="seg-btn active" data-value="vertical" onclick="selectSeg(this,'orientationGroup')">Vertical only</button>
-        <button class="seg-btn" data-value="any" onclick="selectSeg(this,'orientationGroup')">Any</button>
+    <div class="fb">
+      <div class="fbh"><div class="icon">📱</div><div class="lbl">Orientation</div></div>
+      <div class="seg" id="orientSeg">
+        <button class="sb active" data-v="any" onclick="selSeg(this,'orientSeg')">Any</button>
+        <button class="sb" data-v="vertical" onclick="selSeg(this,'orientSeg')">Vertical only</button>
       </div>
     </div>
-    <div class="list-row">
-      <div class="row-icon">🎬</div>
-      <div class="row-label">Videos per platform</div>
-      <div class="row-select-wrap">
-        <select class="row-select" id="maxResults">
+    <div class="lr">
+      <div class="icon">🎬</div>
+      <div class="lbl">Videos per platform</div>
+      <div class="sel-wrap">
+        <select class="sel" id="maxR">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="20" selected>20</option>
@@ -369,677 +305,584 @@ body{background:var(--bg);color:var(--text);font-family:'Figtree',-apple-system,
 </div>
 
 <!-- Scheduler -->
-<div class="section">
-  <div class="section-label">Auto-Run Scheduler</div>
-  <div class="list-group">
-    <div class="scheduler-row">
-      <div class="row-icon">⏰</div>
-      <div>
-        <div class="row-label">Schedule daily run</div>
-        <div class="row-sublabel scheduler-next" id="schedulerNext">Off</div>
-      </div>
-      <div id="schedulerLive" class="scheduler-live" style="display:none">
-        <div class="scheduler-live-dot"></div> Active
-      </div>
-      <label class="scheduler-toggle">
-        <input type="checkbox" id="schedulerEnabled" onchange="updateScheduler()">
-        <div class="toggle-track"><div class="toggle-knob"></div></div>
-      </label>
+<div class="sec">
+  <div class="sec-label">Auto-Run Scheduler</div>
+  <div class="lg">
+    <div class="lr">
+      <div class="icon">⏰</div>
+      <div><div class="lbl">Schedule daily run</div><div class="sub" id="schedNext">Off</div></div>
+      <div id="schedLive" class="sched-live" style="display:none"><div class="sched-dot"></div> Active</div>
+      <label class="tog"><input type="checkbox" id="schedOn" onchange="updSched()"><div class="tog-track"><div class="tog-knob"></div></div></label>
     </div>
-    <div class="scheduler-row" id="schedulerTimeRow" style="display:none">
-      <div class="row-icon">🕐</div>
-      <div class="row-label">Run at</div>
-      <div class="time-inputs">
-        <input class="time-input" type="number" id="schedHour" min="0" max="23" value="9" onchange="updateScheduler()" />
-        <span class="time-sep">:</span>
-        <input class="time-input" type="number" id="schedMin" min="0" max="59" value="0" onchange="updateScheduler()" />
+    <div class="lr" id="schedTimeRow" style="display:none">
+      <div class="icon">🕐</div>
+      <div class="lbl">Run at</div>
+      <div class="time-row">
+        <input class="tbox" type="number" id="schedH" min="0" max="23" value="9" onchange="updSched()" />
+        <span class="tsep">:</span>
+        <input class="tbox" type="number" id="schedM" min="0" max="59" value="0" onchange="updSched()" />
       </div>
     </div>
   </div>
 </div>
 
-<!-- Memory -->
-<div class="section">
-  <div class="section-label">Seen History</div>
-  <div class="list-group">
-    <div class="list-row">
-      <div class="row-icon">🧠</div>
-      <div>
-        <div class="row-label">Already seen</div>
-        <div class="row-sublabel" id="seenCount">Loading...</div>
-      </div>
-      <button onclick="clearSeenUrls()" style="background:var(--surface3);border:1px solid var(--silver4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;color:var(--silver2);padding:7px 14px;cursor:pointer;transition:all 0.18s;margin-left:auto" onmouseover="this.style.color='var(--silver)'" onmouseout="this.style.color='var(--silver2)'">Clear history</button>
+<!-- Seen history -->
+<div class="sec">
+  <div class="sec-label">Seen History</div>
+  <div class="lg">
+    <div class="lr">
+      <div class="icon">🧠</div>
+      <div><div class="lbl">Already seen</div><div class="sub" id="seenCnt">Loading...</div></div>
+      <button class="btn-sm" onclick="clearSeen()">Clear history</button>
     </div>
   </div>
 </div>
 
 <!-- Query preview -->
-<div class="section">
-  <div class="query-card">
-    <div class="query-eyebrow">Searching for</div>
-    <div class="query-text" id="previewText">rich people filmed street</div>
-    <div class="platform-pills" id="previewPlatforms"></div>
-    <div class="filter-pills">
-      <span class="filter-pill">🚫 Wedding/grooming filtered</span>
-      <span class="filter-pill">👁 AI filter: off (enable above)</span>
-    </div>
+<div class="sec">
+  <div class="qcard">
+    <div class="qeye">Searching for</div>
+    <div class="qtxt" id="prevTxt">rich people filmed street</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px" id="prevPlats"></div>
+    <div class="pills"><span class="pill" id="aiPill">👁 AI filter: off</span></div>
   </div>
 </div>
 
 <!-- Buttons -->
 <div class="btn-row">
-  <button class="search-btn" id="searchBtn" onclick="startSearch()"><span id="searchBtnLabel">Search</span></button>
-  <button class="clear-btn" onclick="clearAll()">Clear</button>
+  <button class="btn-search" id="searchBtn" onclick="doSearch()"><span id="searchLbl">Search</span></button>
+  <button class="btn-clear" onclick="clearResults()">Clear</button>
 </div>
 
 <!-- Status -->
-<div class="status-row">
-  <div class="spinner" id="spinner"></div>
-  <div class="status-txt" id="statusText"></div>
-</div>
-
-<!-- Vision bar -->
-<div class="vision-bar-wrap" id="visionBarWrap">
-  <div class="vision-bar-row">
-    <span id="visionBarLabel">👁 AI checking thumbnails...</span>
-    <span id="visionBarCount"></span>
-  </div>
-  <div class="vision-bar-bg"><div class="vision-bar-fill" id="visionBarFill"></div></div>
+<div class="status-row"><div class="spinner" id="spin"></div><div class="status-txt" id="statTxt"></div></div>
+<div class="vbar" id="vbar">
+  <div class="vbar-row"><span id="vbarLbl">👁 AI checking...</span><span id="vbarCnt"></span></div>
+  <div class="vbar-bg"><div class="vbar-fill" id="vbarFill"></div></div>
 </div>
 
 <!-- Results -->
 <div id="results"></div>
 
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// PLATFORMS — confirmed correct actor IDs and input schemas
+// ─────────────────────────────────────────────────────────────────────────────
 const BASE = "https://api.apify.com/v2";
 
-// ── Platform definitions ─────────────────────────────────────────────────────
-const PLATFORMS = {
+const PLAT = {
   tiktok: {
     label:"TikTok", emoji:"🎵",
     actor:"clockworks~tiktok-scraper",
-    buildBody:(query,n)=>({
-      searchQueries:[query],maxResults:n,resultsPerPage:n,
-      shouldDownloadVideos:false,shouldDownloadCovers:false,searchSection:"/video"
-    }),
-    parseItems:raw=>raw,
-    getUrl:   i=>i.webVideoUrl||i.videoUrl||i.url||"",
-    getAuthor:i=>i.authorMeta?.name||i.author||"unknown",
-    getDesc:  i=>i.text||i.description||i.desc||"",
-    getViews: i=>i.playCount||i.viewCount||"",
-    getLikes: i=>i.diggCount||i.likeCount||"",
-    getLinkLabel:()=>"Open on TikTok",
-    getThumbnail:i=>i.videoMeta?.coverUrl||i.videoMeta?.originalCoverUrl||i.covers?.default||i.cover||i.thumbnail||"",
-    getWidth: i=>i.videoMeta?.width||i.width||0,
-    getHeight:i=>i.videoMeta?.height||i.height||0,
+    // Confirmed working: searchQueries array, searchSection /video
+    body:(q,n)=>({searchQueries:[q],maxResults:n,resultsPerPage:n,shouldDownloadVideos:false,shouldDownloadCovers:false,searchSection:"/video"}),
+    all:r=>r,
+    url: i=>i.webVideoUrl||i.videoUrl||i.url||"",
+    auth:i=>i.authorMeta?.name||i.author||"",
+    desc:i=>i.text||i.description||"",
+    views:i=>i.playCount||i.viewCount||"",
+    likes:i=>i.diggCount||i.likeCount||"",
+    thumb:i=>i.videoMeta?.coverUrl||i.videoMeta?.originalCoverUrl||i.covers?.default||i.cover||"",
+    w:i=>i.videoMeta?.width||i.width||0,
+    h:i=>i.videoMeta?.height||i.height||0,
+    link:()=>"Open on TikTok",
   },
 
   instagram: {
     label:"Reels", emoji:"📸",
-    // apify/instagram-reel-scraper — correct actor that takes username array
-    // Confirmed: { username: ["account1","account2"], resultsLimit: n }
+    // CONFIRMED from Apify blog: { "username": ["natgeo"], "resultsLimit": 30 }
     actor:"apify~instagram-reel-scraper",
-    buildBody:(query,n)=>{
-      const q=query.toLowerCase();
-      let accounts;
-      if      (q.includes("monaco")||q.includes("monte carlo"))
-        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone"];
-      else if (q.includes("dubai"))
-        accounts=["rich.dubai.people","richkidsdubai1","rich_people_of_dubai"];
-      else if (q.includes("miami"))
-        accounts=["richkidsofmiami","miamibeachlife_","miami.luxurylife"];
-      else if (q.includes("mykonos"))
-        accounts=["mykonos_life","richkidsofmykonos","mykonos.people"];
-      else if (q.includes("tropez"))
-        accounts=["sttropez_life","richkidsofsttropez","tropez.people"];
-      else if (q.includes("marbella"))
-        accounts=["marbellalife","richkidsofmarbella","marbella.people"];
-      else if (q.includes("moscow"))
-        accounts=["moscow.luxury","richkidsofmoscow","moscowpeople_"];
-      else if (q.includes("los angeles")||q.includes(" la "))
-        accounts=["richkidsofbeverlyhills","larich_","losangeles.luxury"];
-      else if (q.includes("yacht"))
-        accounts=["superyacht.life","yachtlife_luxury","megayacht_"];
-      else if (q.includes("jet"))
-        accounts=["privatejet.life","privatejetworld","jetset.luxury"];
-      else if (q.includes("girl")||q.includes("woman"))
-        accounts=["bilionarescab","rich.monaco.people","rich.dubai.people"];
-      else if (q.includes("man")||q.includes("guy")||q.includes("billionaire"))
-        accounts=["bilionarescab","the_billionare_lifestyle","rich.dubai.people","richkidsdubai1"];
-      else
-        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people","richkidsdubai1"];
-      return { username:accounts, resultsLimit:n };
+    body:(q,n)=>{
+      const lq=q.toLowerCase();
+      let u;
+      if      (lq.includes("monaco")||lq.includes("monte carlo")) u=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone"];
+      else if (lq.includes("dubai"))    u=["rich.dubai.people","richkidsdubai1"];
+      else if (lq.includes("miami"))    u=["richkidsofmiami","miamibeachlife_"];
+      else if (lq.includes("mykonos"))  u=["mykonos_life","richkidsofmykonos"];
+      else if (lq.includes("tropez"))   u=["sttropez_life","richkidsofsttropez"];
+      else if (lq.includes("marbella")) u=["marbellalife","richkidsofmarbella"];
+      else if (lq.includes("moscow"))   u=["moscow.luxury","richkidsofmoscow"];
+      else if (lq.includes("los angeles")||lq.includes(" la ")) u=["richkidsofbeverlyhills","larich_"];
+      else if (lq.includes("yacht"))    u=["superyacht.life","yachtlife_luxury"];
+      else if (lq.includes("jet"))      u=["privatejet.life","privatejetworld"];
+      else if (lq.includes("girl")||lq.includes("woman")) u=["bilionarescab","rich.monaco.people","rich.dubai.people"];
+      else if (lq.includes("man")||lq.includes("guy")||lq.includes("billionaire")) u=["bilionarescab","the_billionare_lifestyle","rich.dubai.people"];
+      else u=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people"];
+      // EXACT confirmed input: username array + resultsLimit
+      return {username:u, resultsLimit:n};
     },
-    parseItems:raw=>raw,
-    getUrl:   i=>i.url||i.reelUrl||(i.shortCode?`https://www.instagram.com/reel/${i.shortCode}/`:""),
-    getAuthor:i=>i.ownerUsername||i.username||i.owner?.username||"unknown",
-    getDesc:  i=>i.caption||i.text||i.description||"",
-    getViews: i=>i.playsCount||i.videoViewCount||i.plays||"",
-    getLikes: i=>i.likesCount||i.likes||"",
-    getLinkLabel:()=>"Open on Instagram",
-    getThumbnail:i=>i.thumbnailUrl||i.displayUrl||i.coverUrl||"",
-    getWidth: i=>0,
-    getHeight:i=>0,
+    all:r=>r,
+    url: i=>i.url||i.reelUrl||(i.shortCode?`https://www.instagram.com/reel/${i.shortCode}/`:""),
+    auth:i=>i.ownerUsername||i.username||i.owner?.username||"",
+    desc:i=>i.caption||i.text||"",
+    views:i=>i.playsCount||i.videoViewCount||i.plays||"",
+    likes:i=>i.likesCount||i.likes||"",
+    thumb:i=>i.thumbnailUrl||i.displayUrl||i.coverUrl||"",
+    w:i=>0, h:i=>0,
+    link:()=>"Open on Instagram",
   },
 
   youtube: {
     label:"Shorts", emoji:"▶️",
+    // Use startUrls pointing to YouTube Shorts search — this guarantees only Shorts come back
+    // Format: https://www.youtube.com/results?search_query=QUERY&sp=EgIYAQ%3D%3D
+    // sp=EgIYAQ%3D%3D is YouTube's own "Shorts" filter parameter
     actor:"streamers~youtube-scraper",
-    // type:"video" + "#shorts" in query = the config confirmed working in v2
-    buildBody:(query,n)=>({
-      searchKeywords:query + " #shorts",
-      maxResults:n,
-      type:"video"
+    body:(q,n)=>({
+      startUrls:[{url:`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}&sp=EgIYAQ%3D%3D`}],
+      maxResults:n
     }),
-    parseItems:raw=>raw,
-    getUrl:   i=>{
+    all:r=>r,
+    url: i=>{
       const u=i.url||"";
       if(u.includes("/shorts/"))return u;
       const id=i.id||i.videoId||(u.match(/[?&]v=([^&]+)/)||[])[1]||"";
       return id?`https://www.youtube.com/shorts/${id}`:u;
     },
-    getAuthor:i=>i.channelName||i.channel||i.author||"unknown",
-    getDesc:  i=>i.title||i.description||"",
-    getViews: i=>i.viewCount||i.views||"",
-    getLikes: i=>i.likes||"",
-    getLinkLabel:()=>"Open on YouTube Shorts",
-    getThumbnail:i=>i.thumbnailUrl||i.thumbnail||"",
-    getWidth: i=>0,
-    getHeight:i=>0,
+    auth:i=>i.channelName||i.channel||i.author||"",
+    desc:i=>i.title||i.description||"",
+    views:i=>i.viewCount||i.views||"",
+    likes:i=>i.likes||"",
+    thumb:i=>i.thumbnailUrl||i.thumbnail||"",
+    w:i=>0, h:i=>0,
+    link:()=>"Open on YouTube Shorts",
   }
 };
 
-// ── Block list — minimal, only obvious garbage ───────────────────────────────
-const BLOCK_WORDS = [
-  "wedding","bride","groom","bridal","ceremony","vows",
-  "beard routine","skincare routine","morning routine","gym transformation"
-];
-const BLOCK_USERNAMES = ["wedding","bride","bridal"];
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let activePlats = new Set(["tiktok"]);
+let presetVal   = "rich people filmed street";
+let vibeOverride = null;
+let schedTimer  = null;
+let seenUrls    = new Set();
 
-function isBlockedByText(item,p){
-  const desc  =(p.getDesc(item)  ||"").toLowerCase();
-  const author=(p.getAuthor(item)||"").toLowerCase();
-  for(const w of BLOCK_WORDS)    {if(desc.includes(w))   return true}
-  for(const w of BLOCK_USERNAMES){if(author.includes(w)) return true}
-  return false;
+// ─────────────────────────────────────────────────────────────────────────────
+// SEEN URL MEMORY
+// ─────────────────────────────────────────────────────────────────────────────
+const SEEN_KEY = "reelvault_v5_seen";
+
+async function loadSeen(){
+  try{
+    const r = await window.storage.get(SEEN_KEY);
+    if(r?.value){ seenUrls = new Set(JSON.parse(r.value)); }
+  }catch{ seenUrls = new Set(); }
+  updSeenCnt();
 }
 
-// ── State ────────────────────────────────────────────────────────────────────
-let activePlatforms   = new Set(["tiktok"]);
-let activePresetValue = "rich people filmed street";
-let vibePromptOverride = null; // set by vibe reference analyser
-let schedulerTimer    = null;
-
-// ── Platform toggle ──────────────────────────────────────────────────────────
-function togglePlatform(el){
-  const key=el.dataset.platform;
-  if(activePlatforms.has(key)){
-    if(activePlatforms.size===1)return;
-    activePlatforms.delete(key);el.classList.remove("active");
-  } else {activePlatforms.add(key);el.classList.add("active")}
-  updatePreview();
+async function saveSeen(){
+  try{
+    let arr=[...seenUrls];
+    if(arr.length>3000) arr=arr.slice(arr.length-3000);
+    seenUrls=new Set(arr);
+    await window.storage.set(SEEN_KEY, JSON.stringify(arr));
+  }catch{}
 }
 
-// ── Preset selection ─────────────────────────────────────────────────────────
-function selectPreset(el){
-  document.querySelectorAll("#presetGrid .preset-card").forEach(c=>{
+async function clearSeen(){
+  seenUrls=new Set();
+  try{await window.storage.delete(SEEN_KEY);}catch{}
+  updSeenCnt();
+  document.getElementById("results").innerHTML=`<div class="errc" style="margin:0 16px">History cleared.<div class="errs">All videos will appear fresh next search.</div></div>`;
+}
+
+function updSeenCnt(){
+  const el=document.getElementById("seenCnt");
+  if(el) el.textContent=`${seenUrls.size.toLocaleString()} URLs remembered`;
+}
+
+function normUrl(url){ return url.split("?")[0].replace(/\/$/,""); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UI HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function toggleP(el){
+  const k=el.dataset.p;
+  if(activePlats.has(k)){
+    if(activePlats.size===1)return;
+    activePlats.delete(k);el.classList.remove("active");
+  }else{activePlats.add(k);el.classList.add("active");}
+  updPrev();
+}
+
+function selPre(el){
+  document.querySelectorAll("#preGrid .precard").forEach(c=>{
     c.classList.remove("active");
-    c.querySelector(".preset-custom-input")?.classList.remove("visible");
+    c.querySelector(".custom-inp")?.classList.remove("show");
   });
   el.classList.add("active");
-  activePresetValue=el.dataset.value;
-  vibePromptOverride=null; // clear vibe override when manually picking preset
-  document.getElementById("vibeRefResult").style.display="none";
-  const inp=el.querySelector(".preset-custom-input");
-  if(inp){inp.classList.add("visible");setTimeout(()=>inp.focus(),50)}
-  updatePreview();
+  presetVal=el.dataset.v;
+  vibeOverride=null;
+  document.getElementById("vibeRes").style.display="none";
+  const inp=el.querySelector(".custom-inp");
+  if(inp){inp.classList.add("show");setTimeout(()=>inp.focus(),50);}
+  updPrev();
 }
 
-function selectSeg(el,groupId){
-  document.querySelectorAll(`#${groupId} .seg-btn`).forEach(b=>b.classList.remove("active"));
-  el.classList.add("active");updatePreview();
-}
-function selectChip(el){
-  document.querySelectorAll("#locationGroup .chip").forEach(c=>c.classList.remove("active"));
-  el.classList.add("active");updatePreview();
+function selSeg(el,id){
+  document.querySelectorAll(`#${id} .sb`).forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  updPrev();
 }
 
-function buildQuery(){
-  let base=activePresetValue;
-  if(base==="custom"){base=document.getElementById("customKeyword").value.trim()||"rich people filmed street"}
-  const subject =document.querySelector("#subjectGroup .seg-btn.active")?.dataset.value||"";
-  const location=document.querySelector("#locationGroup .chip.active")?.dataset.value||"";
-  let q=base;
-  if(subject)  q+=` ${subject}`;
-  if(location) q+=` ${location}`;
-  return q;
+function selChip(el){
+  document.querySelectorAll("#locChips .chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+  updPrev();
 }
 
-function updatePreview(){
-  document.getElementById("previewText").textContent=buildQuery();
-  const pills=document.getElementById("previewPlatforms");
-  pills.innerHTML=[...activePlatforms].map(k=>`<span class="platform-pill">${PLATFORMS[k].emoji} ${PLATFORMS[k].label}</span>`).join("");
-  const count=activePlatforms.size;
-  document.getElementById("searchBtnLabel").textContent=
-    count===1?`Search ${PLATFORMS[[...activePlatforms][0]].label}`:`Search ${count} Platforms`;
+function buildQ(){
+  let b=presetVal==="custom"?(document.getElementById("customQ").value.trim()||"rich people filmed street"):presetVal;
+  if(vibeOverride) b=vibeOverride.query;
+  const subj=document.querySelector("#subjSeg .sb.active")?.dataset.v||"";
+  const loc =document.querySelector("#locChips .chip.active")?.dataset.v||"";
+  return [b,subj,loc].filter(Boolean).join(" ");
 }
 
-// ── Vibe Reference Analyser ──────────────────────────────────────────────────
-async function analyseVibeRefs(){
-  const key=document.getElementById("anthropicKey").value.trim();
-  if(!key){alert("Paste your Anthropic key first — AI analysis needs it.");return}
+function updPrev(){
+  document.getElementById("prevTxt").textContent=buildQ();
+  const pp=document.getElementById("prevPlats");
+  pp.innerHTML=[...activePlats].map(k=>`<span class="pplat">${PLAT[k].emoji} ${PLAT[k].label}</span>`).join("");
+  const cnt=activePlats.size;
+  document.getElementById("searchLbl").textContent=cnt===1?`Search ${PLAT[[...activePlats][0]].label}`:`Search ${cnt} Platforms`;
+  const aiOn=document.querySelector("#aiSeg .sb.active")?.dataset.v==="on";
+  document.getElementById("aiPill").textContent=aiOn?"👁 AI filter: on":"👁 AI filter: off";
+}
 
-  const raw=document.getElementById("vibeRefUrls").value.trim();
-  const urls=raw.split(/\n/).map(s=>s.trim()).filter(s=>s.length>10&&(s.includes("instagram")||s.includes("tiktok")));
-  if(!urls.length){alert("Paste at least one Instagram or TikTok video URL.");return}
+function stat(msg,loading=false){
+  document.getElementById("statTxt").textContent=msg;
+  document.getElementById("spin").style.display=loading?"block":"none";
+}
 
-  const btn=document.getElementById("vibeRefBtn");
-  const statusEl=document.getElementById("vibeRefStatus");
+function setVBar(cur,tot){
+  const w=document.getElementById("vbar");
+  w.style.display=tot>0?"block":"none";
+  document.getElementById("vbarCnt").textContent=`${cur}/${tot}`;
+  document.getElementById("vbarFill").style.width=`${Math.round(cur/tot*100)}%`;
+  document.getElementById("vbarLbl").textContent=cur<tot?"👁 AI checking thumbnails...":"✓ Done";
+}
+
+function clearResults(){
+  document.getElementById("results").innerHTML="";
+  document.getElementById("vbar").style.display="none";
+  stat("");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEDULER
+// ─────────────────────────────────────────────────────────────────────────────
+function updSched(){
+  const on=document.getElementById("schedOn").checked;
+  document.getElementById("schedTimeRow").style.display=on?"flex":"none";
+  document.getElementById("schedLive").style.display=on?"flex":"none";
+  if(schedTimer){clearTimeout(schedTimer);schedTimer=null;}
+  if(!on){document.getElementById("schedNext").textContent="Off";return;}
+  schedNext();
+}
+
+function schedNext(){
+  const h=parseInt(document.getElementById("schedH").value)||0;
+  const m=parseInt(document.getElementById("schedM").value)||0;
+  const now=new Date();
+  const t=new Date();t.setHours(h,m,0,0);
+  if(t<=now)t.setDate(t.getDate()+1);
+  const ms=t-now;
+  document.getElementById("schedNext").textContent=`Next: ${t.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+  schedTimer=setTimeout(()=>{doSearch();setTimeout(schedNext,1000);},ms);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VIBE REFERENCE ANALYSER
+// ─────────────────────────────────────────────────────────────────────────────
+async function analyseVibe(){
+  const aiK=document.getElementById("aiKey").value.trim();
+  if(!aiK){alert("Anthropic key needed for vibe analysis.");return;}
+  const raw=document.getElementById("vibeUrls").value.trim();
+  const urls=raw.split("\n").map(s=>s.trim()).filter(s=>s.length>10);
+  if(!urls.length){alert("Paste at least one video URL.");return;}
+  const btn=document.getElementById("vibeBtn");
+  const st=document.getElementById("vibeSt");
   btn.disabled=true;
-  statusEl.style.display="block";
-  statusEl.textContent="⏳ Fetching thumbnails...";
+  st.style.display="block";st.textContent="✨ Analysing with AI...";
 
-  // Extract shortcodes from Instagram URLs
-  const thumbUrls=[];
-  for(const url of urls.slice(0,6)){
-    // Build thumbnail URL using Instagram's CDN embed trick
-    // We use the oEmbed endpoint which is public
-    try{
-      const code=(url.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/)||[])[2]||
-                 (url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)||[])[1];
-      if(!code)continue;
-      // For Instagram, use oEmbed to get thumbnail
-      if(url.includes("instagram")){
-        const oembed=await fetch(`https://www.instagram.com/api/v1/oembed/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(()=>null);
-        if(oembed?.thumbnail_url) thumbUrls.push(oembed.thumbnail_url);
-      }
-    }catch{}
+  // Try to get thumbnail via oEmbed for Instagram
+  let thumbBase64=null, thumbMime="image/jpeg";
+  for(const url of urls.slice(0,3)){
+    if(url.includes("instagram")){
+      try{
+        const oe=await fetch(`https://www.instagram.com/api/v1/oembed/?url=${encodeURIComponent(url)}`).then(r=>r.json()).catch(()=>null);
+        if(oe?.thumbnail_url){
+          const img=await fetch(oe.thumbnail_url);
+          if(img.ok){
+            const blob=await img.blob();
+            thumbBase64=await b64(blob);
+            thumbMime=blob.type||"image/jpeg";
+            break;
+          }
+        }
+      }catch{}
+    }
   }
 
-  // If we got thumbnails, analyse them. Otherwise fall back to text-only analysis of the URLs.
-  statusEl.textContent=`✨ AI analysing ${thumbUrls.length} thumbnails...`;
+  let vibeDesc="", detectedQ="";
+  const prompt=thumbBase64
+    ?`Look at this video thumbnail. Describe in 1-2 sentences what type of person is shown, what they're doing, where they are, and the vibe. Then suggest a 3-5 word search query to find similar candid footage of wealthy people.\n\nFormat:\nVIBE: [description]\nQUERY: [search terms]`
+    :`Based on these video URLs, suggest a 3-5 word search query for finding similar candid footage of wealthy people in luxury locations.\n\nURLs:\n${urls.slice(0,3).join("\n")}\n\nFormat:\nVIBE: [brief description]\nQUERY: [search terms]`;
 
-  let vibeDescription="";
+  try{
+    const result=thumbBase64
+      ?await callAI(aiK,prompt,thumbBase64,thumbMime,120)
+      :await callAItext(aiK,prompt,200);
+    const vm=result.match(/VIBE:\s*(.+)/i);
+    const qm=result.match(/QUERY:\s*(.+)/i);
+    if(vm) vibeDesc=vm[1].trim();
+    if(qm){
+      detectedQ=qm[1].trim();
+      // Apply as custom preset
+      presetVal="custom";
+      document.querySelectorAll("#preGrid .precard").forEach(c=>{c.classList.remove("active");c.querySelector(".custom-inp")?.classList.remove("show");});
+      const cc=document.querySelector('[data-v="custom"]');
+      cc?.classList.add("active");
+      const ci=document.getElementById("customQ");
+      ci.value=detectedQ;ci.classList.add("show");
+      vibeOverride={query:detectedQ,desc:vibeDesc};
+      updPrev();
+    }
+  }catch(e){vibeDesc="Could not analyse — try again.";}
 
-  if(thumbUrls.length>0){
-    // Fetch and encode first thumbnail
-    try{
-      const imgRes=await fetch(thumbUrls[0]);
-      const blob=await imgRes.blob();
-      const base64=await blobToBase64(blob);
-      const mime=blob.type||"image/jpeg";
-      const prompt=`You are a search assistant for a luxury content discovery app. Look at this video thumbnail and describe in 1-2 sentences: what type of person is shown, what they're doing, where they are, and the overall vibe/aesthetic. Then suggest a search query (3-6 words) that would find similar candid videos of wealthy people. Format your reply as:
-VIBE: [1-2 sentence description]
-QUERY: [search terms]`;
-      const result=await callClaude(key,prompt,base64,mime,120);
-      const vibeMatch=result.match(/VIBE:\s*(.+)/i);
-      const queryMatch=result.match(/QUERY:\s*(.+)/i);
-      if(vibeMatch) vibeDescription=vibeMatch[1].trim();
-      if(queryMatch){
-        const detectedQuery=queryMatch[1].trim();
-        // Apply detected query as custom preset
-        activePresetValue="custom";
-        document.querySelectorAll("#presetGrid .preset-card").forEach(c=>c.classList.remove("active"));
-        const customCard=document.querySelector('[data-value="custom"]');
-        customCard?.classList.add("active");
-        const customInp=document.getElementById("customKeyword");
-        customInp.value=detectedQuery;
-        customInp.classList.add("visible");
-        // Store vibe prompt override for the candid check
-        vibePromptOverride=`This app finds candid videos matching this specific vibe: ${vibeDescription}. Does this thumbnail match that vibe? Reply only YES or NO.`;
-        updatePreview();
-      }
-    }catch(e){vibeDescription="Could not analyse thumbnail — will use URL context only."}
-  } else {
-    // No thumbnails — just use URL patterns as hint
-    vibeDescription="Based on the URLs provided, searching for similar candid luxury content.";
-  }
-
-  statusEl.style.display="none";
-  const resultBox=document.getElementById("vibeRefResult");
-  document.getElementById("vibeRefText").textContent=vibeDescription||"Vibe detected — custom search applied.";
-  resultBox.style.display="block";
+  st.style.display="none";
+  const res=document.getElementById("vibeRes");
+  document.getElementById("vibeRt").textContent=vibeDesc||"Vibe applied.";
+  res.style.display="block";
   btn.disabled=false;
 }
 
-// ── Scheduler ────────────────────────────────────────────────────────────────
-function updateScheduler(){
-  const enabled=document.getElementById("schedulerEnabled").checked;
-  const timeRow=document.getElementById("schedulerTimeRow");
-  const liveEl =document.getElementById("schedulerLive");
-  const nextEl =document.getElementById("schedulerNext");
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN SEARCH
+// ─────────────────────────────────────────────────────────────────────────────
+async function doSearch(){
+  const apK=document.getElementById("apifyKey").value.trim();
+  const aiK=document.getElementById("aiKey").value.trim();
+  const max=parseInt(document.getElementById("maxR").value);
+  const q  =buildQ();
 
-  timeRow.style.display=enabled?"flex":"none";
-  if(schedulerTimer){clearTimeout(schedulerTimer);schedulerTimer=null}
-
-  if(!enabled){
-    liveEl.style.display="none";nextEl.textContent="Off";return;
-  }
-
-  liveEl.style.display="flex";
-  scheduleNextRun();
-}
-
-function scheduleNextRun(){
-  const h=parseInt(document.getElementById("schedHour").value)||0;
-  const m=parseInt(document.getElementById("schedMin").value)||0;
-  const now=new Date();
-  const target=new Date();
-  target.setHours(h,m,0,0);
-  if(target<=now) target.setDate(target.getDate()+1);
-  const msUntil=target-now;
-  const nextEl=document.getElementById("schedulerNext");
-  nextEl.textContent=`Next run: ${target.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
-  schedulerTimer=setTimeout(()=>{
-    startSearch();
-    setTimeout(scheduleNextRun,1000);
-  },msUntil);
-}
-
-// ── Core search ──────────────────────────────────────────────────────────────
-function setStatus(msg,loading=false){
-  document.getElementById("statusText").textContent=msg;
-  document.getElementById("spinner").style.display=loading?"block":"none";
-}
-function setVisionProgress(current,total){
-  const wrap=document.getElementById("visionBarWrap");
-  wrap.style.display=total>0?"block":"none";
-  document.getElementById("visionBarCount").textContent=`${current} / ${total}`;
-  document.getElementById("visionBarFill").style.width=`${Math.round(current/total*100)}%`;
-  document.getElementById("visionBarLabel").textContent=current<total?"👁 AI checking thumbnails...":"✓ Vision filter complete";
-}
-function clearAll(){
-  document.getElementById("results").innerHTML="";
-  document.getElementById("visionBarWrap").style.display="none";
-  setStatus("");
-}
-
-async function apiFetch(path,token,options={}){
-  const res=await fetch(`${BASE}${path}`,{...options,headers:{"Authorization":`Bearer ${token}`,"Content-Type":"application/json",...(options.headers||{})}});
-  const text=await res.text();
-  let json;try{json=JSON.parse(text)}catch{throw new Error(text.slice(0,200))}
-  if(!res.ok)throw new Error(json?.error?.message||`HTTP ${res.status}`);
-  return json;
-}
-
-async function startSearch(){
-  const token       =document.getElementById("token").value.trim();
-  const anthropicKey=document.getElementById("anthropicKey").value.trim();
-  const maxResults  =parseInt(document.getElementById("maxResults").value);
-  const query       =buildQuery();
-
-  if(!token)return alert("Paste your Apify API token first.");
-  if(!activePlatforms.size)return alert("Select at least one platform.");
+  if(!apK){alert("Paste your Apify token first.");return;}
+  if(!activePlats.size){alert("Select at least one platform.");return;}
 
   const btn=document.getElementById("searchBtn");
-  btn.disabled=true;clearAll();
+  btn.disabled=true;clearResults();
 
-  const allResults=[];
+  const all=[];
 
-  for(const platformKey of activePlatforms){
-    const p=PLATFORMS[platformKey];
-    setStatus(`Searching ${p.label}...`,true);
+  for(const pk of activePlats){
+    const p=PLAT[pk];
+    stat(`Searching ${p.label}...`,true);
     try{
-      const fetchCount=maxResults*2;
-      const runData=await apiFetch(`/acts/${p.actor}/runs`,token,{
-        method:"POST",body:JSON.stringify(p.buildBody(query,fetchCount))
-      });
-      const runId    =runData.data?.id;
-      const datasetId=runData.data?.defaultDatasetId;
-      if(!runId)throw new Error(`No run ID for ${p.label}.`);
+      // Fire the run
+      const rd=await apifyPost(`/acts/${p.actor}/runs`,apK,p.body(q,max*2));
+      const runId=rd.data?.id;
+      const dsId =rd.data?.defaultDatasetId;
+      if(!runId) throw new Error("No run ID — check Apify token.");
 
-      await pollUntilDone(token,runId,p.label);
-      setStatus(`Filtering ${p.label}...`,true);
+      await waitRun(apK,runId,p.label);
+      stat(`Processing ${p.label}...`,true);
 
-      const resultData=await apiFetch(`/datasets/${datasetId}/items?limit=${fetchCount}`,token);
-      const raw       =Array.isArray(resultData)?resultData:resultData.data?.items||[];
-      const parsed    =p.parseItems(raw);
-      const hasURL    =parsed.filter(item=>p.getUrl(item));
-      const kwFiltered=hasURL.filter(item=>!isBlockedByText(item,p));
+      const raw=await apifyGet(`/datasets/${dsId}/items?limit=${max*2}`,apK);
+      const items=Array.isArray(raw)?raw:raw.data?.items||[];
 
-      let afterOrient=kwFiltered;
-      if(document.querySelector("#orientationGroup .seg-btn.active")?.dataset.value==="vertical"){
-        afterOrient=kwFiltered.filter(item=>{
-          const w=p.getWidth(item),h=p.getHeight(item);
+      // Filter by orientation if needed
+      const vertOnly=document.querySelector("#orientSeg .sb.active")?.dataset.v==="vertical";
+      let filtered=items.filter(i=>p.url(i)); // must have a URL
+      if(vertOnly){
+        filtered=filtered.filter(i=>{
+          const w=p.w(i),h=p.h(i);
           return !(w>0&&h>0&&h<=w);
         });
       }
 
-      const textFilter   =document.querySelector("#textFilterGroup .seg-btn.active")?.dataset.value||"off";
-      // AI vision only runs when: Anthropic key entered AND text filter is not "off"
-      const useVision    =!!anthropicKey && textFilter!=="off";
-      let finalItems     =afterOrient;
-
-      if(useVision && afterOrient.length>0){
-        setStatus(`👁 AI filter: ${p.label}...`,true);
-        const toCheck=afterOrient.slice(0,maxResults*2);
-        setVisionProgress(0,toCheck.length);
-        const visionResults=[];
+      // AI scene filter (optional — only when enabled AND key present)
+      const aiOn=document.querySelector("#aiSeg .sb.active")?.dataset.v==="on";
+      if(aiOn && aiK && filtered.length>0){
+        stat(`👁 AI filter: ${p.label}...`,true);
+        const toCheck=filtered.slice(0,max*2);
+        setVBar(0,toCheck.length);
+        const passed=[];
         for(let i=0;i<toCheck.length;i++){
-          const item     =toCheck[i];
-          const thumbnail=p.getThumbnail(item);
-          setVisionProgress(i+1,toCheck.length);
-          if(!thumbnail){visionResults.push(item);if(visionResults.length>=maxResults)break;continue}
-          // Only candid check — skip text overlay to save tokens
-          const candid=await checkCandid(thumbnail,anthropicKey);
-          if(!candid.pass)continue;
-          visionResults.push(item);
-          if(visionResults.length>=maxResults)break;
+          setVBar(i+1,toCheck.length);
+          const item=toCheck[i];
+          const tn=p.thumb(item);
+          if(!tn){passed.push(item);if(passed.length>=max)break;continue;}
+          const ok=await aiCandidCheck(tn,aiK,vibeOverride?.desc);
+          if(ok){passed.push(item);if(passed.length>=max)break;}
         }
-        finalItems=visionResults;
+        filtered=passed;
       }
 
-      finalItems.slice(0,maxResults).forEach(item=>allResults.push({item,platform:p}));
+      filtered.slice(0,max).forEach(item=>all.push({item,p}));
     }catch(e){
       const box=document.getElementById("results");
       const d=document.createElement("div");
-      d.className="error-card";d.style.margin="0 16px 10px";
-      d.innerHTML=`${p.emoji} <strong>${p.label}</strong>: ${esc(e.message)}<div class="error-sub">Skipped.</div>`;
+      d.className="errc";d.style.margin="0 16px 10px";
+      d.innerHTML=`${p.emoji} <b>${p.label}</b>: ${esc(e.message)}<div class="errs">Skipped — check your Apify token.</div>`;
       box.appendChild(d);
     }
   }
 
-  btn.disabled=false;setStatus("");
-  document.getElementById("visionBarWrap").style.display="none";
-  if(allResults.length>0) displayResults(allResults,query);
-  else if(!document.getElementById("results").querySelector(".error-card"))
-    document.getElementById("results").innerHTML=`<div class="error-card" style="margin:0 16px">No results for "${esc(query)}".<div class="error-sub">Try a different vibe or loosen filters.</div></div>`;
+  btn.disabled=false;stat("");
+  document.getElementById("vbar").style.display="none";
+
+  if(all.length>0) showResults(all,q);
+  else if(!document.getElementById("results").querySelector(".errc"))
+    document.getElementById("results").innerHTML=`<div class="errc" style="margin:0 16px">No results for "${esc(q)}".<div class="errs">Try a different preset or location.</div></div>`;
 }
 
-async function pollUntilDone(token,runId,label){
+// ─────────────────────────────────────────────────────────────────────────────
+// DISPLAY
+// ─────────────────────────────────────────────────────────────────────────────
+async function showResults(all,q){
+  const box=document.getElementById("results");
+  let skipped=0;
+  const fresh=[];
+  for(const r of all){
+    const nu=normUrl(r.p.url(r.item));
+    if(nu&&seenUrls.has(nu)){skipped++;continue;}
+    fresh.push(r);
+  }
+
+  const perP={};
+  fresh.forEach(({p})=>{perP[p.label]=(perP[p.label]||0)+1;});
+
+  let meta=`<div class="rmeta"><span class="badgec">✓ ${fresh.length} new</span>`;
+  Object.entries(perP).forEach(([l,c])=>{
+    const p=Object.values(PLAT).find(x=>x.label===l);
+    meta+=`<span class="badgep">${p?.emoji||""} ${l} ${c}</span>`;
+  });
+  if(skipped>0) meta+=`<span class="badger">🔁 ${skipped} already seen</span>`;
+  meta+=`</div>`;
+  box.innerHTML+=meta;
+
+  if(!fresh.length&&skipped>0){
+    box.innerHTML+=`<div class="errc" style="margin:0 16px">All results already seen.<div class="errs">Clear history or try a different preset.</div></div>`;
+    return;
+  }
+
+  fresh.forEach(({item,p},i)=>{
+    const url=p.url(item);
+    const nu=normUrl(url);
+    const card=document.createElement("div");
+    card.className="rcard";card.style.animationDelay=`${i*.04}s`;
+    card.innerHTML=`
+      <span class="rplat">${p.emoji} ${p.label}</span>
+      <div class="rauth">@${esc(p.auth(item)||"unknown")}</div>
+      ${p.desc(item)?`<div class="rdesc">${esc(p.desc(item))}</div>`:""}
+      <div class="rstats">
+        ${p.views(item)?`<span>👁 ${fmtN(p.views(item))}</span>`:""}
+        ${p.likes(item)?`<span>❤️ ${fmtN(p.likes(item))}</span>`:""}
+      </div>
+      <a class="rlink" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+        <span>${esc(p.link())}</span><span class="rarrow">↗</span>
+      </a>`;
+    box.appendChild(card);
+    if(nu) seenUrls.add(nu);
+  });
+
+  await saveSeen();
+  updSeenCnt();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APIFY HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+async function apifyPost(path,token,body){
+  const r=await fetch(`${BASE}${path}`,{method:"POST",headers:{"Authorization":`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const t=await r.text();
+  let j;try{j=JSON.parse(t);}catch{throw new Error(t.slice(0,200));}
+  if(!r.ok)throw new Error(j?.error?.message||`HTTP ${r.status}`);
+  return j;
+}
+
+async function apifyGet(path,token){
+  const r=await fetch(`${BASE}${path}`,{headers:{"Authorization":`Bearer ${token}`}});
+  const t=await r.text();
+  let j;try{j=JSON.parse(t);}catch{throw new Error(t.slice(0,200));}
+  if(!r.ok)throw new Error(j?.error?.message||`HTTP ${r.status}`);
+  return j;
+}
+
+async function waitRun(token,runId,label){
   const MAX=180000,INT=5000;let elapsed=0;
   while(elapsed<MAX){
     await new Promise(r=>setTimeout(r,INT));elapsed+=INT;
-    const d=await apiFetch(`/actor-runs/${runId}`,token);
+    const d=await apifyGet(`/actor-runs/${runId}`,token);
     const s=d.data?.status;
-    setStatus(`Scraping ${label}... ${Math.round(elapsed/1000)}s`,true);
+    stat(`Scraping ${label}... ${Math.round(elapsed/1000)}s`,true);
     if(s==="SUCCEEDED")return;
-    if(["FAILED","ABORTED","TIMED-OUT"].includes(s))throw new Error(`Run ${s}.`);
+    if(["FAILED","ABORTED","TIMED-OUT"].includes(s))throw new Error(`${s}. Try again.`);
   }
   throw new Error("Timed out.");
 }
 
-// ── Vision functions ─────────────────────────────────────────────────────────
-async function checkCandid(thumbnailUrl,anthropicKey){
-  if(!thumbnailUrl||!anthropicKey)return{pass:true};
+// ─────────────────────────────────────────────────────────────────────────────
+// AI HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+async function aiCandidCheck(thumbUrl,aiKey,vibeHint){
   try{
-    const imgRes=await fetch(thumbnailUrl);
-    if(!imgRes.ok)return{pass:true};
-    const blob=await imgRes.blob();
-    const base64=await blobToBase64(blob);
+    const ir=await fetch(thumbUrl);
+    if(!ir.ok)return true;
+    const blob=await ir.blob();
+    const b=await b64(blob);
     const mime=blob.type||"image/jpeg";
-
-    // Use vibe override prompt if set by vibe reference analyser
-    const prompt=vibePromptOverride||`You are filtering video thumbnails for an app that finds candid footage of wealthy people in public — on streets, at ports, restaurants, beaches, clubs, or luxury locations.
-
-Answer YES if it shows:
-- Real person(s) in a public outdoor or semi-outdoor setting
-- Candid or caught-on-camera style shot
-- Luxury context: designer clothes, jewellery, exotic location, yacht, upscale venue
-
-Answer NO if it shows:
-- Wedding, ceremony, formal event
-- Indoor grooming, skincare, workout or gym
-- Car interior with no visible person
-- Interior design or home tour with no people
-- Talking head facing camera in studio/bedroom
-- Text/motivational quote as main subject
-- Product or food with no person
-
-Reply only YES or NO.`;
-
-    const res=await callClaude(anthropicKey,prompt,base64,mime,5);
-    return{pass:res.toUpperCase().startsWith("YES")};
-  }catch{return{pass:true}}
+    const prompt=vibeHint
+      ?`Does this thumbnail match this vibe: "${vibeHint}"? Reply YES or NO only.`
+      :`Does this thumbnail show a real person in a public luxury setting — street, beach, club, restaurant, yacht, or airport? Reply YES or NO only. Say NO for: wedding, grooming routine, car interior only, home tour, gym, or talking head.`;
+    return (await callAI(aiKey,prompt,b,mime,5)).toUpperCase().startsWith("Y");
+  }catch{return true;}
 }
 
-async function checkTextOverlay(thumbnailUrl,anthropicKey,textFilter){
-  if(!thumbnailUrl||!anthropicKey)return{block:false};
-  try{
-    const imgRes=await fetch(thumbnailUrl);
-    if(!imgRes.ok)return{block:false};
-    const blob=await imgRes.blob();
-    const base64=await blobToBase64(blob);
-    const mime=blob.type||"image/jpeg";
-    const prompt=textFilter==="all"
-      ?`Does this image contain ANY text, words, captions, subtitles, or letters? Exception: tiny semi-transparent watermarks. Reply only YES or NO.`
-      :`Does this image contain text LARGE enough it could not be covered by a small overlay? Reply only YES or NO.`;
-    const res=await callClaude(anthropicKey,prompt,base64,mime,5);
-    return{block:res.toUpperCase().startsWith("YES")};
-  }catch{return{block:false}}
-}
-
-async function callClaude(anthropicKey,prompt,base64,mime,maxTokens=5){
-  const res=await fetch("https://api.anthropic.com/v1/messages",{
+async function callAI(key,prompt,b64data,mime,maxTok=5){
+  const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:maxTokens,messages:[{role:"user",content:[
-      {type:"image",source:{type:"base64",media_type:mime,data:base64}},
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:maxTok,messages:[{role:"user",content:[
+      {type:"image",source:{type:"base64",media_type:mime,data:b64data}},
       {type:"text",text:prompt}
     ]}]})
   });
-  const data=await res.json();
-  return data?.content?.[0]?.text?.trim()||"";
+  const d=await r.json();
+  return d?.content?.[0]?.text?.trim()||"";
 }
 
-function blobToBase64(blob){
+async function callAItext(key,prompt,maxTok=200){
+  const r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:maxTok,messages:[{role:"user",content:prompt}]})
+  });
+  const d=await r.json();
+  return d?.content?.[0]?.text?.trim()||"";
+}
+
+function b64(blob){
   return new Promise((res,rej)=>{
     const r=new FileReader();r.onloadend=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(blob);
   });
 }
 
-// ── Seen URLs memory (persists across sessions via window.storage) ────────────
-const SEEN_KEY = "reelvault:seen_urls";
-let seenUrls = new Set(); // loaded on init
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────────────────────────
+function fmtN(n){try{return Number(n).toLocaleString();}catch{return n;}}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
-async function loadSeenUrls() {
-  try {
-    const result = await window.storage.get(SEEN_KEY);
-    if (result?.value) {
-      const arr = JSON.parse(result.value);
-      seenUrls = new Set(arr);
-    }
-  } catch { seenUrls = new Set(); }
-}
-
-async function saveSeenUrls() {
-  try {
-    // Keep max 2000 URLs to avoid bloat — trim oldest (front of array)
-    let arr = [...seenUrls];
-    if (arr.length > 2000) arr = arr.slice(arr.length - 2000);
-    seenUrls = new Set(arr);
-    await window.storage.set(SEEN_KEY, JSON.stringify(arr));
-  } catch {}
-}
-
-async function clearSeenUrls() {
-  seenUrls = new Set();
-  try { await window.storage.delete(SEEN_KEY); } catch {}
-  document.getElementById("seenCount").textContent = "0 seen";
-  document.getElementById("results").innerHTML =
-    `<div class="error-card" style="margin:0 16px">History cleared — all videos will appear fresh next search.<div class="error-sub">Run a search to start building new history.</div></div>`;
-}
-
-async function updateSeenCount() {
-  const el = document.getElementById("seenCount");
-  if (el) el.textContent = `${seenUrls.size.toLocaleString()} seen`;
-}
-
-// ── Display ──────────────────────────────────────────────────────────────────
-async function displayResults(allResults, query) {
-  const box = document.getElementById("results");
-  let skipped = 0;
-  const fresh = [];
-
-  for (const r of allResults) {
-    const url = r.platform.getUrl(r.item);
-    // Normalise URL — strip query params for dedup
-    const normUrl = url.split("?")[0].replace(/\/$/, "");
-    if (normUrl && seenUrls.has(normUrl)) { skipped++; continue; }
-    fresh.push(r);
-  }
-
-  const perPlatform = {};
-  fresh.forEach(({ platform }) => {
-    perPlatform[platform.label] = (perPlatform[platform.label] || 0) + 1;
-  });
-
-  let meta = `<div class="results-meta"><span class="badge-count">✓ ${fresh.length} new videos</span>`;
-  Object.entries(perPlatform).forEach(([label, count]) => {
-    const p = Object.values(PLATFORMS).find(x => x.label === label);
-    meta += `<span class="badge-platform">${p?.emoji || ""} ${label} ${count}</span>`;
-  });
-  if (skipped > 0)
-    meta += `<span class="badge-removed">🔁 ${skipped} already seen, skipped</span>`;
-  meta += `</div>`;
-  box.innerHTML += meta;
-
-  if (fresh.length === 0 && skipped > 0) {
-    box.innerHTML += `<div class="error-card" style="margin:0 16px">All results were already seen.<div class="error-sub">Try a different preset, or clear history to start fresh.</div></div>`;
-    return;
-  }
-
-  fresh.forEach(({ item, platform: p }, i) => {
-    const url    = p.getUrl(item);
-    const normUrl = url.split("?")[0].replace(/\/$/, "");
-    const author = p.getAuthor(item);
-    const desc   = p.getDesc(item);
-    const views  = p.getViews(item);
-    const likes  = p.getLikes(item);
-    const card   = document.createElement("div");
-    card.className = "result-card"; card.style.animationDelay = `${i * 0.04}s`;
-    card.innerHTML = `
-      <div class="result-platform-badge">${p.emoji} ${p.label}</div>
-      <div class="result-author">@${esc(author)}</div>
-      ${desc ? `<div class="result-desc">${esc(desc)}</div>` : ""}
-      <div class="result-stats">
-        ${views ? `<span>👁 ${Number(views).toLocaleString()}</span>` : ""}
-        ${likes ? `<span>❤️ ${Number(likes).toLocaleString()}</span>` : ""}
-      </div>
-      <a class="result-link-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
-        <span>${esc(p.getLinkLabel())}</span>
-        <span class="result-link-arrow">↗</span>
-      </a>`;
-    box.appendChild(card);
-
-    // Mark as seen
-    if (normUrl) seenUrls.add(normUrl);
-  });
-
-  // Persist seen URLs after each display
-  await saveSeenUrls();
-  await updateSeenCount();
-}
-
-function esc(str) {
-  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-document.addEventListener("keydown", e => { if (e.key==="Enter" && e.target.id!=="customKeyword" && e.target.id!=="vibeRefUrls") startSearch() });
-
-// Init: load seen URLs on startup
-loadSeenUrls().then(updateSeenCount);
-updatePreview();
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!["customQ","vibeUrls"].includes(e.target.id)) doSearch();
+});
+loadSeen();
+updPrev();
 </script>
 </body>
 </html>
