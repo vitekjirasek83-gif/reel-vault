@@ -475,14 +475,14 @@ const PLATFORMS = {
 
   instagram: {
     label:"Reels", emoji:"📸",
-    // Use apify~instagram-scraper with startUrls pointing to /reels/ page of curated accounts.
-    // These are VERIFIED accounts confirmed to post candid rich-people street content.
-    actor:"apify~instagram-scraper",
+    // apify/instagram-reel-scraper — correct actor that takes username array
+    // Confirmed: { username: ["account1","account2"], resultsLimit: n }
+    actor:"apify~instagram-reel-scraper",
     buildBody:(query,n)=>{
-      const q = query.toLowerCase();
+      const q=query.toLowerCase();
       let accounts;
       if      (q.includes("monaco")||q.includes("monte carlo"))
-        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone","monaco.today"];
+        accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","monacoone"];
       else if (q.includes("dubai"))
         accounts=["rich.dubai.people","richkidsdubai1","rich_people_of_dubai"];
       else if (q.includes("miami"))
@@ -507,38 +507,18 @@ const PLATFORMS = {
         accounts=["bilionarescab","the_billionare_lifestyle","rich.dubai.people","richkidsdubai1"];
       else
         accounts=["bilionarescab","the_billionare_lifestyle","rich.monaco.people","rich.dubai.people","richkidsdubai1"];
-
-      return {
-        // startUrls pointing to the /reels/ tab of each account
-        startUrls: accounts.map(a=>({url:`https://www.instagram.com/${a}/reels/`})),
-        resultsType:"posts",
-        resultsLimit:n,
-        addParentData:false
-      };
+      return { username:accounts, resultsLimit:n };
     },
-    parseItems:raw=>{
-      // Accept any item that is a video — field name varies by scraper version
-      // GraphVideo, Video, isVideo:true, videoUrl present, or /reel/ or /p/ with video duration
-      return raw.filter(i=>
-        i.type==="Video"||i.type==="GraphVideo"||i.type==="Reel"||
-        i.isVideo===true||i.videoUrl||i.videoPlayCount!==undefined||
-        i.url?.includes("/reel/")||i.url?.includes("/p/")
-      );
-    },
-    getUrl:   i=>{
-      if(i.url) return i.url;
-      // Build reel URL from shortCode
-      if(i.shortCode) return `https://www.instagram.com/reel/${i.shortCode}/`;
-      return "";
-    },
-    getAuthor:i=>i.ownerUsername||i.ownerId||"unknown",
-    getDesc:  i=>i.caption||i.description||"",
-    getViews: i=>i.videoViewCount||i.videoPlayCount||"",
+    parseItems:raw=>raw,
+    getUrl:   i=>i.url||i.reelUrl||(i.shortCode?`https://www.instagram.com/reel/${i.shortCode}/`:""),
+    getAuthor:i=>i.ownerUsername||i.username||i.owner?.username||"unknown",
+    getDesc:  i=>i.caption||i.text||i.description||"",
+    getViews: i=>i.playsCount||i.videoViewCount||i.plays||"",
     getLikes: i=>i.likesCount||i.likes||"",
     getLinkLabel:()=>"Open on Instagram",
-    getThumbnail:i=>i.displayUrl||i.thumbnailUrl||"",
-    getWidth: i=>i.dimensionsWidth||0,
-    getHeight:i=>i.dimensionsHeight||0,
+    getThumbnail:i=>i.thumbnailUrl||i.displayUrl||i.coverUrl||"",
+    getWidth: i=>0,
+    getHeight:i=>0,
   },
 
   youtube: {
